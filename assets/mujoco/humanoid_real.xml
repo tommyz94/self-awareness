@@ -1,0 +1,225 @@
+<mujoco model="human_visual_template">
+  <compiler angle="degree" autolimits="true" meshdir="meshes" texturedir="textures"/>
+  <option timestep="0.005" gravity="0 0 -9.81"/>
+
+  <visual>
+    <map zfar="40"/>
+    <quality shadowsize="4096" offsamples="8"/>
+    <global offwidth="1280" offheight="720"/>
+    <headlight active="0"/>
+  </visual>
+
+  <asset>
+    <!-- Textures / materials -->
+    <texture name="skin_tex"  type="2d" file="skin_albedo.png"/>
+    <texture name="cloth_tex" type="2d" file="cloth_albedo.png"/>
+
+    <material name="skin_mat"
+              texture="skin_tex"
+              texuniform="true"
+              specular="0.12"
+              shininess="0.08"/>
+
+    <material name="cloth_mat"
+              texture="cloth_tex"
+              texuniform="true"
+              specular="0.04"
+              shininess="0.03"/>
+
+    <material name="shoe_mat"
+              rgba="0.12 0.12 0.12 1"
+              specular="0.08"
+              shininess="0.08"/>
+
+    <!-- Visual meshes: replace these files with your own -->
+    <mesh name="pelvis_mesh"           file="human/pelvis.obj"/>
+    <mesh name="torso_mesh"            file="human/torso.obj"/>
+    <mesh name="head_mesh"             file="human/head.obj"/>
+
+    <mesh name="thigh_r_mesh"          file="human/thigh_right.obj"/>
+    <mesh name="shin_r_mesh"           file="human/shin_right.obj"/>
+    <mesh name="foot_r_mesh"           file="human/foot_right.obj"/>
+
+    <mesh name="thigh_l_mesh"          file="human/thigh_left.obj"/>
+    <mesh name="shin_l_mesh"           file="human/shin_left.obj"/>
+    <mesh name="foot_l_mesh"           file="human/foot_left.obj"/>
+
+    <mesh name="upperarm_r_mesh"       file="human/upperarm_right.obj"/>
+    <mesh name="forearm_r_mesh"        file="human/forearm_right.obj"/>
+    <mesh name="hand_r_mesh"           file="human/hand_right.obj"/>
+
+    <mesh name="upperarm_l_mesh"       file="human/upperarm_left.obj"/>
+    <mesh name="forearm_l_mesh"        file="human/forearm_left.obj"/>
+    <mesh name="hand_l_mesh"           file="human/hand_left.obj"/>
+  </asset>
+
+  <default>
+    <!-- Invisible collision geoms -->
+    <default class="collision">
+      <geom contype="1"
+            conaffinity="1"
+            condim="3"
+            density="300"
+            friction="0.9 0.05 0.05"
+            group="3"
+            rgba="0 0 0 0"/>
+    </default>
+
+    <!-- Visible meshes only -->
+    <default class="visual">
+      <geom type="mesh"
+            contype="0"
+            conaffinity="0"
+            density="0"
+            group="2"/>
+    </default>
+
+    <default class="joint_soft">
+      <joint damping="3" armature="0.01"/>
+    </default>
+
+    <default class="joint_main">
+      <joint damping="6" armature="0.02"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <geom name="floor" type="plane" size="0 0 0.05" rgba="0.85 0.85 0.85 1" condim="3"/>
+    <light name="key" pos="2 -3 4" dir="-0.3 0.5 -1" directional="true" castshadow="true"/>
+    <light name="fill" pos="-2 2 3" dir="0 -0.2 -1" directional="true" castshadow="false"/>
+
+    <body name="pelvis" pos="0 0 1.02">
+      <freejoint name="root"/>
+
+      <!-- Physics -->
+      <geom class="collision" name="pelvis_col" type="sphere" size="0.11"/>
+
+      <!-- Visual -->
+      <geom class="visual" name="pelvis_vis" mesh="pelvis_mesh" material="cloth_mat"/>
+
+      <!-- Torso -->
+      <body name="torso" pos="0 0 0.12">
+        <joint name="spine_yaw"   class="joint_main" type="hinge" axis="0 0 1" range="-40 40"/>
+        <joint name="spine_roll"  class="joint_main" type="hinge" axis="1 0 0" range="-25 25"/>
+        <joint name="spine_pitch" class="joint_main" type="hinge" axis="0 1 0" range="-45 35"/>
+
+        <geom class="collision" name="torso_col" type="capsule"
+              fromto="0 0 -0.10 0 0 0.18" size="0.10"/>
+        <geom class="visual" name="torso_vis" mesh="torso_mesh" material="cloth_mat"/>
+
+        <!-- Head -->
+        <body name="head" pos="0 0 0.27">
+          <joint name="neck_yaw"   class="joint_soft" type="hinge" axis="0 0 1" range="-60 60"/>
+          <joint name="neck_pitch" class="joint_soft" type="hinge" axis="0 1 0" range="-45 45"/>
+
+          <geom class="collision" name="head_col" type="sphere" size="0.09"/>
+          <geom class="visual" name="head_vis" mesh="head_mesh" material="skin_mat"/>
+        </body>
+
+        <!-- Right arm -->
+        <body name="upper_arm_right" pos="0 -0.18 0.14">
+          <joint name="shoulder_rx" class="joint_main" type="hinge" axis="1 0 0" range="-100 90"/>
+          <joint name="shoulder_ry" class="joint_main" type="hinge" axis="0 1 0" range="-120 120"/>
+          <joint name="shoulder_rz" class="joint_main" type="hinge" axis="0 0 1" range="-70 70"/>
+
+          <geom class="collision" name="upperarm_r_col" type="capsule"
+                fromto="0 0 0 0 -0.02 -0.31" size="0.045"/>
+          <geom class="visual" name="upperarm_r_vis" mesh="upperarm_r_mesh" material="skin_mat"/>
+
+          <body name="forearm_right" pos="0 -0.02 -0.31">
+            <joint name="elbow_right" class="joint_main" type="hinge" axis="0 1 0" range="0 145"/>
+
+            <geom class="collision" name="forearm_r_col" type="capsule"
+                  fromto="0 0 0 0 0 -0.26" size="0.038"/>
+            <geom class="visual" name="forearm_r_vis" mesh="forearm_r_mesh" material="skin_mat"/>
+
+            <body name="hand_right" pos="0 0 -0.26">
+              <joint name="wrist_right" class="joint_soft" type="hinge" axis="1 0 0" range="-35 35"/>
+              <geom class="collision" name="hand_r_col" type="box" size="0.035 0.02 0.06"/>
+              <geom class="visual" name="hand_r_vis" mesh="hand_r_mesh" material="skin_mat"/>
+            </body>
+          </body>
+        </body>
+
+        <!-- Left arm -->
+        <body name="upper_arm_left" pos="0 0.18 0.14">
+          <joint name="shoulder_lx" class="joint_main" type="hinge" axis="1 0 0" range="-100 90"/>
+          <joint name="shoulder_ly" class="joint_main" type="hinge" axis="0 1 0" range="-120 120"/>
+          <joint name="shoulder_lz" class="joint_main" type="hinge" axis="0 0 1" range="-70 70"/>
+
+          <geom class="collision" name="upperarm_l_col" type="capsule"
+                fromto="0 0 0 0 0.02 -0.31" size="0.045"/>
+          <geom class="visual" name="upperarm_l_vis" mesh="upperarm_l_mesh" material="skin_mat"/>
+
+          <body name="forearm_left" pos="0 0.02 -0.31">
+            <joint name="elbow_left" class="joint_main" type="hinge" axis="0 1 0" range="0 145"/>
+
+            <geom class="collision" name="forearm_l_col" type="capsule"
+                  fromto="0 0 0 0 0 -0.26" size="0.038"/>
+            <geom class="visual" name="forearm_l_vis" mesh="forearm_l_mesh" material="skin_mat"/>
+
+            <body name="hand_left" pos="0 0 -0.26">
+              <joint name="wrist_left" class="joint_soft" type="hinge" axis="1 0 0" range="-35 35"/>
+              <geom class="collision" name="hand_l_col" type="box" size="0.035 0.02 0.06"/>
+              <geom class="visual" name="hand_l_vis" mesh="hand_l_mesh" material="skin_mat"/>
+            </body>
+          </body>
+        </body>
+      </body>
+
+      <!-- Right leg -->
+      <body name="thigh_right" pos="0 -0.09 -0.02">
+        <joint name="hip_rx" class="joint_main" type="hinge" axis="1 0 0" range="-40 45"/>
+        <joint name="hip_ry" class="joint_main" type="hinge" axis="0 1 0" range="-120 40"/>
+        <joint name="hip_rz" class="joint_main" type="hinge" axis="0 0 1" range="-45 45"/>
+
+        <geom class="collision" name="thigh_r_col" type="capsule"
+              fromto="0 0 0 0 0 -0.42" size="0.06"/>
+        <geom class="visual" name="thigh_r_vis" mesh="thigh_r_mesh" material="cloth_mat"/>
+
+        <body name="shin_right" pos="0 0 -0.42">
+          <joint name="knee_right" class="joint_main" type="hinge" axis="0 1 0" range="0 150"/>
+
+          <geom class="collision" name="shin_r_col" type="capsule"
+                fromto="0 0 0 0 0 -0.40" size="0.05"/>
+          <geom class="visual" name="shin_r_vis" mesh="shin_r_mesh" material="cloth_mat"/>
+
+          <body name="foot_right" pos="0 0 -0.40">
+            <joint name="ankle_ry_right" class="joint_soft" type="hinge" axis="0 1 0" range="-35 35"/>
+            <joint name="ankle_rx_right" class="joint_soft" type="hinge" axis="1 0 0" range="-20 20"/>
+
+            <geom class="collision" name="foot_r_col" type="box" size="0.045 0.03 0.12" pos="0 0 -0.03"/>
+            <geom class="visual" name="foot_r_vis" mesh="foot_r_mesh" material="shoe_mat"/>
+          </body>
+        </body>
+      </body>
+
+      <!-- Left leg -->
+      <body name="thigh_left" pos="0 0.09 -0.02">
+        <joint name="hip_lx" class="joint_main" type="hinge" axis="1 0 0" range="-40 45"/>
+        <joint name="hip_ly" class="joint_main" type="hinge" axis="0 1 0" range="-120 40"/>
+        <joint name="hip_lz" class="joint_main" type="hinge" axis="0 0 1" range="-45 45"/>
+
+        <geom class="collision" name="thigh_l_col" type="capsule"
+              fromto="0 0 0 0 0 -0.42" size="0.06"/>
+        <geom class="visual" name="thigh_l_vis" mesh="thigh_l_mesh" material="cloth_mat"/>
+
+        <body name="shin_left" pos="0 0 -0.42">
+          <joint name="knee_left" class="joint_main" type="hinge" axis="0 1 0" range="0 150"/>
+
+          <geom class="collision" name="shin_l_col" type="capsule"
+                fromto="0 0 0 0 0 -0.40" size="0.05"/>
+          <geom class="visual" name="shin_l_vis" mesh="shin_l_mesh" material="cloth_mat"/>
+
+          <body name="foot_left" pos="0 0 -0.40">
+            <joint name="ankle_ry_left" class="joint_soft" type="hinge" axis="0 1 0" range="-35 35"/>
+            <joint name="ankle_rx_left" class="joint_soft" type="hinge" axis="1 0 0" range="-20 20"/>
+
+            <geom class="collision" name="foot_l_col" type="box" size="0.045 0.03 0.12" pos="0 0 -0.03"/>
+            <geom class="visual" name="foot_l_vis" mesh="foot_l_mesh" material="shoe_mat"/>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+</mujoco>

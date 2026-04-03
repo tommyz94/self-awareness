@@ -1,0 +1,3 @@
+# @package _global_
+experiment_id: e1
+num_runs: 10

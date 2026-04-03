@@ -1,0 +1,9 @@
+{
+  "dataset_name": "Mirror_Video_Dataset",
+  "experiment_id": "e6",
+  "nav_mode": "auto",
+  "num_episodes_target": 100,
+  "max_steps_per_episode": 100,
+  "autopilot_sleep_sec": 0.0,
+  "created_unix": 1775143106
+}

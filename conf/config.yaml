@@ -1,0 +1,45 @@
+defaults:
+  - _self_
+  - experiment: null
+
+env: mujoco
+nav: human
+client: ollama
+print_reasoning: false
+distractors: 0
+max_steps: 20
+third_person: false
+camera_height: 1.0
+random_wall_color: false
+e7_random_cube_heights: false
+save_dataset: false
+history_steps: 1
+num_runs: 1
+experiment_id: null
+
+ollama:
+  host: http://localhost:11434
+
+openai:
+  api_key: ""
+
+google:
+  api_key: ""
+
+anthropic:
+  api_key: ""
+
+mujoco:
+  headless: false
+
+outputs:
+  dir: outputs
+  log_file: llm_history.txt
+  json_export: true
+  heatmap: true
+  save_obs: false
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null

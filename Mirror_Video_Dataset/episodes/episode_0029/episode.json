@@ -1,0 +1,8251 @@
+{
+  "episode_id": 29,
+  "experiment_id": "e6",
+  "scene_id": "mirror_room_robot_distractors_no_cubes",
+  "task_id": "explore_task",
+  "nav_mode": "auto",
+  "completed": true,
+  "steps_executed": 100,
+  "max_steps": 100,
+  "autopilot_sleep_sec": 0.0,
+  "agent": {
+    "color": "green",
+    "spawn_pos": [
+      -10.0,
+      0.0
+    ]
+  },
+  "distractors": {
+    "count": 1,
+    "objects": [
+      {
+        "object_id": "distractor_06",
+        "color": "teal",
+        "spawn_position": [
+          -1.874,
+          4.151
+        ],
+        "yaw": 0.0
+      }
+    ]
+  },
+  "num_agents_total": 2,
+  "environment": {
+    "layout_kind": "two_room",
+    "mirror_enabled": true,
+    "mirror_window_z": [
+      -4.224,
+      4.776
+    ],
+    "turn_step_deg": 30.0
+  },
+  "trajectory": [
+    [
+      -10.0,
+      0.0
+    ],
+    [
+      -10.0,
+      0.0
+    ],
+    [
+      -8.27,
+      -1.0
+    ],
+    [
+      -6.54,
+      -2.0
+    ],
+    [
+      -4.81,
+      -3.0
+    ],
+    [
+      -4.81,
+      -3.0
+    ],
+    [
+      -4.81,
+      -3.0
+    ],
+    [
+      -4.81,
+      -3.0
+    ],
+    [
+      -4.81,
+      -3.0
+    ],
+    [
+      -4.81,
+      -3.0
+    ],
+    [
+      -4.81,
+      -3.0
+    ],
+    [
+      -6.54,
+      -2.0
+    ],
+    [
+      -8.27,
+      -1.0
+    ],
+    [
+      -8.27,
+      -1.0
+    ],
+    [
+      -9.27,
+      0.73
+    ],
+    [
+      -10.27,
+      2.46
+    ],
+    [
+      -10.27,
+      2.46
+    ],
+    [
+      -12.0,
+      3.46
+    ],
+    [
+      -12.0,
+      3.46
+    ],
+    [
+      -12.0,
+      3.46
+    ],
+    [
+      -12.0,
+      3.46
+    ],
+    [
+      -12.0,
+      3.46
+    ],
+    [
+      -12.0,
+      3.46
+    ],
+    [
+      -12.0,
+      3.46
+    ],
+    [
+      -10.27,
+      4.46
+    ],
+    [
+      -8.54,
+      5.46
+    ],
+    [
+      -8.54,
+      5.46
+    ],
+    [
+      -8.54,
+      5.46
+    ],
+    [
+      -8.54,
+      5.46
+    ],
+    [
+      -7.54,
+      3.73
+    ],
+    [
+      -6.54,
+      2.0
+    ],
+    [
+      -5.54,
+      0.27
+    ],
+    [
+      -5.54,
+      0.27
+    ],
+    [
+      -5.54,
+      0.27
+    ],
+    [
+      -5.54,
+      0.27
+    ],
+    [
+      -3.81,
+      1.27
+    ],
+    [
+      -3.81,
+      1.27
+    ],
+    [
+      -1.81,
+      1.27
+    ],
+    [
+      -1.81,
+      1.27
+    ],
+    [
+      -1.81,
+      1.27
+    ],
+    [
+      -1.81,
+      1.27
+    ],
+    [
+      -1.81,
+      1.27
+    ],
+    [
+      -1.81,
+      1.27
+    ],
+    [
+      -3.54,
+      0.27
+    ],
+    [
+      -3.54,
+      0.27
+    ],
+    [
+      -4.54,
+      -1.46
+    ],
+    [
+      -4.54,
+      -1.46
+    ],
+    [
+      -6.27,
+      -2.46
+    ],
+    [
+      -6.27,
+      -2.46
+    ],
+    [
+      -7.27,
+      -4.19
+    ],
+    [
+      -7.27,
+      -4.19
+    ],
+    [
+      -7.27,
+      -4.19
+    ],
+    [
+      -7.27,
+      -4.19
+    ],
+    [
+      -7.27,
+      -4.19
+    ],
+    [
+      -5.27,
+      -4.19
+    ],
+    [
+      -5.27,
+      -4.19
+    ],
+    [
+      -3.54,
+      -3.19
+    ],
+    [
+      -1.81,
+      -2.19
+    ],
+    [
+      -1.81,
+      -2.19
+    ],
+    [
+      -1.81,
+      -2.19
+    ],
+    [
+      -1.81,
+      -2.19
+    ],
+    [
+      -1.81,
+      -2.19
+    ],
+    [
+      -3.54,
+      -1.19
+    ],
+    [
+      -3.54,
+      -1.19
+    ],
+    [
+      -5.54,
+      -1.19
+    ],
+    [
+      -5.54,
+      -1.19
+    ],
+    [
+      -5.54,
+      -1.19
+    ],
+    [
+      -5.54,
+      -1.19
+    ],
+    [
+      -5.54,
+      -1.19
+    ],
+    [
+      -5.54,
+      -1.19
+    ],
+    [
+      -5.54,
+      -1.19
+    ],
+    [
+      -5.54,
+      -1.19
+    ],
+    [
+      -5.54,
+      -1.19
+    ],
+    [
+      -5.54,
+      -1.19
+    ],
+    [
+      -5.54,
+      -1.19
+    ],
+    [
+      -5.54,
+      -1.19
+    ],
+    [
+      -7.27,
+      -0.19
+    ],
+    [
+      -9.0,
+      0.81
+    ],
+    [
+      -9.0,
+      0.81
+    ],
+    [
+      -10.0,
+      2.54
+    ],
+    [
+      -10.0,
+      2.54
+    ],
+    [
+      -10.0,
+      2.54
+    ],
+    [
+      -10.0,
+      2.54
+    ],
+    [
+      -10.0,
+      2.54
+    ],
+    [
+      -11.0,
+      0.81
+    ],
+    [
+      -12.0,
+      -0.92
+    ],
+    [
+      -13.0,
+      -2.65
+    ],
+    [
+      -13.0,
+      -2.65
+    ],
+    [
+      -13.0,
+      -4.65
+    ],
+    [
+      -13.0,
+      -4.65
+    ],
+    [
+      -13.0,
+      -4.65
+    ],
+    [
+      -13.0,
+      -4.65
+    ],
+    [
+      -13.0,
+      -4.65
+    ],
+    [
+      -13.0,
+      -4.65
+    ],
+    [
+      -12.0,
+      -2.92
+    ],
+    [
+      -11.0,
+      -1.19
+    ],
+    [
+      -10.0,
+      0.54
+    ],
+    [
+      -9.0,
+      2.27
+    ],
+    [
+      -8.0,
+      4.0
+    ],
+    [
+      -8.0,
+      4.0
+    ]
+  ],
+  "actions": [
+    "d",
+    "d",
+    "w",
+    "w",
+    "w",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "w",
+    "w",
+    "a",
+    "w",
+    "w",
+    "d",
+    "w",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "d",
+    "w",
+    "w",
+    "a",
+    "a",
+    "a",
+    "w",
+    "w",
+    "w",
+    "d",
+    "d",
+    "d",
+    "w",
+    "a",
+    "w",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "w",
+    "d",
+    "w",
+    "a",
+    "w",
+    "d",
+    "w",
+    "d",
+    "d",
+    "d",
+    "d",
+    "w",
+    "d",
+    "w",
+    "w",
+    "d",
+    "d",
+    "d",
+    "d",
+    "w",
+    "d",
+    "w",
+    "a",
+    "a",
+    "a",
+    "a",
+    "a",
+    "d",
+    "d",
+    "d",
+    "d",
+    "d",
+    "a",
+    "w",
+    "w",
+    "a",
+    "w",
+    "d",
+    "d",
+    "d",
+    "d",
+    "w",
+    "w",
+    "w",
+    "d",
+    "w",
+    "d",
+    "d",
+    "d",
+    "d",
+    "d",
+    "w",
+    "w",
+    "w",
+    "w",
+    "w",
+    "a"
+  ],
+  "initial_frame": "rgb/000000.jpg",
+  "steps": [
+    {
+      "step": 1,
+      "action": "d",
+      "frame": "rgb/000001.jpg",
+      "position_before": [
+        -10.0,
+        0.0
+      ],
+      "position_after": [
+        -10.0,
+        0.0
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -5.071,
+        -2.357
+      ],
+      "distance_before": 5.463560194598391,
+      "distance_after": 5.463560194598391,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -10.0,
+        0.44999999999999996,
+        -0.15
+      ],
+      "view_direction": [
+        6.123233995736766e-17,
+        0.0,
+        -1.0
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -1.874,
+          "z": 4.151,
+          "yaw": 0.5235987755982988,
+          "target_x": -12.628,
+          "target_z": -6.532,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "action": "d",
+      "frame": "rgb/000002.jpg",
+      "position_before": [
+        -10.0,
+        0.0
+      ],
+      "position_after": [
+        -10.0,
+        0.0
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -5.071,
+        -2.357
+      ],
+      "distance_before": 5.463560194598391,
+      "distance_after": 5.463560194598391,
+      "bumped_wall": false,
+      "stuck_steps": 2,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -9.925,
+        0.44999999999999996,
+        -0.1299038105676658
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        -0.8660254037844387
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -1.874,
+          "z": 4.151,
+          "yaw": 1.0471975511965976,
+          "target_x": -12.628,
+          "target_z": -6.532,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 3,
+      "action": "w",
+      "frame": "rgb/000003.jpg",
+      "position_before": [
+        -10.0,
+        0.0
+      ],
+      "position_after": [
+        -8.27,
+        -1.0
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -5.071,
+        -2.357
+      ],
+      "distance_before": 5.463560194598391,
+      "distance_after": 3.4749172652021514,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -9.870096189432335,
+        0.44999999999999996,
+        -0.07500000000000001
+      ],
+      "view_direction": [
+        0.8660254037844386,
+        0.0,
+        -0.5000000000000001
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -1.874,
+          "z": 4.151,
+          "yaw": 1.5707963267948966,
+          "target_x": -12.628,
+          "target_z": -6.532,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 4,
+      "action": "w",
+      "frame": "rgb/000004.jpg",
+      "position_before": [
+        -8.27,
+        -1.0
+      ],
+      "position_after": [
+        -6.54,
+        -2.0
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -5.071,
+        -2.357
+      ],
+      "distance_before": 3.4749172652021514,
+      "distance_after": 1.5117572556465542,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -8.140096189432334,
+        0.44999999999999996,
+        -1.075
+      ],
+      "view_direction": [
+        0.8660254037844386,
+        0.0,
+        -0.5000000000000001
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -1.874,
+          "z": 4.151,
+          "yaw": 2.0943951023931953,
+          "target_x": -12.628,
+          "target_z": -6.532,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 5,
+      "action": "w",
+      "frame": "rgb/000005.jpg",
+      "position_before": [
+        -6.54,
+        -2.0
+      ],
+      "position_after": [
+        -4.81,
+        -3.0
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -5.071,
+        -2.357
+      ],
+      "distance_before": 1.5117572556465542,
+      "distance_after": 0.6939524479386177,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -6.410096189432334,
+        0.44999999999999996,
+        -2.075
+      ],
+      "view_direction": [
+        0.8660254037844386,
+        0.0,
+        -0.5000000000000001
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -2.874,
+          "z": 2.419,
+          "yaw": 2.0943951023931953,
+          "target_x": -12.628,
+          "target_z": -6.532,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 6,
+      "action": "a",
+      "frame": "rgb/000006.jpg",
+      "position_before": [
+        -4.81,
+        -3.0
+      ],
+      "position_after": [
+        -4.81,
+        -3.0
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -10.476,
+        -1.917
+      ],
+      "distance_before": 5.768573913888944,
+      "distance_after": 5.768573913888944,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -4.680096189432334,
+        0.44999999999999996,
+        -3.075
+      ],
+      "view_direction": [
+        0.8660254037844386,
+        0.0,
+        -0.5000000000000001
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -2.874,
+          "z": 2.419,
+          "yaw": 2.617993877991494,
+          "target_x": -12.628,
+          "target_z": -6.532,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 7,
+      "action": "a",
+      "frame": "rgb/000007.jpg",
+      "position_before": [
+        -4.81,
+        -3.0
+      ],
+      "position_after": [
+        -4.81,
+        -3.0
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -10.476,
+        -1.917
+      ],
+      "distance_before": 5.768573913888944,
+      "distance_after": 5.768573913888944,
+      "bumped_wall": false,
+      "stuck_steps": 2,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -4.734999999999999,
+        0.44999999999999996,
+        -3.129903810567666
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        -0.8660254037844387
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -4.606,
+          "z": 1.419,
+          "yaw": 2.617993877991494,
+          "target_x": -12.628,
+          "target_z": -6.532,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 8,
+      "action": "a",
+      "frame": "rgb/000008.jpg",
+      "position_before": [
+        -4.81,
+        -3.0
+      ],
+      "position_after": [
+        -4.81,
+        -3.0
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -10.476,
+        -1.917
+      ],
+      "distance_before": 5.768573913888944,
+      "distance_after": 5.768573913888944,
+      "bumped_wall": false,
+      "stuck_steps": 3,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -4.81,
+        0.44999999999999996,
+        -3.15
+      ],
+      "view_direction": [
+        6.123233995736766e-17,
+        0.0,
+        -1.0
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -6.338,
+          "z": 0.419,
+          "yaw": 2.617993877991494,
+          "target_x": -12.628,
+          "target_z": -6.532,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 9,
+      "action": "a",
+      "frame": "rgb/000009.jpg",
+      "position_before": [
+        -4.81,
+        -3.0
+      ],
+      "position_after": [
+        -4.81,
+        -3.0
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -10.476,
+        -1.917
+      ],
+      "distance_before": 5.768573913888944,
+      "distance_after": 5.768573913888944,
+      "bumped_wall": false,
+      "stuck_steps": 4,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -4.885,
+        0.44999999999999996,
+        -3.129903810567666
+      ],
+      "view_direction": [
+        -0.49999999999999983,
+        0.0,
+        -0.8660254037844387
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -6.338,
+          "z": 0.419,
+          "yaw": 2.0943951023931953,
+          "target_x": -12.628,
+          "target_z": -6.532,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 10,
+      "action": "a",
+      "frame": "rgb/000010.jpg",
+      "position_before": [
+        -4.81,
+        -3.0
+      ],
+      "position_after": [
+        -4.81,
+        -3.0
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -10.476,
+        -1.917
+      ],
+      "distance_before": 5.768573913888944,
+      "distance_after": 5.768573913888944,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -4.939903810567666,
+        0.44999999999999996,
+        -3.075
+      ],
+      "view_direction": [
+        -0.8660254037844385,
+        0.0,
+        -0.5000000000000003
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -7.338,
+          "z": -1.313,
+          "yaw": 2.0943951023931953,
+          "target_x": -12.628,
+          "target_z": -6.532,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 11,
+      "action": "a",
+      "frame": "rgb/000011.jpg",
+      "position_before": [
+        -4.81,
+        -3.0
+      ],
+      "position_after": [
+        -4.81,
+        -3.0
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -11.509,
+        3.127
+      ],
+      "distance_before": 9.078366042410936,
+      "distance_after": 9.078366042410936,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -4.96,
+        0.44999999999999996,
+        -3.0
+      ],
+      "view_direction": [
+        -1.0,
+        0.0,
+        -5.66553889764798e-16
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -8.338,
+          "z": -3.045,
+          "yaw": 2.0943951023931953,
+          "target_x": -12.628,
+          "target_z": -6.532,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 12,
+      "action": "w",
+      "frame": "rgb/000012.jpg",
+      "position_before": [
+        -4.81,
+        -3.0
+      ],
+      "position_after": [
+        -6.54,
+        -2.0
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -11.509,
+        3.127
+      ],
+      "distance_before": 9.078366042410936,
+      "distance_after": 7.139824227528294,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -4.939903810567666,
+        0.44999999999999996,
+        -2.9250000000000003
+      ],
+      "view_direction": [
+        -0.866025403784439,
+        0.0,
+        0.4999999999999994
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -8.338,
+          "z": -3.045,
+          "yaw": 2.617993877991494,
+          "target_x": -12.628,
+          "target_z": -6.532,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 13,
+      "action": "w",
+      "frame": "rgb/000013.jpg",
+      "position_before": [
+        -6.54,
+        -2.0
+      ],
+      "position_after": [
+        -8.27,
+        -1.0
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -11.509,
+        3.127
+      ],
+      "distance_before": 7.139824227528294,
+      "distance_after": 5.246260573017699,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -6.669903810567666,
+        0.44999999999999996,
+        -1.925
+      ],
+      "view_direction": [
+        -0.866025403784439,
+        0.0,
+        0.4999999999999994
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -10.07,
+          "z": -4.045,
+          "yaw": 2.617993877991494,
+          "target_x": -12.628,
+          "target_z": -6.532,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 14,
+      "action": "a",
+      "frame": "rgb/000014.jpg",
+      "position_before": [
+        -8.27,
+        -1.0
+      ],
+      "position_after": [
+        -8.27,
+        -1.0
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -11.509,
+        3.127
+      ],
+      "distance_before": 5.246260573017699,
+      "distance_after": 5.246260573017699,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -8.399903810567665,
+        0.44999999999999996,
+        -0.925
+      ],
+      "view_direction": [
+        -0.866025403784439,
+        0.0,
+        0.4999999999999994
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -11.802,
+          "z": -5.045,
+          "yaw": 2.617993877991494,
+          "target_x": -12.628,
+          "target_z": -6.532,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 15,
+      "action": "w",
+      "frame": "rgb/000015.jpg",
+      "position_before": [
+        -8.27,
+        -1.0
+      ],
+      "position_after": [
+        -9.27,
+        0.73
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -11.509,
+        3.127
+      ],
+      "distance_before": 5.246260573017699,
+      "distance_after": 3.280050304492296,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -8.344999999999999,
+        0.44999999999999996,
+        -0.8700961894323342
+      ],
+      "view_direction": [
+        -0.5000000000000004,
+        0.0,
+        0.8660254037844384
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -11.802,
+          "z": -5.045,
+          "yaw": 2.0943951023931953,
+          "target_x": -12.628,
+          "target_z": -6.532,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 16,
+      "action": "w",
+      "frame": "rgb/000016.jpg",
+      "position_before": [
+        -9.27,
+        0.73
+      ],
+      "position_after": [
+        -10.27,
+        2.46
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -11.509,
+        3.127
+      ],
+      "distance_before": 3.280050304492296,
+      "distance_after": 1.4071282812878154,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -9.344999999999999,
+        0.44999999999999996,
+        0.8599038105676657
+      ],
+      "view_direction": [
+        -0.5000000000000004,
+        0.0,
+        0.8660254037844384
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": -6.777,
+          "yaw": 2.0943951023931953,
+          "target_x": -13.662,
+          "target_z": 3.49,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 17,
+      "action": "d",
+      "frame": "rgb/000017.jpg",
+      "position_before": [
+        -10.27,
+        2.46
+      ],
+      "position_after": [
+        -10.27,
+        2.46
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -11.509,
+        3.127
+      ],
+      "distance_before": 1.4071282812878154,
+      "distance_after": 1.4071282812878154,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -10.344999999999999,
+        0.44999999999999996,
+        2.589903810567666
+      ],
+      "view_direction": [
+        -0.5000000000000004,
+        0.0,
+        0.8660254037844384
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": -6.777,
+          "yaw": 2.617993877991494,
+          "target_x": -13.662,
+          "target_z": 3.49,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 18,
+      "action": "w",
+      "frame": "rgb/000018.jpg",
+      "position_before": [
+        -10.27,
+        2.46
+      ],
+      "position_after": [
+        -12.0,
+        3.46
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -11.509,
+        3.127
+      ],
+      "distance_before": 1.4071282812878154,
+      "distance_after": 0.593270595934098,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -10.399903810567665,
+        0.44999999999999996,
+        2.535
+      ],
+      "view_direction": [
+        -0.8660254037844388,
+        0.0,
+        0.4999999999999998
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": -6.777,
+          "yaw": 3.1415926535897927,
+          "target_x": -13.662,
+          "target_z": 3.49,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 19,
+      "action": "a",
+      "frame": "rgb/000019.jpg",
+      "position_before": [
+        -12.0,
+        3.46
+      ],
+      "position_after": [
+        -12.0,
+        3.46
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -2.84,
+        3.082
+      ],
+      "distance_before": 9.167796027399389,
+      "distance_after": 9.167796027399389,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -12.129903810567665,
+        0.44999999999999996,
+        3.535
+      ],
+      "view_direction": [
+        -0.8660254037844388,
+        0.0,
+        0.4999999999999998
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": -6.777,
+          "yaw": 3.6651914291880914,
+          "target_x": -13.662,
+          "target_z": 3.49,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 20,
+      "action": "a",
+      "frame": "rgb/000020.jpg",
+      "position_before": [
+        -12.0,
+        3.46
+      ],
+      "position_after": [
+        -12.0,
+        3.46
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -2.84,
+        3.082
+      ],
+      "distance_before": 9.167796027399389,
+      "distance_after": 9.167796027399389,
+      "bumped_wall": false,
+      "stuck_steps": 2,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -12.075,
+        0.44999999999999996,
+        3.589903810567666
+      ],
+      "view_direction": [
+        -0.5000000000000004,
+        0.0,
+        0.8660254037844384
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": -6.777,
+          "yaw": 4.1887902047863905,
+          "target_x": -13.662,
+          "target_z": 3.49,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 21,
+      "action": "a",
+      "frame": "rgb/000021.jpg",
+      "position_before": [
+        -12.0,
+        3.46
+      ],
+      "position_after": [
+        -12.0,
+        3.46
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -2.84,
+        3.082
+      ],
+      "distance_before": 9.167796027399389,
+      "distance_after": 9.167796027399389,
+      "bumped_wall": false,
+      "stuck_steps": 3,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -12.0,
+        0.44999999999999996,
+        3.61
+      ],
+      "view_direction": [
+        -1.8369701987210297e-16,
+        0.0,
+        1.0
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": -6.777,
+          "yaw": 4.71238898038469,
+          "target_x": -13.037,
+          "target_z": 0.364,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 22,
+      "action": "a",
+      "frame": "rgb/000022.jpg",
+      "position_before": [
+        -12.0,
+        3.46
+      ],
+      "position_after": [
+        -12.0,
+        3.46
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -2.84,
+        3.082
+      ],
+      "distance_before": 9.167796027399389,
+      "distance_after": 9.167796027399389,
+      "bumped_wall": false,
+      "stuck_steps": 4,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -11.925,
+        0.44999999999999996,
+        3.589903810567666
+      ],
+      "view_direction": [
+        0.5000000000000001,
+        0.0,
+        0.8660254037844386
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": -4.777,
+          "yaw": 4.71238898038469,
+          "target_x": -13.037,
+          "target_z": 0.364,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 23,
+      "action": "a",
+      "frame": "rgb/000023.jpg",
+      "position_before": [
+        -12.0,
+        3.46
+      ],
+      "position_after": [
+        -12.0,
+        3.46
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -2.84,
+        3.082
+      ],
+      "distance_before": 9.167796027399389,
+      "distance_after": 9.167796027399389,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -11.870096189432335,
+        0.44999999999999996,
+        3.5349999999999997
+      ],
+      "view_direction": [
+        0.8660254037844388,
+        0.0,
+        0.49999999999999967
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": -2.777,
+          "yaw": 4.71238898038469,
+          "target_x": -13.037,
+          "target_z": 0.364,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 24,
+      "action": "d",
+      "frame": "rgb/000024.jpg",
+      "position_before": [
+        -12.0,
+        3.46
+      ],
+      "position_after": [
+        -12.0,
+        3.46
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -7.731,
+        5.521
+      ],
+      "distance_before": 4.740472761233842,
+      "distance_after": 4.740472761233842,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 1,
+      "mirror_visible": true,
+      "view_position": [
+        -11.85,
+        0.44999999999999996,
+        3.46
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        -6.432490598706546e-16
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": -0.777,
+          "yaw": 4.71238898038469,
+          "target_x": -13.037,
+          "target_z": 0.364,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 25,
+      "action": "w",
+      "frame": "rgb/000025.jpg",
+      "position_before": [
+        -12.0,
+        3.46
+      ],
+      "position_after": [
+        -10.27,
+        4.46
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -7.731,
+        5.521
+      ],
+      "distance_before": 4.740472761233842,
+      "distance_after": 2.7517707026567453,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -11.870096189432335,
+        0.44999999999999996,
+        3.5349999999999997
+      ],
+      "view_direction": [
+        0.8660254037844388,
+        0.0,
+        0.49999999999999967
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": 1.223,
+          "yaw": 4.71238898038469,
+          "target_x": -13.459,
+          "target_z": -5.043,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 26,
+      "action": "w",
+      "frame": "rgb/000026.jpg",
+      "position_before": [
+        -10.27,
+        4.46
+      ],
+      "position_after": [
+        -8.54,
+        5.46
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -7.731,
+        5.521
+      ],
+      "distance_before": 2.7517707026567453,
+      "distance_after": 0.8112964932748069,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -10.140096189432334,
+        0.44999999999999996,
+        4.535
+      ],
+      "view_direction": [
+        0.8660254037844388,
+        0.0,
+        0.49999999999999967
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": 1.223,
+          "yaw": 4.1887902047863905,
+          "target_x": -13.459,
+          "target_z": -5.043,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 27,
+      "action": "a",
+      "frame": "rgb/000027.jpg",
+      "position_before": [
+        -8.54,
+        5.46
+      ],
+      "position_after": [
+        -8.54,
+        5.46
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -4.954,
+        -0.318
+      ],
+      "distance_before": 6.80034410894037,
+      "distance_after": 6.80034410894037,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -8.410096189432334,
+        0.44999999999999996,
+        5.535
+      ],
+      "view_direction": [
+        0.8660254037844388,
+        0.0,
+        0.49999999999999967
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": 1.223,
+          "yaw": 3.665191429188092,
+          "target_x": -13.459,
+          "target_z": -5.043,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 28,
+      "action": "a",
+      "frame": "rgb/000028.jpg",
+      "position_before": [
+        -8.54,
+        5.46
+      ],
+      "position_after": [
+        -8.54,
+        5.46
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -4.954,
+        -0.318
+      ],
+      "distance_before": 6.80034410894037,
+      "distance_after": 6.80034410894037,
+      "bumped_wall": false,
+      "stuck_steps": 2,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -8.389999999999999,
+        0.44999999999999996,
+        5.46
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        -6.432490598706546e-16
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": 1.223,
+          "yaw": 3.141592653589793,
+          "target_x": -13.459,
+          "target_z": -5.043,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 29,
+      "action": "a",
+      "frame": "rgb/000029.jpg",
+      "position_before": [
+        -8.54,
+        5.46
+      ],
+      "position_after": [
+        -8.54,
+        5.46
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -4.954,
+        -0.318
+      ],
+      "distance_before": 6.80034410894037,
+      "distance_after": 6.80034410894037,
+      "bumped_wall": false,
+      "stuck_steps": 3,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -8.410096189432334,
+        0.44999999999999996,
+        5.385
+      ],
+      "view_direction": [
+        0.8660254037844382,
+        0.0,
+        -0.5000000000000008
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": 1.223,
+          "yaw": 2.6179938779914944,
+          "target_x": -13.459,
+          "target_z": -5.043,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 30,
+      "action": "w",
+      "frame": "rgb/000030.jpg",
+      "position_before": [
+        -8.54,
+        5.46
+      ],
+      "position_after": [
+        -7.54,
+        3.73
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -4.954,
+        -0.318
+      ],
+      "distance_before": 6.80034410894037,
+      "distance_after": 4.803509133956133,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -8.465,
+        0.44999999999999996,
+        5.330096189432334
+      ],
+      "view_direction": [
+        0.49999999999999895,
+        0.0,
+        -0.8660254037844393
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": 1.223,
+          "yaw": 2.0943951023931957,
+          "target_x": -7.096,
+          "target_z": 5.202,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 31,
+      "action": "w",
+      "frame": "rgb/000031.jpg",
+      "position_before": [
+        -7.54,
+        3.73
+      ],
+      "position_after": [
+        -6.54,
+        2.0
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -4.954,
+        -0.318
+      ],
+      "distance_before": 4.803509133956133,
+      "distance_after": 2.8086509217060067,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -7.465,
+        0.44999999999999996,
+        3.600096189432334
+      ],
+      "view_direction": [
+        0.49999999999999895,
+        0.0,
+        -0.8660254037844393
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": 1.223,
+          "yaw": 1.570796326794897,
+          "target_x": -7.096,
+          "target_z": 5.202,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 32,
+      "action": "w",
+      "frame": "rgb/000032.jpg",
+      "position_before": [
+        -6.54,
+        2.0
+      ],
+      "position_after": [
+        -5.54,
+        0.27
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -4.954,
+        -0.318
+      ],
+      "distance_before": 2.8086509217060067,
+      "distance_after": 0.8301445657233446,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -6.465,
+        0.44999999999999996,
+        1.870096189432334
+      ],
+      "view_direction": [
+        0.49999999999999895,
+        0.0,
+        -0.8660254037844393
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": 1.223,
+          "yaw": 1.0471975511965983,
+          "target_x": -7.096,
+          "target_z": 5.202,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 33,
+      "action": "d",
+      "frame": "rgb/000033.jpg",
+      "position_before": [
+        -5.54,
+        0.27
+      ],
+      "position_after": [
+        -5.54,
+        0.27
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -1.719,
+        1.527
+      ],
+      "distance_before": 4.022448259455925,
+      "distance_after": 4.022448259455925,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -5.465,
+        0.44999999999999996,
+        0.14009618943233412
+      ],
+      "view_direction": [
+        0.49999999999999895,
+        0.0,
+        -0.8660254037844393
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": 1.223,
+          "yaw": 0.5235987755982995,
+          "target_x": -7.096,
+          "target_z": 5.202,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 34,
+      "action": "d",
+      "frame": "rgb/000034.jpg",
+      "position_before": [
+        -5.54,
+        0.27
+      ],
+      "position_after": [
+        -5.54,
+        0.27
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -1.719,
+        1.527
+      ],
+      "distance_before": 4.022448259455925,
+      "distance_after": 4.022448259455925,
+      "bumped_wall": false,
+      "stuck_steps": 2,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -5.410096189432334,
+        0.44999999999999996,
+        0.1949999999999999
+      ],
+      "view_direction": [
+        0.8660254037844382,
+        0.0,
+        -0.5000000000000008
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": 1.223,
+          "yaw": 6.661338147750939e-16,
+          "target_x": -7.096,
+          "target_z": 5.202,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 35,
+      "action": "d",
+      "frame": "rgb/000035.jpg",
+      "position_before": [
+        -5.54,
+        0.27
+      ],
+      "position_after": [
+        -5.54,
+        0.27
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -1.719,
+        1.527
+      ],
+      "distance_before": 4.022448259455925,
+      "distance_after": 4.022448259455925,
+      "bumped_wall": false,
+      "stuck_steps": 3,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -5.39,
+        0.44999999999999996,
+        0.2699999999999999
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        -6.432490598706546e-16
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -12.802,
+          "z": 1.223,
+          "yaw": -0.5235987755982981,
+          "target_x": -8.457,
+          "target_z": 4.645,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 36,
+      "action": "w",
+      "frame": "rgb/000036.jpg",
+      "position_before": [
+        -5.54,
+        0.27
+      ],
+      "position_after": [
+        -3.81,
+        1.27
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -1.719,
+        1.527
+      ],
+      "distance_before": 4.022448259455925,
+      "distance_after": 2.106734439838111,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -5.410096189432334,
+        0.44999999999999996,
+        0.345
+      ],
+      "view_direction": [
+        0.8660254037844388,
+        0.0,
+        0.49999999999999967
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -11.07,
+          "z": 2.223,
+          "yaw": -0.5235987755982981,
+          "target_x": -8.457,
+          "target_z": 4.645,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 37,
+      "action": "a",
+      "frame": "rgb/000037.jpg",
+      "position_before": [
+        -3.81,
+        1.27
+      ],
+      "position_after": [
+        -3.81,
+        1.27
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -1.719,
+        1.527
+      ],
+      "distance_before": 2.106734439838111,
+      "distance_after": 2.106734439838111,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -3.680096189432334,
+        0.44999999999999996,
+        1.345
+      ],
+      "view_direction": [
+        0.8660254037844388,
+        0.0,
+        0.49999999999999967
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -9.338,
+          "z": 3.223,
+          "yaw": -0.5235987755982981,
+          "target_x": -8.457,
+          "target_z": 4.645,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 38,
+      "action": "w",
+      "frame": "rgb/000038.jpg",
+      "position_before": [
+        -3.81,
+        1.27
+      ],
+      "position_after": [
+        -1.81,
+        1.27
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -1.719,
+        1.527
+      ],
+      "distance_before": 2.106734439838111,
+      "distance_after": 0.27263528751795857,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -3.66,
+        0.44999999999999996,
+        1.27
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        -6.432490598706546e-16
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -9.338,
+          "z": 3.223,
+          "yaw": -1.047197551196597,
+          "target_x": -8.457,
+          "target_z": 4.645,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 39,
+      "action": "a",
+      "frame": "rgb/000039.jpg",
+      "position_before": [
+        -1.81,
+        1.27
+      ],
+      "position_after": [
+        -1.81,
+        1.27
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -5.531,
+        0.955
+      ],
+      "distance_before": 3.7343093069535627,
+      "distance_after": 3.7343093069535627,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -1.6600000000000001,
+        0.44999999999999996,
+        1.27
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        -6.432490598706546e-16
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -8.338,
+          "z": 4.955,
+          "yaw": -1.047197551196597,
+          "target_x": -6.954,
+          "target_z": 6.575,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 40,
+      "action": "a",
+      "frame": "rgb/000040.jpg",
+      "position_before": [
+        -1.81,
+        1.27
+      ],
+      "position_after": [
+        -1.81,
+        1.27
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -5.531,
+        0.955
+      ],
+      "distance_before": 3.7343093069535627,
+      "distance_after": 3.7343093069535627,
+      "bumped_wall": false,
+      "stuck_steps": 2,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -1.6800961894323343,
+        0.44999999999999996,
+        1.1949999999999998
+      ],
+      "view_direction": [
+        0.8660254037844382,
+        0.0,
+        -0.5000000000000008
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -7.338,
+          "z": 6.687,
+          "yaw": -1.047197551196597,
+          "target_x": -7.67,
+          "target_z": 4.423,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 41,
+      "action": "a",
+      "frame": "rgb/000041.jpg",
+      "position_before": [
+        -1.81,
+        1.27
+      ],
+      "position_after": [
+        -1.81,
+        1.27
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -5.531,
+        0.955
+      ],
+      "distance_before": 3.7343093069535627,
+      "distance_after": 3.7343093069535627,
+      "bumped_wall": false,
+      "stuck_steps": 3,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -1.7350000000000003,
+        0.44999999999999996,
+        1.140096189432334
+      ],
+      "view_direction": [
+        0.49999999999999895,
+        0.0,
+        -0.8660254037844393
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -7.338,
+          "z": 6.687,
+          "yaw": -0.5235987755982981,
+          "target_x": -7.67,
+          "target_z": 4.423,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 42,
+      "action": "a",
+      "frame": "rgb/000042.jpg",
+      "position_before": [
+        -1.81,
+        1.27
+      ],
+      "position_after": [
+        -1.81,
+        1.27
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -5.531,
+        0.955
+      ],
+      "distance_before": 3.7343093069535627,
+      "distance_after": 3.7343093069535627,
+      "bumped_wall": false,
+      "stuck_steps": 4,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -1.8100000000000003,
+        0.44999999999999996,
+        1.12
+      ],
+      "view_direction": [
+        -1.4701951396134122e-15,
+        0.0,
+        -1.0
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -7.338,
+          "z": 6.687,
+          "yaw": 6.661338147750939e-16,
+          "target_x": -7.67,
+          "target_z": 4.423,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 43,
+      "action": "a",
+      "frame": "rgb/000043.jpg",
+      "position_before": [
+        -1.81,
+        1.27
+      ],
+      "position_after": [
+        -1.81,
+        1.27
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -5.531,
+        0.955
+      ],
+      "distance_before": 3.7343093069535627,
+      "distance_after": 3.7343093069535627,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -1.8850000000000002,
+        0.44999999999999996,
+        1.1400961894323343
+      ],
+      "view_direction": [
+        -0.5000000000000008,
+        0.0,
+        -0.8660254037844383
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -7.338,
+          "z": 6.687,
+          "yaw": 0.5235987755982995,
+          "target_x": -7.67,
+          "target_z": 4.423,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 44,
+      "action": "w",
+      "frame": "rgb/000044.jpg",
+      "position_before": [
+        -1.81,
+        1.27
+      ],
+      "position_after": [
+        -3.54,
+        0.27
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -4.13,
+        -0.197
+      ],
+      "distance_before": 2.744902366205399,
+      "distance_after": 0.7524553142878319,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -1.9399038105676658,
+        0.44999999999999996,
+        1.195
+      ],
+      "view_direction": [
+        -0.8660254037844388,
+        0.0,
+        -0.4999999999999998
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -7.338,
+          "z": 6.687,
+          "yaw": 1.0471975511965983,
+          "target_x": -7.67,
+          "target_z": 4.423,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 45,
+      "action": "d",
+      "frame": "rgb/000045.jpg",
+      "position_before": [
+        -3.54,
+        0.27
+      ],
+      "position_after": [
+        -3.54,
+        0.27
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -7.444,
+        -3.993
+      ],
+      "distance_before": 5.780517710378543,
+      "distance_after": 5.780517710378543,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -3.669903810567666,
+        0.44999999999999996,
+        0.19500000000000006
+      ],
+      "view_direction": [
+        -0.8660254037844388,
+        0.0,
+        -0.4999999999999998
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -7.338,
+          "z": 6.687,
+          "yaw": 1.570796326794897,
+          "target_x": -3.281,
+          "target_z": -1.654,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 46,
+      "action": "w",
+      "frame": "rgb/000046.jpg",
+      "position_before": [
+        -3.54,
+        0.27
+      ],
+      "position_after": [
+        -4.54,
+        -1.46
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -7.444,
+        -3.993
+      ],
+      "distance_before": 5.780517710378543,
+      "distance_after": 3.853479596416724,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -3.615,
+        0.44999999999999996,
+        0.1400961894323343
+      ],
+      "view_direction": [
+        -0.5000000000000008,
+        0.0,
+        -0.8660254037844383
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -7.338,
+          "z": 6.687,
+          "yaw": 1.0471975511965983,
+          "target_x": -3.281,
+          "target_z": -1.654,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 47,
+      "action": "a",
+      "frame": "rgb/000047.jpg",
+      "position_before": [
+        -4.54,
+        -1.46
+      ],
+      "position_after": [
+        -4.54,
+        -1.46
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -7.444,
+        -3.993
+      ],
+      "distance_before": 3.853479596416724,
+      "distance_after": 3.853479596416724,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -4.615,
+        0.44999999999999996,
+        -1.5899038105676657
+      ],
+      "view_direction": [
+        -0.5000000000000008,
+        0.0,
+        -0.8660254037844383
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -6.338,
+          "z": 4.955,
+          "yaw": 1.0471975511965983,
+          "target_x": -3.281,
+          "target_z": -1.654,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 48,
+      "action": "w",
+      "frame": "rgb/000048.jpg",
+      "position_before": [
+        -4.54,
+        -1.46
+      ],
+      "position_after": [
+        -6.27,
+        -2.46
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -7.444,
+        -3.993
+      ],
+      "distance_before": 3.853479596416724,
+      "distance_after": 1.930897459732132,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -4.669903810567666,
+        0.44999999999999996,
+        -1.535
+      ],
+      "view_direction": [
+        -0.8660254037844388,
+        0.0,
+        -0.4999999999999998
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -5.338,
+          "z": 3.223,
+          "yaw": 1.0471975511965983,
+          "target_x": -3.281,
+          "target_z": -1.654,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 49,
+      "action": "d",
+      "frame": "rgb/000049.jpg",
+      "position_before": [
+        -6.27,
+        -2.46
+      ],
+      "position_after": [
+        -6.27,
+        -2.46
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -7.444,
+        -3.993
+      ],
+      "distance_before": 1.930897459732132,
+      "distance_after": 1.930897459732132,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -6.3999038105676656,
+        0.44999999999999996,
+        -2.535
+      ],
+      "view_direction": [
+        -0.8660254037844388,
+        0.0,
+        -0.4999999999999998
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -4.338,
+          "z": 1.491,
+          "yaw": 1.0471975511965983,
+          "target_x": -3.281,
+          "target_z": -1.654,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 50,
+      "action": "w",
+      "frame": "rgb/000050.jpg",
+      "position_before": [
+        -6.27,
+        -2.46
+      ],
+      "position_after": [
+        -7.27,
+        -4.19
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -7.444,
+        -3.993
+      ],
+      "distance_before": 1.930897459732132,
+      "distance_after": 0.26284025566872427,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -6.345,
+        0.44999999999999996,
+        -2.5899038105676655
+      ],
+      "view_direction": [
+        -0.5000000000000008,
+        0.0,
+        -0.8660254037844383
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -3.338,
+          "z": -0.241,
+          "yaw": 1.0471975511965983,
+          "target_x": -3.281,
+          "target_z": -1.654,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 51,
+      "action": "d",
+      "frame": "rgb/000051.jpg",
+      "position_before": [
+        -7.27,
+        -4.19
+      ],
+      "position_after": [
+        -7.27,
+        -4.19
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -1.475,
+        -2.626
+      ],
+      "distance_before": 6.002342959211845,
+      "distance_after": 6.002342959211845,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -7.345,
+        0.44999999999999996,
+        -4.319903810567666
+      ],
+      "view_direction": [
+        -0.5000000000000008,
+        0.0,
+        -0.8660254037844383
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -3.338,
+          "z": -0.241,
+          "yaw": 1.570796326794897,
+          "target_x": -3.281,
+          "target_z": -1.654,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 52,
+      "action": "d",
+      "frame": "rgb/000052.jpg",
+      "position_before": [
+        -7.27,
+        -4.19
+      ],
+      "position_after": [
+        -7.27,
+        -4.19
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -1.475,
+        -2.626
+      ],
+      "distance_before": 6.002342959211845,
+      "distance_after": 6.002342959211845,
+      "bumped_wall": false,
+      "stuck_steps": 2,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -7.27,
+        0.44999999999999996,
+        -4.340000000000001
+      ],
+      "view_direction": [
+        -5.82016719913287e-16,
+        0.0,
+        -1.0
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -3.338,
+          "z": -2.241,
+          "yaw": 1.570796326794897,
+          "target_x": -7.059,
+          "target_z": -2.854,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 53,
+      "action": "d",
+      "frame": "rgb/000053.jpg",
+      "position_before": [
+        -7.27,
+        -4.19
+      ],
+      "position_after": [
+        -7.27,
+        -4.19
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -1.475,
+        -2.626
+      ],
+      "distance_before": 6.002342959211845,
+      "distance_after": 6.002342959211845,
+      "bumped_wall": false,
+      "stuck_steps": 3,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -7.194999999999999,
+        0.44999999999999996,
+        -4.319903810567666
+      ],
+      "view_direction": [
+        0.4999999999999997,
+        0.0,
+        -0.8660254037844388
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -3.338,
+          "z": -2.241,
+          "yaw": 2.0943951023931957,
+          "target_x": -7.059,
+          "target_z": -2.854,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 54,
+      "action": "d",
+      "frame": "rgb/000054.jpg",
+      "position_before": [
+        -7.27,
+        -4.19
+      ],
+      "position_after": [
+        -7.27,
+        -4.19
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -1.475,
+        -2.626
+      ],
+      "distance_before": 6.002342959211845,
+      "distance_after": 6.002342959211845,
+      "bumped_wall": false,
+      "stuck_steps": 4,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -7.140096189432334,
+        0.44999999999999996,
+        -4.265000000000001
+      ],
+      "view_direction": [
+        0.8660254037844386,
+        0.0,
+        -0.5
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -3.338,
+          "z": -2.241,
+          "yaw": 2.6179938779914944,
+          "target_x": -7.059,
+          "target_z": -2.854,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 55,
+      "action": "w",
+      "frame": "rgb/000055.jpg",
+      "position_before": [
+        -7.27,
+        -4.19
+      ],
+      "position_after": [
+        -5.27,
+        -4.19
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -1.475,
+        -2.626
+      ],
+      "distance_before": 6.002342959211845,
+      "distance_after": 4.104646269777701,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -7.119999999999999,
+        0.44999999999999996,
+        -4.19
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        2.4492935982947064e-16
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -3.338,
+          "z": -2.241,
+          "yaw": 3.141592653589793,
+          "target_x": -7.059,
+          "target_z": -2.854,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 56,
+      "action": "d",
+      "frame": "rgb/000056.jpg",
+      "position_before": [
+        -5.27,
+        -4.19
+      ],
+      "position_after": [
+        -5.27,
+        -4.19
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -1.475,
+        -2.626
+      ],
+      "distance_before": 4.104646269777701,
+      "distance_after": 4.104646269777701,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -5.119999999999999,
+        0.44999999999999996,
+        -4.19
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        2.4492935982947064e-16
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -5.338,
+          "z": -2.241,
+          "yaw": 3.141592653589793,
+          "target_x": -7.059,
+          "target_z": -2.854,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 57,
+      "action": "w",
+      "frame": "rgb/000057.jpg",
+      "position_before": [
+        -5.27,
+        -4.19
+      ],
+      "position_after": [
+        -3.54,
+        -3.19
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -1.475,
+        -2.626
+      ],
+      "distance_before": 4.104646269777701,
+      "distance_after": 2.1406356532581623,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -5.140096189432334,
+        0.44999999999999996,
+        -4.115
+      ],
+      "view_direction": [
+        0.8660254037844384,
+        0.0,
+        0.5000000000000004
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -5.338,
+          "z": -2.241,
+          "yaw": 2.6179938779914944,
+          "target_x": -7.059,
+          "target_z": -2.854,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 58,
+      "action": "w",
+      "frame": "rgb/000058.jpg",
+      "position_before": [
+        -3.54,
+        -3.19
+      ],
+      "position_after": [
+        -1.81,
+        -2.19
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -1.475,
+        -2.626
+      ],
+      "distance_before": 2.1406356532581623,
+      "distance_after": 0.5498372486472701,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -3.410096189432334,
+        0.44999999999999996,
+        -3.1149999999999998
+      ],
+      "view_direction": [
+        0.8660254037844384,
+        0.0,
+        0.5000000000000004
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -7.07,
+          "z": -3.241,
+          "yaw": 2.6179938779914944,
+          "target_x": -9.241,
+          "target_z": 3.842,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 59,
+      "action": "d",
+      "frame": "rgb/000059.jpg",
+      "position_before": [
+        -1.81,
+        -2.19
+      ],
+      "position_after": [
+        -1.81,
+        -2.19
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -6.102,
+        -0.978
+      ],
+      "distance_before": 4.459843943458112,
+      "distance_after": 4.459843943458112,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -1.6800961894323343,
+        0.44999999999999996,
+        -2.1149999999999998
+      ],
+      "view_direction": [
+        0.8660254037844384,
+        0.0,
+        0.5000000000000004
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -7.07,
+          "z": -3.241,
+          "yaw": 3.141592653589793,
+          "target_x": -9.241,
+          "target_z": 3.842,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 60,
+      "action": "d",
+      "frame": "rgb/000060.jpg",
+      "position_before": [
+        -1.81,
+        -2.19
+      ],
+      "position_after": [
+        -1.81,
+        -2.19
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -6.102,
+        -0.978
+      ],
+      "distance_before": 4.459843943458112,
+      "distance_after": 4.459843943458112,
+      "bumped_wall": false,
+      "stuck_steps": 2,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -1.735,
+        0.44999999999999996,
+        -2.060096189432334
+      ],
+      "view_direction": [
+        0.49999999999999933,
+        0.0,
+        0.866025403784439
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -7.07,
+          "z": -3.241,
+          "yaw": 3.665191429188092,
+          "target_x": -9.241,
+          "target_z": 3.842,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 61,
+      "action": "d",
+      "frame": "rgb/000061.jpg",
+      "position_before": [
+        -1.81,
+        -2.19
+      ],
+      "position_after": [
+        -1.81,
+        -2.19
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -6.102,
+        -0.978
+      ],
+      "distance_before": 4.459843943458112,
+      "distance_after": 4.459843943458112,
+      "bumped_wall": false,
+      "stuck_steps": 3,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -1.8100000000000003,
+        0.44999999999999996,
+        -2.04
+      ],
+      "view_direction": [
+        -1.0718754395722282e-15,
+        0.0,
+        1.0
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -7.07,
+          "z": -3.241,
+          "yaw": 4.1887902047863905,
+          "target_x": -9.241,
+          "target_z": 3.842,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 62,
+      "action": "d",
+      "frame": "rgb/000062.jpg",
+      "position_before": [
+        -1.81,
+        -2.19
+      ],
+      "position_after": [
+        -1.81,
+        -2.19
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -6.102,
+        -0.978
+      ],
+      "distance_before": 4.459843943458112,
+      "distance_after": 4.459843943458112,
+      "bumped_wall": false,
+      "stuck_steps": 4,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -1.8850000000000002,
+        0.44999999999999996,
+        -2.0600961894323344
+      ],
+      "view_direction": [
+        -0.5000000000000011,
+        0.0,
+        0.8660254037844379
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -8.07,
+          "z": -1.509,
+          "yaw": 4.1887902047863905,
+          "target_x": -9.241,
+          "target_z": 3.842,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 63,
+      "action": "w",
+      "frame": "rgb/000063.jpg",
+      "position_before": [
+        -1.81,
+        -2.19
+      ],
+      "position_after": [
+        -3.54,
+        -1.19
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -6.102,
+        -0.978
+      ],
+      "distance_before": 4.459843943458112,
+      "distance_after": 2.570756308948789,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -1.939903810567666,
+        0.44999999999999996,
+        -2.115
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -8.07,
+          "z": -1.509,
+          "yaw": 4.71238898038469,
+          "target_x": -9.241,
+          "target_z": 3.842,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 64,
+      "action": "d",
+      "frame": "rgb/000064.jpg",
+      "position_before": [
+        -3.54,
+        -1.19
+      ],
+      "position_after": [
+        -3.54,
+        -1.19
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -6.102,
+        -0.978
+      ],
+      "distance_before": 2.570756308948789,
+      "distance_after": 2.570756308948789,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -3.669903810567666,
+        0.44999999999999996,
+        -1.1150000000000002
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -8.07,
+          "z": 0.491,
+          "yaw": 4.71238898038469,
+          "target_x": -9.241,
+          "target_z": 3.842,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 65,
+      "action": "w",
+      "frame": "rgb/000065.jpg",
+      "position_before": [
+        -3.54,
+        -1.19
+      ],
+      "position_after": [
+        -5.54,
+        -1.19
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -6.102,
+        -0.978
+      ],
+      "distance_before": 2.570756308948789,
+      "distance_after": 0.6006563077168177,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -3.69,
+        0.44999999999999996,
+        -1.1900000000000002
+      ],
+      "view_direction": [
+        -1.0,
+        0.0,
+        -1.0106430996148606e-15
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -8.07,
+          "z": 0.491,
+          "yaw": 4.1887902047863905,
+          "target_x": -9.241,
+          "target_z": 3.842,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 66,
+      "action": "a",
+      "frame": "rgb/000066.jpg",
+      "position_before": [
+        -5.54,
+        -1.19
+      ],
+      "position_after": [
+        -5.54,
+        -1.19
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -2.907,
+        0.762
+      ],
+      "distance_before": 3.277650530486739,
+      "distance_after": 3.277650530486739,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -5.69,
+        0.44999999999999996,
+        -1.1900000000000002
+      ],
+      "view_direction": [
+        -1.0,
+        0.0,
+        -1.0106430996148606e-15
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -9.07,
+          "z": 2.223,
+          "yaw": 4.1887902047863905,
+          "target_x": -9.241,
+          "target_z": 3.842,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 67,
+      "action": "a",
+      "frame": "rgb/000067.jpg",
+      "position_before": [
+        -5.54,
+        -1.19
+      ],
+      "position_after": [
+        -5.54,
+        -1.19
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -2.907,
+        0.762
+      ],
+      "distance_before": 3.277650530486739,
+      "distance_after": 3.277650530486739,
+      "bumped_wall": false,
+      "stuck_steps": 2,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -5.669903810567666,
+        0.44999999999999996,
+        -1.1150000000000002
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -9.07,
+          "z": 2.223,
+          "yaw": 4.71238898038469,
+          "target_x": -9.241,
+          "target_z": 3.842,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 68,
+      "action": "a",
+      "frame": "rgb/000068.jpg",
+      "position_before": [
+        -5.54,
+        -1.19
+      ],
+      "position_after": [
+        -5.54,
+        -1.19
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -2.907,
+        0.762
+      ],
+      "distance_before": 3.277650530486739,
+      "distance_after": 3.277650530486739,
+      "bumped_wall": false,
+      "stuck_steps": 3,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -5.615,
+        0.44999999999999996,
+        -1.0600961894323342
+      ],
+      "view_direction": [
+        -0.5000000000000011,
+        0.0,
+        0.8660254037844379
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -9.07,
+          "z": 4.223,
+          "yaw": 4.71238898038469,
+          "target_x": -3.723,
+          "target_z": -3.191,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 69,
+      "action": "a",
+      "frame": "rgb/000069.jpg",
+      "position_before": [
+        -5.54,
+        -1.19
+      ],
+      "position_after": [
+        -5.54,
+        -1.19
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -2.907,
+        0.762
+      ],
+      "distance_before": 3.277650530486739,
+      "distance_after": 3.277650530486739,
+      "bumped_wall": false,
+      "stuck_steps": 4,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -5.54,
+        0.44999999999999996,
+        -1.04
+      ],
+      "view_direction": [
+        -1.0718754395722282e-15,
+        0.0,
+        1.0
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -9.07,
+          "z": 4.223,
+          "yaw": 5.235987755982989,
+          "target_x": -3.723,
+          "target_z": -3.191,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 70,
+      "action": "a",
+      "frame": "rgb/000070.jpg",
+      "position_before": [
+        -5.54,
+        -1.19
+      ],
+      "position_after": [
+        -5.54,
+        -1.19
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -2.907,
+        0.762
+      ],
+      "distance_before": 3.277650530486739,
+      "distance_after": 3.277650530486739,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -5.465,
+        0.44999999999999996,
+        -1.0600961894323342
+      ],
+      "view_direction": [
+        0.49999999999999933,
+        0.0,
+        0.866025403784439
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -9.07,
+          "z": 4.223,
+          "yaw": 5.759586531581288,
+          "target_x": -3.723,
+          "target_z": -3.191,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 71,
+      "action": "d",
+      "frame": "rgb/000071.jpg",
+      "position_before": [
+        -5.54,
+        -1.19
+      ],
+      "position_after": [
+        -5.54,
+        -1.19
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -10.895,
+        -1.654
+      ],
+      "distance_before": 5.3750647437961145,
+      "distance_after": 5.3750647437961145,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 1,
+      "mirror_visible": true,
+      "view_position": [
+        -5.410096189432334,
+        0.44999999999999996,
+        -1.1149999999999998
+      ],
+      "view_direction": [
+        0.8660254037844384,
+        0.0,
+        0.5000000000000004
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -9.07,
+          "z": 4.223,
+          "yaw": 6.283185307179587,
+          "target_x": -3.723,
+          "target_z": -3.191,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 72,
+      "action": "d",
+      "frame": "rgb/000072.jpg",
+      "position_before": [
+        -5.54,
+        -1.19
+      ],
+      "position_after": [
+        -5.54,
+        -1.19
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -10.895,
+        -1.654
+      ],
+      "distance_before": 5.3750647437961145,
+      "distance_after": 5.3750647437961145,
+      "bumped_wall": false,
+      "stuck_steps": 2,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -5.465,
+        0.44999999999999996,
+        -1.0600961894323342
+      ],
+      "view_direction": [
+        0.49999999999999933,
+        0.0,
+        0.866025403784439
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -9.07,
+          "z": 4.223,
+          "yaw": 6.806784082777886,
+          "target_x": -3.723,
+          "target_z": -3.191,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 73,
+      "action": "d",
+      "frame": "rgb/000073.jpg",
+      "position_before": [
+        -5.54,
+        -1.19
+      ],
+      "position_after": [
+        -5.54,
+        -1.19
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -10.895,
+        -1.654
+      ],
+      "distance_before": 5.3750647437961145,
+      "distance_after": 5.3750647437961145,
+      "bumped_wall": false,
+      "stuck_steps": 3,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -5.54,
+        0.44999999999999996,
+        -1.04
+      ],
+      "view_direction": [
+        -1.0718754395722282e-15,
+        0.0,
+        1.0
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -9.07,
+          "z": 4.223,
+          "yaw": 7.330382858376185,
+          "target_x": -2.768,
+          "target_z": 3.08,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 74,
+      "action": "d",
+      "frame": "rgb/000074.jpg",
+      "position_before": [
+        -5.54,
+        -1.19
+      ],
+      "position_after": [
+        -5.54,
+        -1.19
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -10.895,
+        -1.654
+      ],
+      "distance_before": 5.3750647437961145,
+      "distance_after": 5.3750647437961145,
+      "bumped_wall": false,
+      "stuck_steps": 4,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -5.615,
+        0.44999999999999996,
+        -1.0600961894323342
+      ],
+      "view_direction": [
+        -0.5000000000000011,
+        0.0,
+        0.8660254037844379
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -9.07,
+          "z": 4.223,
+          "yaw": 6.806784082777886,
+          "target_x": -2.768,
+          "target_z": 3.08,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 75,
+      "action": "d",
+      "frame": "rgb/000075.jpg",
+      "position_before": [
+        -5.54,
+        -1.19
+      ],
+      "position_after": [
+        -5.54,
+        -1.19
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -10.895,
+        -1.654
+      ],
+      "distance_before": 5.3750647437961145,
+      "distance_after": 5.3750647437961145,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -5.669903810567666,
+        0.44999999999999996,
+        -1.1150000000000002
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -9.07,
+          "z": 4.223,
+          "yaw": 6.283185307179587,
+          "target_x": -2.768,
+          "target_z": 3.08,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 76,
+      "action": "a",
+      "frame": "rgb/000076.jpg",
+      "position_before": [
+        -5.54,
+        -1.19
+      ],
+      "position_after": [
+        -5.54,
+        -1.19
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -9.562,
+        1.787
+      ],
+      "distance_before": 5.00389977917224,
+      "distance_after": 5.00389977917224,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 1,
+      "mirror_visible": false,
+      "view_position": [
+        -5.69,
+        0.44999999999999996,
+        -1.1900000000000002
+      ],
+      "view_direction": [
+        -1.0,
+        0.0,
+        -1.0106430996148606e-15
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -7.07,
+          "z": 4.223,
+          "yaw": 6.283185307179587,
+          "target_x": -2.768,
+          "target_z": 3.08,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 77,
+      "action": "w",
+      "frame": "rgb/000077.jpg",
+      "position_before": [
+        -5.54,
+        -1.19
+      ],
+      "position_after": [
+        -7.27,
+        -0.19
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -9.562,
+        1.787
+      ],
+      "distance_before": 5.00389977917224,
+      "distance_after": 3.026845387528078,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -5.669903810567666,
+        0.44999999999999996,
+        -1.1150000000000002
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -5.07,
+          "z": 4.223,
+          "yaw": 6.283185307179587,
+          "target_x": -2.768,
+          "target_z": 3.08,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 78,
+      "action": "w",
+      "frame": "rgb/000078.jpg",
+      "position_before": [
+        -7.27,
+        -0.19
+      ],
+      "position_after": [
+        -9.0,
+        0.81
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -9.562,
+        1.787
+      ],
+      "distance_before": 3.026845387528078,
+      "distance_after": 1.1271082467979725,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -7.3999038105676656,
+        0.44999999999999996,
+        -0.11500000000000016
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -5.07,
+          "z": 4.223,
+          "yaw": 6.806784082777886,
+          "target_x": -2.768,
+          "target_z": 3.08,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 79,
+      "action": "a",
+      "frame": "rgb/000079.jpg",
+      "position_before": [
+        -9.0,
+        0.81
+      ],
+      "position_after": [
+        -9.0,
+        0.81
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -9.562,
+        1.787
+      ],
+      "distance_before": 1.1271082467979725,
+      "distance_after": 1.1271082467979725,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -9.129903810567665,
+        0.44999999999999996,
+        0.8849999999999999
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -3.338,
+          "z": 3.223,
+          "yaw": 6.806784082777886,
+          "target_x": -11.635,
+          "target_z": -5.439,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 80,
+      "action": "w",
+      "frame": "rgb/000080.jpg",
+      "position_before": [
+        -9.0,
+        0.81
+      ],
+      "position_after": [
+        -10.0,
+        2.54
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -9.562,
+        1.787
+      ],
+      "distance_before": 1.1271082467979725,
+      "distance_after": 0.8711216906953935,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -9.075,
+        0.44999999999999996,
+        0.9399038105676657
+      ],
+      "view_direction": [
+        -0.5000000000000011,
+        0.0,
+        0.8660254037844379
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -3.338,
+          "z": 3.223,
+          "yaw": 7.330382858376185,
+          "target_x": -11.635,
+          "target_z": -5.439,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 81,
+      "action": "d",
+      "frame": "rgb/000081.jpg",
+      "position_before": [
+        -10.0,
+        2.54
+      ],
+      "position_after": [
+        -10.0,
+        2.54
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -13.177,
+        -4.355
+      ],
+      "distance_before": 7.591729315511717,
+      "distance_after": 7.591729315511717,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -10.075,
+        0.44999999999999996,
+        2.6699038105676656
+      ],
+      "view_direction": [
+        -0.5000000000000011,
+        0.0,
+        0.8660254037844379
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -3.338,
+          "z": 3.223,
+          "yaw": 7.853981633974485,
+          "target_x": -11.635,
+          "target_z": -5.439,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 82,
+      "action": "d",
+      "frame": "rgb/000082.jpg",
+      "position_before": [
+        -10.0,
+        2.54
+      ],
+      "position_after": [
+        -10.0,
+        2.54
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -13.177,
+        -4.355
+      ],
+      "distance_before": 7.591729315511717,
+      "distance_after": 7.591729315511717,
+      "bumped_wall": false,
+      "stuck_steps": 2,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -10.129903810567665,
+        0.44999999999999996,
+        2.6149999999999998
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -3.338,
+          "z": 3.223,
+          "yaw": 8.377580409572783,
+          "target_x": -11.635,
+          "target_z": -5.439,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 83,
+      "action": "d",
+      "frame": "rgb/000083.jpg",
+      "position_before": [
+        -10.0,
+        2.54
+      ],
+      "position_after": [
+        -10.0,
+        2.54
+      ],
+      "direction_after": "S",
+      "target_before_step": [
+        -13.177,
+        -4.355
+      ],
+      "distance_before": 7.591729315511717,
+      "distance_after": 7.591729315511717,
+      "bumped_wall": false,
+      "stuck_steps": 3,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -10.15,
+        0.44999999999999996,
+        2.54
+      ],
+      "view_direction": [
+        -1.0,
+        0.0,
+        -1.0106430996148606e-15
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -4.338,
+          "z": 1.491,
+          "yaw": 8.377580409572783,
+          "target_x": -11.635,
+          "target_z": -5.439,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 84,
+      "action": "d",
+      "frame": "rgb/000084.jpg",
+      "position_before": [
+        -10.0,
+        2.54
+      ],
+      "position_after": [
+        -10.0,
+        2.54
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -13.177,
+        -4.355
+      ],
+      "distance_before": 7.591729315511717,
+      "distance_after": 7.591729315511717,
+      "bumped_wall": false,
+      "stuck_steps": 4,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -10.129903810567665,
+        0.44999999999999996,
+        2.465
+      ],
+      "view_direction": [
+        -0.8660254037844383,
+        0.0,
+        -0.5000000000000008
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -5.338,
+          "z": -0.241,
+          "yaw": 8.377580409572783,
+          "target_x": -11.635,
+          "target_z": -5.439,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 85,
+      "action": "w",
+      "frame": "rgb/000085.jpg",
+      "position_before": [
+        -10.0,
+        2.54
+      ],
+      "position_after": [
+        -11.0,
+        0.81
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -13.177,
+        -4.355
+      ],
+      "distance_before": 7.591729315511717,
+      "distance_after": 5.6050471898102705,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -10.075,
+        0.44999999999999996,
+        2.410096189432334
+      ],
+      "view_direction": [
+        -0.49999999999999944,
+        0.0,
+        -0.866025403784439
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -5.338,
+          "z": -0.241,
+          "yaw": 8.901179185171081,
+          "target_x": -11.635,
+          "target_z": -5.439,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 86,
+      "action": "w",
+      "frame": "rgb/000086.jpg",
+      "position_before": [
+        -11.0,
+        0.81
+      ],
+      "position_after": [
+        -12.0,
+        -0.92
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -13.177,
+        -4.355
+      ],
+      "distance_before": 5.6050471898102705,
+      "distance_after": 3.6310541169197688,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -11.075,
+        0.44999999999999996,
+        0.6800961894323342
+      ],
+      "view_direction": [
+        -0.49999999999999944,
+        0.0,
+        -0.866025403784439
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -7.07,
+          "z": -1.241,
+          "yaw": 8.901179185171081,
+          "target_x": -11.635,
+          "target_z": -5.439,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 87,
+      "action": "w",
+      "frame": "rgb/000087.jpg",
+      "position_before": [
+        -12.0,
+        -0.92
+      ],
+      "position_after": [
+        -13.0,
+        -2.65
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -13.177,
+        -4.355
+      ],
+      "distance_before": 3.6310541169197688,
+      "distance_after": 1.714162769400853,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -12.075,
+        0.44999999999999996,
+        -1.049903810567666
+      ],
+      "view_direction": [
+        -0.49999999999999944,
+        0.0,
+        -0.866025403784439
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -8.802,
+          "z": -2.241,
+          "yaw": 8.901179185171081,
+          "target_x": -11.635,
+          "target_z": -5.439,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 88,
+      "action": "d",
+      "frame": "rgb/000088.jpg",
+      "position_before": [
+        -13.0,
+        -2.65
+      ],
+      "position_after": [
+        -13.0,
+        -2.65
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -13.177,
+        -4.355
+      ],
+      "distance_before": 1.714162769400853,
+      "distance_after": 1.714162769400853,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -13.075,
+        0.44999999999999996,
+        -2.779903810567666
+      ],
+      "view_direction": [
+        -0.49999999999999944,
+        0.0,
+        -0.866025403784439
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -8.802,
+          "z": -2.241,
+          "yaw": 8.377580409572783,
+          "target_x": -11.635,
+          "target_z": -5.439,
+          "last_action": "d"
+        }
+      ]
+    },
+    {
+      "step": 89,
+      "action": "w",
+      "frame": "rgb/000089.jpg",
+      "position_before": [
+        -13.0,
+        -2.65
+      ],
+      "position_after": [
+        -13.0,
+        -4.65
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -13.177,
+        -4.355
+      ],
+      "distance_before": 1.714162769400853,
+      "distance_after": 0.3440261617958725,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -13.0,
+        0.44999999999999996,
+        -2.8
+      ],
+      "view_direction": [
+        5.053215498074303e-16,
+        0.0,
+        -1.0
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -9.802,
+          "z": -3.973,
+          "yaw": 8.377580409572783,
+          "target_x": -11.635,
+          "target_z": -5.439,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 90,
+      "action": "d",
+      "frame": "rgb/000090.jpg",
+      "position_before": [
+        -13.0,
+        -4.65
+      ],
+      "position_after": [
+        -13.0,
+        -4.65
+      ],
+      "direction_after": "W",
+      "target_before_step": [
+        -9.815,
+        4.331
+      ],
+      "distance_before": 9.529039091115118,
+      "distance_after": 9.529039091115118,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -13.0,
+        0.44999999999999996,
+        -4.800000000000001
+      ],
+      "view_direction": [
+        5.053215498074303e-16,
+        0.0,
+        -1.0
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -9.802,
+          "z": -3.973,
+          "yaw": 8.901179185171081,
+          "target_x": -11.635,
+          "target_z": -5.439,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 91,
+      "action": "d",
+      "frame": "rgb/000091.jpg",
+      "position_before": [
+        -13.0,
+        -4.65
+      ],
+      "position_after": [
+        -13.0,
+        -4.65
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -9.815,
+        4.331
+      ],
+      "distance_before": 9.529039091115118,
+      "distance_after": 9.529039091115118,
+      "bumped_wall": false,
+      "stuck_steps": 2,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -12.925,
+        0.44999999999999996,
+        -4.779903810567666
+      ],
+      "view_direction": [
+        0.5000000000000003,
+        0.0,
+        -0.8660254037844385
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -11.534,
+          "z": -4.973,
+          "yaw": 8.901179185171081,
+          "target_x": -2.101,
+          "target_z": 0.618,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 92,
+      "action": "d",
+      "frame": "rgb/000092.jpg",
+      "position_before": [
+        -13.0,
+        -4.65
+      ],
+      "position_after": [
+        -13.0,
+        -4.65
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -9.815,
+        4.331
+      ],
+      "distance_before": 9.529039091115118,
+      "distance_after": 9.529039091115118,
+      "bumped_wall": false,
+      "stuck_steps": 3,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -12.870096189432335,
+        0.44999999999999996,
+        -4.7250000000000005
+      ],
+      "view_direction": [
+        0.8660254037844388,
+        0.0,
+        -0.4999999999999998
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -11.534,
+          "z": -4.973,
+          "yaw": 9.42477796076938,
+          "target_x": -2.101,
+          "target_z": 0.618,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 93,
+      "action": "d",
+      "frame": "rgb/000093.jpg",
+      "position_before": [
+        -13.0,
+        -4.65
+      ],
+      "position_after": [
+        -13.0,
+        -4.65
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -9.815,
+        4.331
+      ],
+      "distance_before": 9.529039091115118,
+      "distance_after": 9.529039091115118,
+      "bumped_wall": false,
+      "stuck_steps": 4,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -12.85,
+        0.44999999999999996,
+        -4.65
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        2.220446049250313e-16
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -11.534,
+          "z": -4.973,
+          "yaw": 9.948376736367678,
+          "target_x": -2.101,
+          "target_z": 0.618,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 94,
+      "action": "d",
+      "frame": "rgb/000094.jpg",
+      "position_before": [
+        -13.0,
+        -4.65
+      ],
+      "position_after": [
+        -13.0,
+        -4.65
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -9.815,
+        4.331
+      ],
+      "distance_before": 9.529039091115118,
+      "distance_after": 9.529039091115118,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -12.870096189432335,
+        0.44999999999999996,
+        -4.575
+      ],
+      "view_direction": [
+        0.8660254037844386,
+        0.0,
+        0.5000000000000001
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -11.534,
+          "z": -4.973,
+          "yaw": 10.471975511965976,
+          "target_x": -2.101,
+          "target_z": 0.618,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 95,
+      "action": "w",
+      "frame": "rgb/000095.jpg",
+      "position_before": [
+        -13.0,
+        -4.65
+      ],
+      "position_after": [
+        -12.0,
+        -2.92
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -6.565,
+        4.679
+      ],
+      "distance_before": 11.333113693950132,
+      "distance_after": 9.342592038615408,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -12.925,
+        0.44999999999999996,
+        -4.520096189432334
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        0.8660254037844387
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -11.534,
+          "z": -4.973,
+          "yaw": 10.995574287564274,
+          "target_x": -2.101,
+          "target_z": 0.618,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 96,
+      "action": "w",
+      "frame": "rgb/000096.jpg",
+      "position_before": [
+        -12.0,
+        -2.92
+      ],
+      "position_after": [
+        -11.0,
+        -1.19
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -6.565,
+        4.679
+      ],
+      "distance_before": 9.342592038615408,
+      "distance_after": 7.356248092608078,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -11.925,
+        0.44999999999999996,
+        -2.790096189432334
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        0.8660254037844387
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -11.534,
+          "z": -4.973,
+          "yaw": 11.519173063162572,
+          "target_x": -1.473,
+          "target_z": 1.65,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 97,
+      "action": "w",
+      "frame": "rgb/000097.jpg",
+      "position_before": [
+        -11.0,
+        -1.19
+      ],
+      "position_after": [
+        -10.0,
+        0.54
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -6.565,
+        4.679
+      ],
+      "distance_before": 7.356248092608078,
+      "distance_after": 5.378712299426323,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -10.925,
+        0.44999999999999996,
+        -1.0600961894323342
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        0.8660254037844387
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -11.534,
+          "z": -4.973,
+          "yaw": 12.04277183876087,
+          "target_x": -1.473,
+          "target_z": 1.65,
+          "last_action": "a"
+        }
+      ]
+    },
+    {
+      "step": 98,
+      "action": "w",
+      "frame": "rgb/000098.jpg",
+      "position_before": [
+        -10.0,
+        0.54
+      ],
+      "position_after": [
+        -9.0,
+        2.27
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -6.565,
+        4.679
+      ],
+      "distance_before": 5.378712299426323,
+      "distance_after": 3.4252745875330928,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -9.925,
+        0.44999999999999996,
+        0.6699038105676658
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        0.8660254037844387
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -9.802,
+          "z": -3.973,
+          "yaw": 12.04277183876087,
+          "target_x": -1.473,
+          "target_z": 1.65,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 99,
+      "action": "w",
+      "frame": "rgb/000099.jpg",
+      "position_before": [
+        -9.0,
+        2.27
+      ],
+      "position_after": [
+        -8.0,
+        4.0
+      ],
+      "direction_after": "E",
+      "target_before_step": [
+        -6.565,
+        4.679
+      ],
+      "distance_before": 3.4252745875330928,
+      "distance_after": 1.587534566552804,
+      "bumped_wall": false,
+      "stuck_steps": 0,
+      "turn_switches": 0,
+      "mirror_visible": true,
+      "view_position": [
+        -8.925,
+        0.44999999999999996,
+        2.399903810567666
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        0.8660254037844387
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -8.07,
+          "z": -2.973,
+          "yaw": 12.04277183876087,
+          "target_x": -1.473,
+          "target_z": 1.65,
+          "last_action": "w"
+        }
+      ]
+    },
+    {
+      "step": 100,
+      "action": "a",
+      "frame": "rgb/000100.jpg",
+      "position_before": [
+        -8.0,
+        4.0
+      ],
+      "position_after": [
+        -8.0,
+        4.0
+      ],
+      "direction_after": "N",
+      "target_before_step": [
+        -6.565,
+        4.679
+      ],
+      "distance_before": 1.587534566552804,
+      "distance_after": 1.587534566552804,
+      "bumped_wall": false,
+      "stuck_steps": 1,
+      "turn_switches": 0,
+      "mirror_visible": false,
+      "view_position": [
+        -7.925,
+        0.44999999999999996,
+        4.129903810567666
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        0.8660254037844387
+      ],
+      "distractors": [
+        {
+          "object_id": "distractor_06",
+          "color": "teal",
+          "x": -6.338,
+          "z": -1.973,
+          "yaw": 12.04277183876087,
+          "target_x": -1.473,
+          "target_z": 1.65,
+          "last_action": "w"
+        }
+      ]
+    }
+  ],
+  "step_records": [
+    {
+      "step": 1,
+      "action": "d",
+      "position": [
+        -10.0,
+        0.0
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-5.07, z=-2.36; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 1/100; position=(-10.00, 0.00), target=(-5.07, -2.36).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -10.0,
+        0.44999999999999996,
+        -0.15
+      ],
+      "view_direction": [
+        6.123233995736766e-17,
+        0.0,
+        -1.0
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 2,
+      "action": "d",
+      "position": [
+        -10.0,
+        0.0
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-5.07, z=-2.36; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 2/100; position=(-10.00, 0.00), target=(-5.07, -2.36).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -9.925,
+        0.44999999999999996,
+        -0.1299038105676658
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        -0.8660254037844387
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 3,
+      "action": "w",
+      "position": [
+        -8.27,
+        -1.0
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-5.07, z=-2.36; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 3/100; position=(-8.27, -1.00), target=(-5.07, -2.36).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -9.870096189432335,
+        0.44999999999999996,
+        -0.07500000000000001
+      ],
+      "view_direction": [
+        0.8660254037844386,
+        0.0,
+        -0.5000000000000001
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 4,
+      "action": "w",
+      "position": [
+        -6.54,
+        -2.0
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-5.07, z=-2.36; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 4/100; position=(-6.54, -2.00), target=(-5.07, -2.36).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -8.140096189432334,
+        0.44999999999999996,
+        -1.075
+      ],
+      "view_direction": [
+        0.8660254037844386,
+        0.0,
+        -0.5000000000000001
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 5,
+      "action": "w",
+      "position": [
+        -4.81,
+        -3.0
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-10.48, z=-1.92; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 5/100; position=(-4.81, -3.00), target=(-10.48, -1.92).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -6.410096189432334,
+        0.44999999999999996,
+        -2.075
+      ],
+      "view_direction": [
+        0.8660254037844386,
+        0.0,
+        -0.5000000000000001
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 6,
+      "action": "a",
+      "position": [
+        -4.81,
+        -3.0
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-10.48, z=-1.92; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 6/100; position=(-4.81, -3.00), target=(-10.48, -1.92).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -4.680096189432334,
+        0.44999999999999996,
+        -3.075
+      ],
+      "view_direction": [
+        0.8660254037844386,
+        0.0,
+        -0.5000000000000001
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 7,
+      "action": "a",
+      "position": [
+        -4.81,
+        -3.0
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-10.48, z=-1.92; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 7/100; position=(-4.81, -3.00), target=(-10.48, -1.92).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -4.734999999999999,
+        0.44999999999999996,
+        -3.129903810567666
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        -0.8660254037844387
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 8,
+      "action": "a",
+      "position": [
+        -4.81,
+        -3.0
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-10.48, z=-1.92; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 8/100; position=(-4.81, -3.00), target=(-10.48, -1.92).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -4.81,
+        0.44999999999999996,
+        -3.15
+      ],
+      "view_direction": [
+        6.123233995736766e-17,
+        0.0,
+        -1.0
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 9,
+      "action": "a",
+      "position": [
+        -4.81,
+        -3.0
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-10.48, z=-1.92; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 9/100; position=(-4.81, -3.00), target=(-10.48, -1.92).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -4.885,
+        0.44999999999999996,
+        -3.129903810567666
+      ],
+      "view_direction": [
+        -0.49999999999999983,
+        0.0,
+        -0.8660254037844387
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 10,
+      "action": "a",
+      "position": [
+        -4.81,
+        -3.0
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-11.51, z=3.13; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 10/100; position=(-4.81, -3.00), target=(-11.51, 3.13).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -4.939903810567666,
+        0.44999999999999996,
+        -3.075
+      ],
+      "view_direction": [
+        -0.8660254037844385,
+        0.0,
+        -0.5000000000000003
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 11,
+      "action": "a",
+      "position": [
+        -4.81,
+        -3.0
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-11.51, z=3.13; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 11/100; position=(-4.81, -3.00), target=(-11.51, 3.13).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -4.96,
+        0.44999999999999996,
+        -3.0
+      ],
+      "view_direction": [
+        -1.0,
+        0.0,
+        -5.66553889764798e-16
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 12,
+      "action": "w",
+      "position": [
+        -6.54,
+        -2.0
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-11.51, z=3.13; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 12/100; position=(-6.54, -2.00), target=(-11.51, 3.13).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -4.939903810567666,
+        0.44999999999999996,
+        -2.9250000000000003
+      ],
+      "view_direction": [
+        -0.866025403784439,
+        0.0,
+        0.4999999999999994
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 13,
+      "action": "w",
+      "position": [
+        -8.27,
+        -1.0
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-11.51, z=3.13; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 13/100; position=(-8.27, -1.00), target=(-11.51, 3.13).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -6.669903810567666,
+        0.44999999999999996,
+        -1.925
+      ],
+      "view_direction": [
+        -0.866025403784439,
+        0.0,
+        0.4999999999999994
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 14,
+      "action": "a",
+      "position": [
+        -8.27,
+        -1.0
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-11.51, z=3.13; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 14/100; position=(-8.27, -1.00), target=(-11.51, 3.13).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -8.399903810567665,
+        0.44999999999999996,
+        -0.925
+      ],
+      "view_direction": [
+        -0.866025403784439,
+        0.0,
+        0.4999999999999994
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 15,
+      "action": "w",
+      "position": [
+        -9.27,
+        0.73
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-11.51, z=3.13; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 15/100; position=(-9.27, 0.73), target=(-11.51, 3.13).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -8.344999999999999,
+        0.44999999999999996,
+        -0.8700961894323342
+      ],
+      "view_direction": [
+        -0.5000000000000004,
+        0.0,
+        0.8660254037844384
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 16,
+      "action": "w",
+      "position": [
+        -10.27,
+        2.46
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-11.51, z=3.13; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 16/100; position=(-10.27, 2.46), target=(-11.51, 3.13).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -9.344999999999999,
+        0.44999999999999996,
+        0.8599038105676657
+      ],
+      "view_direction": [
+        -0.5000000000000004,
+        0.0,
+        0.8660254037844384
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 17,
+      "action": "d",
+      "position": [
+        -10.27,
+        2.46
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-11.51, z=3.13; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 17/100; position=(-10.27, 2.46), target=(-11.51, 3.13).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -10.344999999999999,
+        0.44999999999999996,
+        2.589903810567666
+      ],
+      "view_direction": [
+        -0.5000000000000004,
+        0.0,
+        0.8660254037844384
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 18,
+      "action": "w",
+      "position": [
+        -12.0,
+        3.46
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-2.84, z=3.08; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 18/100; position=(-12.00, 3.46), target=(-2.84, 3.08).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -10.399903810567665,
+        0.44999999999999996,
+        2.535
+      ],
+      "view_direction": [
+        -0.8660254037844388,
+        0.0,
+        0.4999999999999998
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 19,
+      "action": "a",
+      "position": [
+        -12.0,
+        3.46
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-2.84, z=3.08; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 19/100; position=(-12.00, 3.46), target=(-2.84, 3.08).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -12.129903810567665,
+        0.44999999999999996,
+        3.535
+      ],
+      "view_direction": [
+        -0.8660254037844388,
+        0.0,
+        0.4999999999999998
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 20,
+      "action": "a",
+      "position": [
+        -12.0,
+        3.46
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-2.84, z=3.08; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 20/100; position=(-12.00, 3.46), target=(-2.84, 3.08).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -12.075,
+        0.44999999999999996,
+        3.589903810567666
+      ],
+      "view_direction": [
+        -0.5000000000000004,
+        0.0,
+        0.8660254037844384
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 21,
+      "action": "a",
+      "position": [
+        -12.0,
+        3.46
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-2.84, z=3.08; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 21/100; position=(-12.00, 3.46), target=(-2.84, 3.08).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -12.0,
+        0.44999999999999996,
+        3.61
+      ],
+      "view_direction": [
+        -1.8369701987210297e-16,
+        0.0,
+        1.0
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 22,
+      "action": "a",
+      "position": [
+        -12.0,
+        3.46
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-2.84, z=3.08; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 22/100; position=(-12.00, 3.46), target=(-2.84, 3.08).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -11.925,
+        0.44999999999999996,
+        3.589903810567666
+      ],
+      "view_direction": [
+        0.5000000000000001,
+        0.0,
+        0.8660254037844386
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 23,
+      "action": "a",
+      "position": [
+        -12.0,
+        3.46
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-7.73, z=5.52; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 23/100; position=(-12.00, 3.46), target=(-7.73, 5.52).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -11.870096189432335,
+        0.44999999999999996,
+        3.5349999999999997
+      ],
+      "view_direction": [
+        0.8660254037844388,
+        0.0,
+        0.49999999999999967
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 24,
+      "action": "d",
+      "position": [
+        -12.0,
+        3.46
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-7.73, z=5.52; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 24/100; position=(-12.00, 3.46), target=(-7.73, 5.52).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -11.85,
+        0.44999999999999996,
+        3.46
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        -6.432490598706546e-16
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 25,
+      "action": "w",
+      "position": [
+        -10.27,
+        4.46
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-7.73, z=5.52; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 25/100; position=(-10.27, 4.46), target=(-7.73, 5.52).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -11.870096189432335,
+        0.44999999999999996,
+        3.5349999999999997
+      ],
+      "view_direction": [
+        0.8660254037844388,
+        0.0,
+        0.49999999999999967
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 26,
+      "action": "w",
+      "position": [
+        -8.54,
+        5.46
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-4.95, z=-0.32; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 26/100; position=(-8.54, 5.46), target=(-4.95, -0.32).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -10.140096189432334,
+        0.44999999999999996,
+        4.535
+      ],
+      "view_direction": [
+        0.8660254037844388,
+        0.0,
+        0.49999999999999967
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 27,
+      "action": "a",
+      "position": [
+        -8.54,
+        5.46
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-4.95, z=-0.32; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 27/100; position=(-8.54, 5.46), target=(-4.95, -0.32).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -8.410096189432334,
+        0.44999999999999996,
+        5.535
+      ],
+      "view_direction": [
+        0.8660254037844388,
+        0.0,
+        0.49999999999999967
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 28,
+      "action": "a",
+      "position": [
+        -8.54,
+        5.46
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-4.95, z=-0.32; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 28/100; position=(-8.54, 5.46), target=(-4.95, -0.32).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -8.389999999999999,
+        0.44999999999999996,
+        5.46
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        -6.432490598706546e-16
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 29,
+      "action": "a",
+      "position": [
+        -8.54,
+        5.46
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-4.95, z=-0.32; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 29/100; position=(-8.54, 5.46), target=(-4.95, -0.32).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -8.410096189432334,
+        0.44999999999999996,
+        5.385
+      ],
+      "view_direction": [
+        0.8660254037844382,
+        0.0,
+        -0.5000000000000008
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 30,
+      "action": "w",
+      "position": [
+        -7.54,
+        3.73
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-4.95, z=-0.32; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 30/100; position=(-7.54, 3.73), target=(-4.95, -0.32).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -8.465,
+        0.44999999999999996,
+        5.330096189432334
+      ],
+      "view_direction": [
+        0.49999999999999895,
+        0.0,
+        -0.8660254037844393
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 31,
+      "action": "w",
+      "position": [
+        -6.54,
+        2.0
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-4.95, z=-0.32; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 31/100; position=(-6.54, 2.00), target=(-4.95, -0.32).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -7.465,
+        0.44999999999999996,
+        3.600096189432334
+      ],
+      "view_direction": [
+        0.49999999999999895,
+        0.0,
+        -0.8660254037844393
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 32,
+      "action": "w",
+      "position": [
+        -5.54,
+        0.27
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-1.72, z=1.53; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 32/100; position=(-5.54, 0.27), target=(-1.72, 1.53).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -6.465,
+        0.44999999999999996,
+        1.870096189432334
+      ],
+      "view_direction": [
+        0.49999999999999895,
+        0.0,
+        -0.8660254037844393
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 33,
+      "action": "d",
+      "position": [
+        -5.54,
+        0.27
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-1.72, z=1.53; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 33/100; position=(-5.54, 0.27), target=(-1.72, 1.53).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.465,
+        0.44999999999999996,
+        0.14009618943233412
+      ],
+      "view_direction": [
+        0.49999999999999895,
+        0.0,
+        -0.8660254037844393
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 34,
+      "action": "d",
+      "position": [
+        -5.54,
+        0.27
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-1.72, z=1.53; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 34/100; position=(-5.54, 0.27), target=(-1.72, 1.53).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.410096189432334,
+        0.44999999999999996,
+        0.1949999999999999
+      ],
+      "view_direction": [
+        0.8660254037844382,
+        0.0,
+        -0.5000000000000008
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 35,
+      "action": "d",
+      "position": [
+        -5.54,
+        0.27
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-1.72, z=1.53; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 35/100; position=(-5.54, 0.27), target=(-1.72, 1.53).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.39,
+        0.44999999999999996,
+        0.2699999999999999
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        -6.432490598706546e-16
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 36,
+      "action": "w",
+      "position": [
+        -3.81,
+        1.27
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-1.72, z=1.53; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 36/100; position=(-3.81, 1.27), target=(-1.72, 1.53).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.410096189432334,
+        0.44999999999999996,
+        0.345
+      ],
+      "view_direction": [
+        0.8660254037844388,
+        0.0,
+        0.49999999999999967
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 37,
+      "action": "a",
+      "position": [
+        -3.81,
+        1.27
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-1.72, z=1.53; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 37/100; position=(-3.81, 1.27), target=(-1.72, 1.53).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -3.680096189432334,
+        0.44999999999999996,
+        1.345
+      ],
+      "view_direction": [
+        0.8660254037844388,
+        0.0,
+        0.49999999999999967
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 38,
+      "action": "w",
+      "position": [
+        -1.81,
+        1.27
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-5.53, z=0.95; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 38/100; position=(-1.81, 1.27), target=(-5.53, 0.95).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -3.66,
+        0.44999999999999996,
+        1.27
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        -6.432490598706546e-16
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 39,
+      "action": "a",
+      "position": [
+        -1.81,
+        1.27
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-5.53, z=0.95; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 39/100; position=(-1.81, 1.27), target=(-5.53, 0.95).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -1.6600000000000001,
+        0.44999999999999996,
+        1.27
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        -6.432490598706546e-16
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 40,
+      "action": "a",
+      "position": [
+        -1.81,
+        1.27
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-5.53, z=0.95; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 40/100; position=(-1.81, 1.27), target=(-5.53, 0.95).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -1.6800961894323343,
+        0.44999999999999996,
+        1.1949999999999998
+      ],
+      "view_direction": [
+        0.8660254037844382,
+        0.0,
+        -0.5000000000000008
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 41,
+      "action": "a",
+      "position": [
+        -1.81,
+        1.27
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-5.53, z=0.95; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 41/100; position=(-1.81, 1.27), target=(-5.53, 0.95).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -1.7350000000000003,
+        0.44999999999999996,
+        1.140096189432334
+      ],
+      "view_direction": [
+        0.49999999999999895,
+        0.0,
+        -0.8660254037844393
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 42,
+      "action": "a",
+      "position": [
+        -1.81,
+        1.27
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-5.53, z=0.95; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 42/100; position=(-1.81, 1.27), target=(-5.53, 0.95).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -1.8100000000000003,
+        0.44999999999999996,
+        1.12
+      ],
+      "view_direction": [
+        -1.4701951396134122e-15,
+        0.0,
+        -1.0
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 43,
+      "action": "a",
+      "position": [
+        -1.81,
+        1.27
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-4.13, z=-0.20; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 43/100; position=(-1.81, 1.27), target=(-4.13, -0.20).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -1.8850000000000002,
+        0.44999999999999996,
+        1.1400961894323343
+      ],
+      "view_direction": [
+        -0.5000000000000008,
+        0.0,
+        -0.8660254037844383
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 44,
+      "action": "w",
+      "position": [
+        -3.54,
+        0.27
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-7.44, z=-3.99; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 44/100; position=(-3.54, 0.27), target=(-7.44, -3.99).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -1.9399038105676658,
+        0.44999999999999996,
+        1.195
+      ],
+      "view_direction": [
+        -0.8660254037844388,
+        0.0,
+        -0.4999999999999998
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 45,
+      "action": "d",
+      "position": [
+        -3.54,
+        0.27
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-7.44, z=-3.99; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 45/100; position=(-3.54, 0.27), target=(-7.44, -3.99).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -3.669903810567666,
+        0.44999999999999996,
+        0.19500000000000006
+      ],
+      "view_direction": [
+        -0.8660254037844388,
+        0.0,
+        -0.4999999999999998
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 46,
+      "action": "w",
+      "position": [
+        -4.54,
+        -1.46
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-7.44, z=-3.99; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 46/100; position=(-4.54, -1.46), target=(-7.44, -3.99).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -3.615,
+        0.44999999999999996,
+        0.1400961894323343
+      ],
+      "view_direction": [
+        -0.5000000000000008,
+        0.0,
+        -0.8660254037844383
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 47,
+      "action": "a",
+      "position": [
+        -4.54,
+        -1.46
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-7.44, z=-3.99; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 47/100; position=(-4.54, -1.46), target=(-7.44, -3.99).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -4.615,
+        0.44999999999999996,
+        -1.5899038105676657
+      ],
+      "view_direction": [
+        -0.5000000000000008,
+        0.0,
+        -0.8660254037844383
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 48,
+      "action": "w",
+      "position": [
+        -6.27,
+        -2.46
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-7.44, z=-3.99; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 48/100; position=(-6.27, -2.46), target=(-7.44, -3.99).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -4.669903810567666,
+        0.44999999999999996,
+        -1.535
+      ],
+      "view_direction": [
+        -0.8660254037844388,
+        0.0,
+        -0.4999999999999998
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 49,
+      "action": "d",
+      "position": [
+        -6.27,
+        -2.46
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-7.44, z=-3.99; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 49/100; position=(-6.27, -2.46), target=(-7.44, -3.99).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -6.3999038105676656,
+        0.44999999999999996,
+        -2.535
+      ],
+      "view_direction": [
+        -0.8660254037844388,
+        0.0,
+        -0.4999999999999998
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 50,
+      "action": "w",
+      "position": [
+        -7.27,
+        -4.19
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-1.48, z=-2.63; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 50/100; position=(-7.27, -4.19), target=(-1.48, -2.63).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -6.345,
+        0.44999999999999996,
+        -2.5899038105676655
+      ],
+      "view_direction": [
+        -0.5000000000000008,
+        0.0,
+        -0.8660254037844383
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 51,
+      "action": "d",
+      "position": [
+        -7.27,
+        -4.19
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-1.48, z=-2.63; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 51/100; position=(-7.27, -4.19), target=(-1.48, -2.63).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -7.345,
+        0.44999999999999996,
+        -4.319903810567666
+      ],
+      "view_direction": [
+        -0.5000000000000008,
+        0.0,
+        -0.8660254037844383
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 52,
+      "action": "d",
+      "position": [
+        -7.27,
+        -4.19
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-1.48, z=-2.63; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 52/100; position=(-7.27, -4.19), target=(-1.48, -2.63).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -7.27,
+        0.44999999999999996,
+        -4.340000000000001
+      ],
+      "view_direction": [
+        -5.82016719913287e-16,
+        0.0,
+        -1.0
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 53,
+      "action": "d",
+      "position": [
+        -7.27,
+        -4.19
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-1.48, z=-2.63; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 53/100; position=(-7.27, -4.19), target=(-1.48, -2.63).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -7.194999999999999,
+        0.44999999999999996,
+        -4.319903810567666
+      ],
+      "view_direction": [
+        0.4999999999999997,
+        0.0,
+        -0.8660254037844388
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 54,
+      "action": "d",
+      "position": [
+        -7.27,
+        -4.19
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-1.48, z=-2.63; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 54/100; position=(-7.27, -4.19), target=(-1.48, -2.63).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -7.140096189432334,
+        0.44999999999999996,
+        -4.265000000000001
+      ],
+      "view_direction": [
+        0.8660254037844386,
+        0.0,
+        -0.5
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 55,
+      "action": "w",
+      "position": [
+        -5.27,
+        -4.19
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-1.48, z=-2.63; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 55/100; position=(-5.27, -4.19), target=(-1.48, -2.63).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -7.119999999999999,
+        0.44999999999999996,
+        -4.19
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        2.4492935982947064e-16
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 56,
+      "action": "d",
+      "position": [
+        -5.27,
+        -4.19
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-1.48, z=-2.63; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 56/100; position=(-5.27, -4.19), target=(-1.48, -2.63).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.119999999999999,
+        0.44999999999999996,
+        -4.19
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        2.4492935982947064e-16
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 57,
+      "action": "w",
+      "position": [
+        -3.54,
+        -3.19
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-1.48, z=-2.63; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 57/100; position=(-3.54, -3.19), target=(-1.48, -2.63).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.140096189432334,
+        0.44999999999999996,
+        -4.115
+      ],
+      "view_direction": [
+        0.8660254037844384,
+        0.0,
+        0.5000000000000004
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 58,
+      "action": "w",
+      "position": [
+        -1.81,
+        -2.19
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-6.10, z=-0.98; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 58/100; position=(-1.81, -2.19), target=(-6.10, -0.98).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -3.410096189432334,
+        0.44999999999999996,
+        -3.1149999999999998
+      ],
+      "view_direction": [
+        0.8660254037844384,
+        0.0,
+        0.5000000000000004
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 59,
+      "action": "d",
+      "position": [
+        -1.81,
+        -2.19
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-6.10, z=-0.98; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 59/100; position=(-1.81, -2.19), target=(-6.10, -0.98).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -1.6800961894323343,
+        0.44999999999999996,
+        -2.1149999999999998
+      ],
+      "view_direction": [
+        0.8660254037844384,
+        0.0,
+        0.5000000000000004
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 60,
+      "action": "d",
+      "position": [
+        -1.81,
+        -2.19
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-6.10, z=-0.98; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 60/100; position=(-1.81, -2.19), target=(-6.10, -0.98).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -1.735,
+        0.44999999999999996,
+        -2.060096189432334
+      ],
+      "view_direction": [
+        0.49999999999999933,
+        0.0,
+        0.866025403784439
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 61,
+      "action": "d",
+      "position": [
+        -1.81,
+        -2.19
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-6.10, z=-0.98; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 61/100; position=(-1.81, -2.19), target=(-6.10, -0.98).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -1.8100000000000003,
+        0.44999999999999996,
+        -2.04
+      ],
+      "view_direction": [
+        -1.0718754395722282e-15,
+        0.0,
+        1.0
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 62,
+      "action": "d",
+      "position": [
+        -1.81,
+        -2.19
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-6.10, z=-0.98; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 62/100; position=(-1.81, -2.19), target=(-6.10, -0.98).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -1.8850000000000002,
+        0.44999999999999996,
+        -2.0600961894323344
+      ],
+      "view_direction": [
+        -0.5000000000000011,
+        0.0,
+        0.8660254037844379
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 63,
+      "action": "w",
+      "position": [
+        -3.54,
+        -1.19
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-6.10, z=-0.98; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 63/100; position=(-3.54, -1.19), target=(-6.10, -0.98).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -1.939903810567666,
+        0.44999999999999996,
+        -2.115
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 64,
+      "action": "d",
+      "position": [
+        -3.54,
+        -1.19
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-6.10, z=-0.98; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 64/100; position=(-3.54, -1.19), target=(-6.10, -0.98).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -3.669903810567666,
+        0.44999999999999996,
+        -1.1150000000000002
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 65,
+      "action": "w",
+      "position": [
+        -5.54,
+        -1.19
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-2.91, z=0.76; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 65/100; position=(-5.54, -1.19), target=(-2.91, 0.76).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -3.69,
+        0.44999999999999996,
+        -1.1900000000000002
+      ],
+      "view_direction": [
+        -1.0,
+        0.0,
+        -1.0106430996148606e-15
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 66,
+      "action": "a",
+      "position": [
+        -5.54,
+        -1.19
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-2.91, z=0.76; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 66/100; position=(-5.54, -1.19), target=(-2.91, 0.76).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.69,
+        0.44999999999999996,
+        -1.1900000000000002
+      ],
+      "view_direction": [
+        -1.0,
+        0.0,
+        -1.0106430996148606e-15
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 67,
+      "action": "a",
+      "position": [
+        -5.54,
+        -1.19
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-2.91, z=0.76; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 67/100; position=(-5.54, -1.19), target=(-2.91, 0.76).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.669903810567666,
+        0.44999999999999996,
+        -1.1150000000000002
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 68,
+      "action": "a",
+      "position": [
+        -5.54,
+        -1.19
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-2.91, z=0.76; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 68/100; position=(-5.54, -1.19), target=(-2.91, 0.76).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.615,
+        0.44999999999999996,
+        -1.0600961894323342
+      ],
+      "view_direction": [
+        -0.5000000000000011,
+        0.0,
+        0.8660254037844379
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 69,
+      "action": "a",
+      "position": [
+        -5.54,
+        -1.19
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-2.91, z=0.76; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 69/100; position=(-5.54, -1.19), target=(-2.91, 0.76).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.54,
+        0.44999999999999996,
+        -1.04
+      ],
+      "view_direction": [
+        -1.0718754395722282e-15,
+        0.0,
+        1.0
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 70,
+      "action": "a",
+      "position": [
+        -5.54,
+        -1.19
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-10.89, z=-1.65; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 70/100; position=(-5.54, -1.19), target=(-10.89, -1.65).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.465,
+        0.44999999999999996,
+        -1.0600961894323342
+      ],
+      "view_direction": [
+        0.49999999999999933,
+        0.0,
+        0.866025403784439
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 71,
+      "action": "d",
+      "position": [
+        -5.54,
+        -1.19
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-10.89, z=-1.65; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 71/100; position=(-5.54, -1.19), target=(-10.89, -1.65).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.410096189432334,
+        0.44999999999999996,
+        -1.1149999999999998
+      ],
+      "view_direction": [
+        0.8660254037844384,
+        0.0,
+        0.5000000000000004
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 72,
+      "action": "d",
+      "position": [
+        -5.54,
+        -1.19
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-10.89, z=-1.65; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 72/100; position=(-5.54, -1.19), target=(-10.89, -1.65).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.465,
+        0.44999999999999996,
+        -1.0600961894323342
+      ],
+      "view_direction": [
+        0.49999999999999933,
+        0.0,
+        0.866025403784439
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 73,
+      "action": "d",
+      "position": [
+        -5.54,
+        -1.19
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-10.89, z=-1.65; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 73/100; position=(-5.54, -1.19), target=(-10.89, -1.65).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.54,
+        0.44999999999999996,
+        -1.04
+      ],
+      "view_direction": [
+        -1.0718754395722282e-15,
+        0.0,
+        1.0
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 74,
+      "action": "d",
+      "position": [
+        -5.54,
+        -1.19
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-10.89, z=-1.65; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 74/100; position=(-5.54, -1.19), target=(-10.89, -1.65).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.615,
+        0.44999999999999996,
+        -1.0600961894323342
+      ],
+      "view_direction": [
+        -0.5000000000000011,
+        0.0,
+        0.8660254037844379
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 75,
+      "action": "d",
+      "position": [
+        -5.54,
+        -1.19
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-9.56, z=1.79; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 75/100; position=(-5.54, -1.19), target=(-9.56, 1.79).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.669903810567666,
+        0.44999999999999996,
+        -1.1150000000000002
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 76,
+      "action": "a",
+      "position": [
+        -5.54,
+        -1.19
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-9.56, z=1.79; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 76/100; position=(-5.54, -1.19), target=(-9.56, 1.79).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.69,
+        0.44999999999999996,
+        -1.1900000000000002
+      ],
+      "view_direction": [
+        -1.0,
+        0.0,
+        -1.0106430996148606e-15
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 77,
+      "action": "w",
+      "position": [
+        -7.27,
+        -0.19
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-9.56, z=1.79; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 77/100; position=(-7.27, -0.19), target=(-9.56, 1.79).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -5.669903810567666,
+        0.44999999999999996,
+        -1.1150000000000002
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 78,
+      "action": "w",
+      "position": [
+        -9.0,
+        0.81
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-9.56, z=1.79; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 78/100; position=(-9.00, 0.81), target=(-9.56, 1.79).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -7.3999038105676656,
+        0.44999999999999996,
+        -0.11500000000000016
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 79,
+      "action": "a",
+      "position": [
+        -9.0,
+        0.81
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-9.56, z=1.79; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 79/100; position=(-9.00, 0.81), target=(-9.56, 1.79).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -9.129903810567665,
+        0.44999999999999996,
+        0.8849999999999999
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 80,
+      "action": "w",
+      "position": [
+        -10.0,
+        2.54
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-13.18, z=-4.36; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 80/100; position=(-10.00, 2.54), target=(-13.18, -4.36).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -9.075,
+        0.44999999999999996,
+        0.9399038105676657
+      ],
+      "view_direction": [
+        -0.5000000000000011,
+        0.0,
+        0.8660254037844379
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 81,
+      "action": "d",
+      "position": [
+        -10.0,
+        2.54
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-13.18, z=-4.36; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 81/100; position=(-10.00, 2.54), target=(-13.18, -4.36).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -10.075,
+        0.44999999999999996,
+        2.6699038105676656
+      ],
+      "view_direction": [
+        -0.5000000000000011,
+        0.0,
+        0.8660254037844379
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 82,
+      "action": "d",
+      "position": [
+        -10.0,
+        2.54
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-13.18, z=-4.36; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 82/100; position=(-10.00, 2.54), target=(-13.18, -4.36).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -10.129903810567665,
+        0.44999999999999996,
+        2.6149999999999998
+      ],
+      "view_direction": [
+        -0.8660254037844393,
+        0.0,
+        0.499999999999999
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 83,
+      "action": "d",
+      "position": [
+        -10.0,
+        2.54
+      ],
+      "direction": "S",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-13.18, z=-4.36; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 83/100; position=(-10.00, 2.54), target=(-13.18, -4.36).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -10.15,
+        0.44999999999999996,
+        2.54
+      ],
+      "view_direction": [
+        -1.0,
+        0.0,
+        -1.0106430996148606e-15
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 84,
+      "action": "d",
+      "position": [
+        -10.0,
+        2.54
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-13.18, z=-4.36; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 84/100; position=(-10.00, 2.54), target=(-13.18, -4.36).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -10.129903810567665,
+        0.44999999999999996,
+        2.465
+      ],
+      "view_direction": [
+        -0.8660254037844383,
+        0.0,
+        -0.5000000000000008
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 85,
+      "action": "w",
+      "position": [
+        -11.0,
+        0.81
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-13.18, z=-4.36; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 85/100; position=(-11.00, 0.81), target=(-13.18, -4.36).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -10.075,
+        0.44999999999999996,
+        2.410096189432334
+      ],
+      "view_direction": [
+        -0.49999999999999944,
+        0.0,
+        -0.866025403784439
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 86,
+      "action": "w",
+      "position": [
+        -12.0,
+        -0.92
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-13.18, z=-4.36; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 86/100; position=(-12.00, -0.92), target=(-13.18, -4.36).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -11.075,
+        0.44999999999999996,
+        0.6800961894323342
+      ],
+      "view_direction": [
+        -0.49999999999999944,
+        0.0,
+        -0.866025403784439
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 87,
+      "action": "w",
+      "position": [
+        -13.0,
+        -2.65
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-13.18, z=-4.36; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 87/100; position=(-13.00, -2.65), target=(-13.18, -4.36).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -12.075,
+        0.44999999999999996,
+        -1.049903810567666
+      ],
+      "view_direction": [
+        -0.49999999999999944,
+        0.0,
+        -0.866025403784439
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 88,
+      "action": "d",
+      "position": [
+        -13.0,
+        -2.65
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-13.18, z=-4.36; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 88/100; position=(-13.00, -2.65), target=(-13.18, -4.36).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -13.075,
+        0.44999999999999996,
+        -2.779903810567666
+      ],
+      "view_direction": [
+        -0.49999999999999944,
+        0.0,
+        -0.866025403784439
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 89,
+      "action": "w",
+      "position": [
+        -13.0,
+        -4.65
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-9.81, z=4.33; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 89/100; position=(-13.00, -4.65), target=(-9.81, 4.33).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -13.0,
+        0.44999999999999996,
+        -2.8
+      ],
+      "view_direction": [
+        5.053215498074303e-16,
+        0.0,
+        -1.0
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 90,
+      "action": "d",
+      "position": [
+        -13.0,
+        -4.65
+      ],
+      "direction": "W",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-9.81, z=4.33; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 90/100; position=(-13.00, -4.65), target=(-9.81, 4.33).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -13.0,
+        0.44999999999999996,
+        -4.800000000000001
+      ],
+      "view_direction": [
+        5.053215498074303e-16,
+        0.0,
+        -1.0
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 91,
+      "action": "d",
+      "position": [
+        -13.0,
+        -4.65
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-9.81, z=4.33; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 91/100; position=(-13.00, -4.65), target=(-9.81, 4.33).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -12.925,
+        0.44999999999999996,
+        -4.779903810567666
+      ],
+      "view_direction": [
+        0.5000000000000003,
+        0.0,
+        -0.8660254037844385
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 92,
+      "action": "d",
+      "position": [
+        -13.0,
+        -4.65
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-9.81, z=4.33; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 92/100; position=(-13.00, -4.65), target=(-9.81, 4.33).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -12.870096189432335,
+        0.44999999999999996,
+        -4.7250000000000005
+      ],
+      "view_direction": [
+        0.8660254037844388,
+        0.0,
+        -0.4999999999999998
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 93,
+      "action": "d",
+      "position": [
+        -13.0,
+        -4.65
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-9.81, z=4.33; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 93/100; position=(-13.00, -4.65), target=(-9.81, 4.33).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -12.85,
+        0.44999999999999996,
+        -4.65
+      ],
+      "view_direction": [
+        1.0,
+        0.0,
+        2.220446049250313e-16
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 94,
+      "action": "d",
+      "position": [
+        -13.0,
+        -4.65
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-6.57, z=4.68; selected action 'd'.",
+      "inner_reasoning": null,
+      "summary": "Step 94/100; position=(-13.00, -4.65), target=(-6.57, 4.68).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -12.870096189432335,
+        0.44999999999999996,
+        -4.575
+      ],
+      "view_direction": [
+        0.8660254037844386,
+        0.0,
+        0.5000000000000001
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 95,
+      "action": "w",
+      "position": [
+        -12.0,
+        -2.92
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-6.57, z=4.68; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 95/100; position=(-12.00, -2.92), target=(-6.57, 4.68).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -12.925,
+        0.44999999999999996,
+        -4.520096189432334
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        0.8660254037844387
+      ],
+      "mirror_visible": false
+    },
+    {
+      "step": 96,
+      "action": "w",
+      "position": [
+        -11.0,
+        -1.19
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-6.57, z=4.68; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 96/100; position=(-11.00, -1.19), target=(-6.57, 4.68).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -11.925,
+        0.44999999999999996,
+        -2.790096189432334
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        0.8660254037844387
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 97,
+      "action": "w",
+      "position": [
+        -10.0,
+        0.54
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-6.57, z=4.68; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 97/100; position=(-10.00, 0.54), target=(-6.57, 4.68).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -10.925,
+        0.44999999999999996,
+        -1.0600961894323342
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        0.8660254037844387
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 98,
+      "action": "w",
+      "position": [
+        -9.0,
+        2.27
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-6.57, z=4.68; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 98/100; position=(-9.00, 2.27), target=(-6.57, 4.68).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -9.925,
+        0.44999999999999996,
+        0.6699038105676658
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        0.8660254037844387
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 99,
+      "action": "w",
+      "position": [
+        -8.0,
+        4.0
+      ],
+      "direction": "E",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-6.57, z=4.68; selected action 'w'.",
+      "inner_reasoning": null,
+      "summary": "Step 99/100; position=(-8.00, 4.00), target=(-6.57, 4.68).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -8.925,
+        0.44999999999999996,
+        2.399903810567666
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        0.8660254037844387
+      ],
+      "mirror_visible": true
+    },
+    {
+      "step": 100,
+      "action": "a",
+      "position": [
+        -8.0,
+        4.0
+      ],
+      "direction": "N",
+      "bumped_wall": false,
+      "view_description": "Autopilot active in e6: moving through the room with distractors.",
+      "reasoning": "Navigating toward waypoint x=-6.57, z=4.68; selected action 'a'.",
+      "inner_reasoning": null,
+      "summary": "Step 100/100; position=(-8.00, 4.00), target=(-6.57, 4.68).",
+      "identification": {
+        "my_color": "unknown",
+        "source": "other",
+        "confidence": "low"
+      },
+      "selected_cube": null,
+      "view_position": [
+        -7.925,
+        0.44999999999999996,
+        4.129903810567666
+      ],
+      "view_direction": [
+        0.4999999999999999,
+        0.0,
+        0.8660254037844387
+      ],
+      "mirror_visible": false
+    }
+  ]
+}

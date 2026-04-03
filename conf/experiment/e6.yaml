@@ -1,0 +1,6 @@
+# @package _global_
+experiment_id: e6
+num_runs: 100
+nav: auto
+max_steps: 100
+save_dataset: false

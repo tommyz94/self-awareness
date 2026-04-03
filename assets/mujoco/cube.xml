@@ -1,0 +1,10 @@
+<body name="{body_name}" pos="{x} -0.75 {z}">
+  <freejoint name="{joint_name}"/>
+  <geom
+      name="{geom_name}"
+      type="box"
+      size=".25 .25 .25"
+      rgba="{rgba}"
+      contype="0"
+      conaffinity="0"/>
+</body>
