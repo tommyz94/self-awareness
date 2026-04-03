@@ -84,13 +84,49 @@ trajectory/action metadata into `Mirror_Video_Dataset/`, including per-step
 `mirror_visible` and `ego_reflection_visible` flags plus `ego_reflection_seen`
 at episode level.
 
-**Human e4 commands:**
+**Human commands for experiments `e1`-`e7` (live MuJoCo):**
 
 ```sh
-python main.py env=mujoco nav=human mujoco.headless=false experiment=e4 num_runs=1
+# e1
+python main.py env=mujoco nav=human mujoco.headless=false experiment=e1 random_wall_color=true
+
+# e2
+python main.py env=mujoco nav=human mujoco.headless=false experiment=e2 random_wall_color=true
+
+# e3
+python main.py env=mujoco nav=human mujoco.headless=false experiment=e3 random_wall_color=true
+
+# e4
+python main.py env=mujoco nav=human mujoco.headless=false experiment=e4 
+
+# e5
+python main.py env=mujoco nav=human mujoco.headless=false experiment=e5 random_wall_color=true
+
+# e6 (preset is auto by default, here forced to human)
+python main.py env=mujoco nav=human mujoco.headless=false experiment=e6 random_wall_color=true
+
+# e7 (preset is auto by default, here forced to human)
+python main.py env=mujoco nav=human mujoco.headless=false experiment=e7 random_wall_color=true
+```
+
+Useful optional overrides:
+
+```sh
+# Random wall color in e1/e2/e3/e5/e6/e7
+python main.py env=mujoco nav=human mujoco.headless=false experiment=e1 random_wall_color=true
+
+# Third-person camera
+python main.py env=mujoco nav=human mujoco.headless=false experiment=e5 third_person=true
+
+# Save per-step JPG observations (manual navigation)
+python main.py env=mujoco nav=human mujoco.headless=false experiment=e3 outputs.save_obs=true
+
+# e7 cube stacks toggle
+python main.py env=mujoco nav=human mujoco.headless=false experiment=e7 e7_random_cube_heights=false
 ```
 
 In `e4`, the corridor variant is sampled randomly each episode; `use_mirror` does not force the variant. In `nav=human`, `F` maps to corridor `done`.
+`save_dataset=true` is currently supported only for `experiment=e6/e7` with `nav=auto`.
 
 ## MuJoCo backend
 
