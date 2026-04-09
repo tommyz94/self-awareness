@@ -103,6 +103,54 @@ def test_e5_run_setup_uses_pool_colors_for_agent_cubes_and_distractors():
     assert run_setup.agent_color_name in {obj.color for obj in cubes}
 
 
+@pytest.mark.parametrize(
+    ("mode", "expect_unique", "expect_exclude_agent"),
+    [
+        ("allow_agent_color", True, False),
+        ("exclude_agent_color", True, True),
+        ("allow_duplicates", False, False),
+    ],
+)
+def test_e5_distractor_color_modes(mode: str, expect_unique: bool, expect_exclude_agent: bool):
+    from experiments.specs import get_experiment
+    from experiments.specs.types import ExperimentRuntimeOptions
+
+    spec = get_experiment("e5")
+    run_setup = spec.initialize_run(1, ExperimentRuntimeOptions(distractor_color_mode=mode))
+    distractor_colors = [obj.color for obj in run_setup.scene_spec.objects if obj.kind == "distractor_robot"]
+
+    assert distractor_colors
+    assert all(color in COLOR_POOL for color in distractor_colors)
+    if expect_unique:
+        assert len(set(distractor_colors)) == len(distractor_colors)
+    if expect_exclude_agent:
+        assert run_setup.agent_color_name not in set(distractor_colors)
+
+
+def test_e5_allow_duplicates_mode_can_generate_duplicate_distractor_colors(monkeypatch):
+    import experiments.specs.e5.experiment as e5_experiment
+
+    monkeypatch.setattr(e5_experiment._random, "choice", lambda seq: seq[0])
+    colors = e5_experiment._sample_distractor_colors(
+        count=4,
+        agent_color="red",
+        color_mode="allow_duplicates",
+    )
+
+    assert colors == [colors[0], colors[0], colors[0], colors[0]]
+
+
+def test_e5_distractor_color_mode_validation():
+    import experiments.specs.e5.experiment as e5_experiment
+
+    with pytest.raises(ValueError, match="Unsupported distractor_color_mode"):
+        e5_experiment._sample_distractor_colors(
+            count=2,
+            agent_color="red",
+            color_mode="invalid-mode",
+        )
+
+
 def test_e5_supports_runtime_random_wall_color():
     from experiments.specs import get_experiment
     from experiments.specs.types import ExperimentRuntimeOptions

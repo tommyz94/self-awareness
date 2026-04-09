@@ -65,9 +65,9 @@ _CUBE_XML_RGBA = {
     "blue": "0 0.3 1 1",
 }
 _MIRROR_CUBE_XML_RGBA = {
-    "red": "1 0 0 0.75",
-    "green": "0 0.8 0 0.75",
-    "blue": "0 0.3 1 0.75",
+    "red": "1 0 0 1",
+    "green": "0 0.8 0 1",
+    "blue": "0 0.3 1 1",
 }
 _INITIAL_CUBE_POSITIONS = {
     "red": (-13.0, -6.0),
@@ -1112,6 +1112,7 @@ class MuJoCoEnv(BaseEnv):
                 "color": str(obj.color),
                 "position": (float(obj.position[0]), float(obj.position[1])),
                 "reflect_in_mirror": bool(obj.metadata.get("reflect_in_mirror") is True),
+                "reflect_ignore_aperture": bool(obj.metadata.get("reflect_ignore_aperture") is True),
             }
             for obj in run_setup.scene_spec.objects
             if obj.kind == "cube" and obj.color is not None
@@ -1143,18 +1144,21 @@ class MuJoCoEnv(BaseEnv):
             if (
                 slot_index < len(cube_objects)
                 and cube_objects[slot_index]["reflect_in_mirror"]
-                and self._is_in_mirror_aperture(float(cube_objects[slot_index]["position"][1]))
+                and (
+                    cube_objects[slot_index]["reflect_ignore_aperture"]
+                    or self._is_in_mirror_aperture(float(cube_objects[slot_index]["position"][1]))
+                )
                 and self._mirror_plane_x is not None
             ):
                 cx, cz = cube_objects[slot_index]["position"]
                 mirror_x = 2 * self._mirror_plane_x - float(cx)
                 self._set_body_pos(addr, mirror_x, _CUBE_Y, float(cz))
                 if geom_id is not None:
-                    self._set_color([geom_id], _rgba_for_color(cube_objects[slot_index]["color"], alpha=0.75))
+                    self._set_color([geom_id], _rgba_for_color(cube_objects[slot_index]["color"], alpha=1.0))
             else:
                 self._park_body(addr)
                 if geom_id is not None:
-                    self._set_color([geom_id], _rgba_for_color("gray", alpha=0.75))
+                    self._set_color([geom_id], _rgba_for_color("gray", alpha=1.0))
 
         self._apply_arm_rest_pose()
         self._sync_robot()

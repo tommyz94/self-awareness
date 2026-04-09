@@ -20,6 +20,11 @@ _THIRD_PERSON_CAMERA = {
     "pos": "-3 2 0",
     "xyaxes": "0 0 1 0.306 0.914 0",
 }
+_AGENT_FLAT_MATERIAL_NAME = "agent_flat_mat"
+_AGENT_FLAT_MATERIAL_XML = (
+    f'<material name="{_AGENT_FLAT_MATERIAL_NAME}" '
+    'rgba="1 1 1 1" reflectance="0" shininess="0" specular="0" emission="0.0"/>'
+)
 
 
 @dataclass(frozen=True)
@@ -118,6 +123,17 @@ def _serialize_optional(element: ET.Element | None) -> str:
     return ET.tostring(element, encoding="unicode")
 
 
+def _inject_agent_flat_material(asset_xml: str) -> str:
+    if not asset_xml:
+        return f"<asset>{_AGENT_FLAT_MATERIAL_XML}</asset>"
+    if _AGENT_FLAT_MATERIAL_NAME in asset_xml:
+        return asset_xml
+    closing_tag = "</asset>"
+    if closing_tag not in asset_xml:
+        return asset_xml
+    return asset_xml.replace(closing_tag, f"{_AGENT_FLAT_MATERIAL_XML}{closing_tag}")
+
+
 def _remove_tag_recursive(element: ET.Element, tag_name: str) -> None:
     for child in list(element):
         if child.tag == tag_name:
@@ -135,6 +151,9 @@ def _prefix_named_elements(element: ET.Element, prefix: str) -> list[str]:
             node.set("name", prefixed_name)
             if node.tag == "geom":
                 geom_names.append(prefixed_name)
+        if node.tag == "geom":
+            # Force a neutral material so runtime geom_rgba maps to a stable perceived color.
+            node.set("material", _AGENT_FLAT_MATERIAL_NAME)
     return geom_names
 
 
@@ -210,7 +229,9 @@ def build_humanoid_scene(
     camera_height: float = 1.0,
 ) -> HumanoidSceneFragments:
     humanoid_root = _load_humanoid_root()
-    asset_xml = _serialize_optional(humanoid_root.find("./asset"))
+    asset_xml = _inject_agent_flat_material(
+        _serialize_optional(humanoid_root.find("./asset"))
+    )
     default_xml = _serialize_optional(humanoid_root.find("./default"))
 
     robot_body_xml, robot_geom_names = _build_humanoid_wrapper(

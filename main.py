@@ -16,6 +16,7 @@ def main(cfg: DictConfig) -> None:
         camera_height=cfg.camera_height,
         use_mirror=cfg.get("use_mirror", True),
         random_wall_color=cfg.get("random_wall_color", False),
+        distractor_color_mode=cfg.get("distractor_color_mode", "allow_duplicates"),
         e7_random_cube_heights=cfg.get("e7_random_cube_heights", False),
         save_dataset=cfg.get("save_dataset", False),
         experiment_id=cfg.experiment_id,

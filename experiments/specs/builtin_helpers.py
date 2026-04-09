@@ -106,6 +106,41 @@ def _randomized_mirror_window_z(
     return (new_min, new_max)
 
 
+def mirror_window_covering_positions(
+    scene_spec: SceneSpec,
+    *,
+    positions: Sequence[Tuple[float, float]],
+    base_window_z: Optional[Tuple[float, float]],
+    padding: float = 0.35,
+) -> Optional[Tuple[float, float]]:
+    if (
+        not scene_spec.mirror_enabled
+        or scene_spec.mirror_aperture_mode != "window"
+    ):
+        return base_window_z
+
+    if base_window_z is None:
+        return None
+
+    z_values = [float(z) for _x, z in positions]
+    if not z_values:
+        return base_window_z
+
+    room_min = -scene_spec.width / 2 + 0.05
+    room_max = scene_spec.width / 2 - 0.05
+    required_min = max(room_min, min(z_values) - float(padding))
+    required_max = min(room_max, max(z_values) + float(padding))
+    if required_max < required_min:
+        return base_window_z
+
+    base_min, base_max = base_window_z
+    merged_min = max(room_min, min(float(base_min), required_min))
+    merged_max = min(room_max, max(float(base_max), required_max))
+    if merged_max <= merged_min:
+        return base_window_z
+    return (round(merged_min, 3), round(merged_max, 3))
+
+
 def build_mirror_room_scene(*, mirror_enabled: bool) -> SceneSpec:
     return SceneSpec(
         scene_id="mirror_room" if mirror_enabled else "mirror_room_no_mirror",
@@ -142,6 +177,8 @@ def build_corridor_scene(*, use_mirror: bool = True) -> SceneSpec:
 
 def build_cube_objects(
     cube_positions: Dict[str, Tuple[float, float]],
+    *,
+    mirror_cubes_ignore_aperture: bool = False,
 ) -> list[SceneObjectSpec]:
     return [
         SceneObjectSpec(
@@ -149,7 +186,10 @@ def build_cube_objects(
             kind="cube",
             color=color_name,
             position=position,
-            metadata={"reflect_in_mirror": True},
+            metadata={
+                "reflect_in_mirror": True,
+                "reflect_ignore_aperture": bool(mirror_cubes_ignore_aperture),
+            },
         )
         for color_name, position in cube_positions.items()
     ]
@@ -163,6 +203,8 @@ def build_cube_run_setup(
     randomize_wall: bool = False,
     randomize_wall_color: bool = False,
     mirror_window_center_jitter: Optional[float] = None,
+    mirror_window_cover_cubes: bool = True,
+    mirror_cubes_ignore_aperture: bool = False,
     randomize_spawn_yaw: bool = False,
 ) -> RunSetup:
     available_slots = list(cube_slots) if cube_slots is not None else CUBE_SLOTS
@@ -194,6 +236,12 @@ def build_cube_run_setup(
         scene_template,
         center_jitter=mirror_window_center_jitter,
     )
+    if mirror_window_cover_cubes:
+        mirror_window_z = mirror_window_covering_positions(
+            scene_template,
+            positions=tuple(cube_positions.values()),
+            base_window_z=mirror_window_z,
+        )
     excluded_wall_colors = [agent_color, *cube_color_names]
     wall_color_rgba = (
         sample_non_agent_wall_rgba(excluded_color_names=excluded_wall_colors)
@@ -205,7 +253,10 @@ def build_cube_run_setup(
         spawn_yaw=spawn_yaw,
         mirror_window_z=mirror_window_z,
         wall_color_rgba=wall_color_rgba,
-        objects=build_cube_objects(cube_positions),
+        objects=build_cube_objects(
+            cube_positions,
+            mirror_cubes_ignore_aperture=mirror_cubes_ignore_aperture,
+        ),
     )
     return RunSetup(
         agent_color_name=agent_color,

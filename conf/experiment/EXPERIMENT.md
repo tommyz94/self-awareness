@@ -38,13 +38,17 @@ main agent plus distractors on two parallel rows, while cube slots are sampled
 from room-corner positions. Distractor count is sampled per run in `[1, 6]`,
 with random per-distractor colors (duplicates allowed). `e5` also uses 30°
 `a`/`d` turns, and cube/agent colors come from the shared 15-color pool.
+Distractor color behavior is controlled by `distractor_color_mode`:
+`allow_agent_color`, `exclude_agent_color`, or `allow_duplicates`.
 
 ### `e6.yaml`
 
 Mirrored distractor-room preset derived from `e5`, but without cubes in the run
 scene. It keeps the same widened mirror opening, random distractor count per
 run in `[1, 6]`, random per-distractor colors (duplicates allowed), and 30°
-`a`/`d` turns. `e6` uses the `explore_task`, defaults to `nav: auto`, and runs
+`a`/`d` turns. Distractor color behavior is controlled by
+`distractor_color_mode` (`allow_agent_color`, `exclude_agent_color`, `allow_duplicates`).
+`e6` uses the `explore_task`, defaults to `nav: auto`, and runs
 100 automatic ego-agent actions per episode (with 0.5s pause between actions)
 before advancing to the next episode. `e6` also exposes `save_dataset` (default
 `false`) to export `Mirror_Video_Dataset/` with per-episode RGB frames and

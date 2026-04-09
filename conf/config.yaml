@@ -11,6 +11,7 @@ max_steps: 20
 third_person: false
 camera_height: 1.0
 random_wall_color: false
+distractor_color_mode: allow_duplicates
 e7_random_cube_heights: false
 save_dataset: false
 history_steps: 1

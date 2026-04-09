@@ -25,11 +25,12 @@ A successful run requires the agent to:
 ## Running
 
 Configuration is managed by Hydra. Override values with `key=value` syntax.
+`env` defaults to `mujoco`, so `env=mujoco` is optional in commands unless you want to make it explicit.
 
 **Human navigation:**
 
 ```sh
-python main.py env=mujoco nav=human mujoco.headless=false
+python main.py nav=human mujoco.headless=false
 ```
 
 Keys: `W` forward, `S` backward, `A`/`D` rotate by 30° in `e1/e2/e3/e5/e6/e7`; in `e4`, `A`/`D` are forward diagonals and `S` is disabled. `C` toggles camera.
@@ -42,91 +43,125 @@ python main.py nav=gemma3:4b
 
 Each step captures a JPG observation, sends it to the VLM, parses one JSON action, executes it, and records the run.
 
-**Controlled experiments:**
+**Controlled experiments (quick commands):**
 
 ```sh
+# LLM-driven
 python main.py experiment=e1 nav=gemma3:4b
 python main.py experiment=e2 nav=gemma3:4b
 python main.py experiment=e3 nav=gemma3:4b
 python main.py experiment=e4 nav=gemma3:4b
 python main.py experiment=e5 nav=gemma3:4b
+
+# Auto presets (e6/e7 default to nav=auto, 100 runs, 100 steps)
 python main.py experiment=e6
-python main.py experiment=e6 save_dataset=true
 python main.py experiment=e7
+
+# Auto + dataset export
+python main.py experiment=e6 save_dataset=true
 python main.py experiment=e7 save_dataset=true
-python main.py experiment=e7 e7_random_cube_heights=false
+
+# Human mode examples
+python main.py nav=human mujoco.headless=false experiment=e1
+python main.py nav=human mujoco.headless=false experiment=e4
+python main.py nav=human mujoco.headless=false experiment=e7
 ```
 
-| Experiment | Description |
-|---|---|
-| `e1` | Mirror present, agent color randomized each run. |
-| `e2` | No mirror, agent color randomized each run. |
-| `e3` | Mirror present plus misleading color text in the system prompt. |
-| `e4` | Checkerboard corridor with latent per-episode variant sampling (`mirror` vs `long`). Geometry is `10x3` (mirror) or `20x3` (long, as two `10x3` halves). Actions are `w/a/d/done` only, with `a`/`d` as forward-diagonal moves (yaw fixed). On terminal row: `done` succeeds, while `w/a/d` ends the run as failure. |
-| `e5` | Same mirrored cube task as `e1`, but with `1..6` colored humanoid distractor robots sampled randomly each run on a nearer mirror-facing row; distractor colors are random per robot (duplicates allowed), and cube/agent colors come from the shared 15-color pool. |
-| `e6` | Same mirrored distractor-room layout as `e5`, but without cubes; each run samples `1..6` colored distractor humanoids (duplicates allowed) plus a random agent color from the shared 15-color pool. Preset defaults to `nav=auto`, executes 100 ego-agent actions per run, and waits 0.5s between actions when rendering live (`mujoco.headless=false`); in headless mode the wait is skipped. Optional `save_dataset=true` exports a per-episode RGB + JSON dataset in `Mirror_Video_Dataset/`. |
-| `e7` | `e6` plus random distractor cubes: each run samples `1..6` distractor humanoids and `5..15` cube bases with colors from the same 15-color pool (duplicates allowed), placed across both room sides and reflected through the mirror aperture model. With `e7_random_cube_heights=true` (default in the preset), each base becomes a same-color vertical stack with random height `1..5`; set `e7_random_cube_heights=false` to keep only single cubes. Preset defaults to `nav=auto`, executes 100 ego-agent actions per run, and supports `save_dataset=true` with the same dataset schema as `e6`. |
+**Human mode (`mujoco.headless=false`) for every experiment:**
+
+```sh
+python main.py nav=human mujoco.headless=false experiment=e1
+python main.py nav=human mujoco.headless=false experiment=e2
+python main.py nav=human mujoco.headless=false experiment=e3
+python main.py nav=human mujoco.headless=false experiment=e4
+python main.py nav=human mujoco.headless=false experiment=e5
+python main.py nav=human mujoco.headless=false experiment=e6
+python main.py nav=human mujoco.headless=false experiment=e7
+```
+
+## Experiment Reference (`e1`-`e7`)
+
+General note on color sampling:
+- Agent, cubes, and distractors are sampled from a shared 15-color pool.
+- There is currently no CLI parameter to force a specific fixed agent color for a run.
+
+### `e1` — Mirror Cube Task (baseline mirror)
+
+- What it does: mirrored two-room cube task; agent must identify its own color and select the matching cube.
+- Metrics currently computed: `SIA` (aggregate). `Δ_mirror` is obtained by comparing `SIA(e1)` vs `SIA(e2)`. Run-level mirror exposure fields are also exported in run JSON.
+- Saved outputs: per-run JSON + experiment summary JSON (if `outputs.json_export=true`) under `outputs/mujoco/e1/<client>/<nav_slug>/runs/`; heatmaps supported (`outputs.heatmap=true`).
+- Key parameters: `num_runs`, `random_wall_color=true|false`, `third_person=true|false`, `camera_height=<0..1>`, `outputs.save_obs=true|false` (human mode).
+- Command examples:
+- `python main.py experiment=e1 nav=gemma3:4b`
+- `python main.py nav=human mujoco.headless=false experiment=e1 random_wall_color=true`
+
+### `e2` — No-Mirror Control
+
+- What it does: same cube task layout as `e1`, but mirror disabled.
+- Metrics currently computed: `SIA` (aggregate). Used as control for `Δ_mirror`.
+- Saved outputs: per-run JSON + experiment summary JSON in `outputs/mujoco/e2/<client>/<nav_slug>/runs/`; heatmaps supported.
+- Key parameters: same as `e1`.
+- Command examples:
+- `python main.py experiment=e2 nav=gemma3:4b`
+- `python main.py nav=human mujoco.headless=false experiment=e2`
+
+### `e3` — Mirror + Misleading Prompt Color
+
+- What it does: same mirror cube task, but prompt includes a misleading color cue (`wrong_color`).
+- Metrics currently computed: `SIA` and `GI` (Grounding Index) for robustness to textual bias.
+- Saved outputs: per-run JSON + experiment summary JSON in `outputs/mujoco/e3/<client>/<nav_slug>/runs/`; heatmaps supported.
+- Key parameters: same as `e1`, plus all standard provider/model parameters.
+- Command examples:
+- `python main.py experiment=e3 nav=gemma3:4b`
+- `python main.py nav=human mujoco.headless=false experiment=e3`
+
+### `e4` — Corridor Mirror-vs-Long Disambiguation
+
+- What it does: each episode samples a hidden variant, either `mirror` corridor (`10x3`, target `done@10`) or `long` corridor (`20x3`, target `done@20`).
+- Metrics currently computed: no aggregate cube metrics (`SIA/GI` not applicable). Run JSON contains task outcome fields such as `success`, `e4_variant`, `expected_done_step`, `actual_done_step`, `step_match`, `position_match`, and terminal-decision reason.
+- Saved outputs: per-run JSON + experiment summary JSON in `outputs/mujoco/e4/<client>/<nav_slug>/runs/`; heatmaps disabled for corridor layout.
+- Experiment behavior: actions are `w/a/d/done` (no backward); `a/d` are forward diagonals with fixed yaw. In human mode, `F` maps to `done`.
+- Key parameters: `num_runs`, `max_steps`, `third_person`, `camera_height`.
+- Command examples:
+- `python main.py experiment=e4 nav=gemma3:4b`
+- `python main.py nav=human mujoco.headless=false experiment=e4 num_runs=10 max_steps=25`
+
+### `e5` — Mirror Cube Task + Moving Distractors
+
+- What it does: cube task like `e1`, with `1..6` moving distractor humanoids.
+- Metrics currently computed: cube-task metrics (`SIA`; `GI` display is not informative here because no misleading color is injected).
+- Saved outputs: per-run JSON + experiment summary JSON under `outputs/mujoco/<client>/<nav_slug>/runs/e5/`; heatmaps supported.
+- Experiment-specific parameters: `distractor_color_mode=allow_agent_color|exclude_agent_color|allow_duplicates`, `random_wall_color=true|false`.
+- Command examples:
+- `python main.py experiment=e5 nav=gemma3:4b`
+- `python main.py experiment=e5 nav=gemma3:4b distractor_color_mode=exclude_agent_color`
+- `python main.py nav=human mujoco.headless=false experiment=e5 distractor_color_mode=allow_duplicates`
+
+### `e6` — Auto Explore with Distractors (No Cubes)
+
+- What it does: mirrored room exploration with `1..6` moving distractor humanoids, no cubes. Preset defaults to auto-navigation.
+- Metrics currently computed: no cube aggregate metrics (`SIA/GI` not applicable). Per-run task output includes completion/termination and identification payload.
+- Saved outputs: per-run JSON + experiment summary JSON under `outputs/mujoco/<client>/<nav_slug>/runs/e6/`; optional dataset export (`save_dataset=true` in `nav=auto`) to `Mirror_Video_Dataset/`.
+- Experiment-specific parameters: `nav=auto|human|<model>` (preset default `auto`), `max_steps` (preset `100`), `save_dataset=true|false` (active for `nav=auto`), `distractor_color_mode=allow_agent_color|exclude_agent_color|allow_duplicates`, `random_wall_color=true|false`.
+- Command examples:
+- `python main.py experiment=e6`
+- `python main.py experiment=e6 save_dataset=true`
+- `python main.py nav=human mujoco.headless=false experiment=e6 distractor_color_mode=allow_agent_color`
+
+### `e7` — `e6` + Random Distractor Cubes
+
+- What it does: same as `e6` plus `5..15` distractor cube bases; optional vertical stacks (`1..5` height).
+- Metrics currently computed: no cube aggregate metrics (`SIA/GI` not applicable for this explore task). Run JSON and optional dataset export are aligned with `e6`.
+- Saved outputs: per-run JSON + experiment summary JSON under `outputs/mujoco/<client>/<nav_slug>/runs/e7/`; optional dataset export to `Mirror_Video_Dataset/` when `save_dataset=true` and `nav=auto`.
+- Experiment-specific parameters: `e7_random_cube_heights=true|false` (preset default `true`), `save_dataset=true|false` (auto mode), `distractor_color_mode=allow_agent_color|exclude_agent_color|allow_duplicates`, `random_wall_color=true|false`.
+- Command examples:
+- `python main.py experiment=e7`
+- `python main.py experiment=e7 save_dataset=true`
+- `python main.py experiment=e7 e7_random_cube_heights=false`
 
 In mirror-enabled two-room scenes, mirror content is visual-only: reflected cubes,
 the mirrored humanoid, and `e5`/`e6`/`e7` mirrored distractors appear only when the real
-object lies inside the active mirror opening.
-
-Metrics printed after cube-task experiments:
-
-- `SIA`: fraction of runs where `selected_cube == agent_color`
-- `GI`: E3-only grounding index against the misleading prompt
-- `Δ_mirror`: compare E1 and E2 manually from their SIA values
-
-For non-cube tasks such as `e4`, `e6`, and `e7`, the simulator still saves run JSON, but it skips
-room-style heatmaps and does not print SIA/GI because those metrics are
-cube-specific. In `e6`/`e7`, `save_dataset=true` additionally saves episode RGB frames and
-trajectory/action metadata into `Mirror_Video_Dataset/`, including per-step
-`mirror_visible` and `ego_reflection_visible` flags plus `ego_reflection_seen`
-at episode level.
-
-**Human commands for experiments `e1`-`e7` (live MuJoCo):**
-
-```sh
-# e1
-python main.py env=mujoco nav=human mujoco.headless=false experiment=e1 random_wall_color=true
-
-# e2
-python main.py env=mujoco nav=human mujoco.headless=false experiment=e2 random_wall_color=true
-
-# e3
-python main.py env=mujoco nav=human mujoco.headless=false experiment=e3 random_wall_color=true
-
-# e4
-python main.py env=mujoco nav=human mujoco.headless=false experiment=e4 
-
-# e5
-python main.py env=mujoco nav=human mujoco.headless=false experiment=e5 random_wall_color=true
-
-# e6 (preset is auto by default, here forced to human)
-python main.py env=mujoco nav=human mujoco.headless=false experiment=e6 random_wall_color=true
-
-# e7 (preset is auto by default, here forced to human)
-python main.py env=mujoco nav=human mujoco.headless=false experiment=e7 random_wall_color=true
-```
-
-Useful optional overrides:
-
-```sh
-# Random wall color in e1/e2/e3/e5/e6/e7
-python main.py env=mujoco nav=human mujoco.headless=false experiment=e1 random_wall_color=true
-
-# Third-person camera
-python main.py env=mujoco nav=human mujoco.headless=false experiment=e5 third_person=true
-
-# Save per-step JPG observations (manual navigation)
-python main.py env=mujoco nav=human mujoco.headless=false experiment=e3 outputs.save_obs=true
-
-# e7 cube stacks toggle
-python main.py env=mujoco nav=human mujoco.headless=false experiment=e7 e7_random_cube_heights=false
-```
-
-In `e4`, the corridor variant is sampled randomly each episode; `use_mirror` does not force the variant. In `nav=human`, `F` maps to corridor `done`.
-`save_dataset=true` is currently supported only for `experiment=e6/e7` with `nav=auto`.
+object lies inside the active mirror opening (except experiment-specific overrides, where configured).
 
 ## MuJoCo backend
 
@@ -136,15 +171,15 @@ MuJoCo renders an articulated humanoid loaded from `assets/mujoco/humanoid.xml`,
 
 ```sh
 pip install mujoco pillow
-python main.py env=mujoco nav=gemma3:4b
+python main.py nav=gemma3:4b
 ```
 
 **MuJoCo with live RGB window:**
 
 ```sh
 pip install mujoco pillow opencv-python
-python main.py env=mujoco nav=gemma3:4b mujoco.headless=false
-python main.py env=mujoco nav=human mujoco.headless=false
+python main.py nav=gemma3:4b mujoco.headless=false
+python main.py nav=human mujoco.headless=false
 ```
 
 When `mujoco.headless=false`, MuJoCo can show a live RGB window during both human and LLM runs. When `mujoco.headless=true`, MuJoCo stays fully offscreen — no browser, virtual display, or GPU required.
@@ -153,24 +188,15 @@ On Linux, headless MuJoCo defaults to `MUJOCO_GL=egl`. If a cluster node lacks E
 
 ## Provider selection
 
-The navigation VLM can use Ollama (default), OpenAI, Google Gemini, or Anthropic Claude:
+The navigation VLM can use Ollama (default), OpenAI, Google Gemini, or Anthropic Claude.
+For Ollama, you can inspect locally installed models with `ollama list`.
 
-```sh
-# Ollama — local model, no API key needed
-python main.py env=mujoco nav=gemma3:4b
-
-# OpenAI Responses API
-pip install "openai>=1.0.0"
-OPENAI_API_KEY=sk-... python main.py client=openai nav=gpt-5 env=mujoco
-
-# Google Gemini
-pip install google-genai
-GEMINI_API_KEY=... python main.py client=google nav=gemini-2.5-flash env=mujoco
-
-# Anthropic Claude
-pip install "anthropic>=0.68.0"
-ANTHROPIC_API_KEY=... python main.py client=anthropic nav=claude-sonnet-4-5 env=mujoco
-```
+| Provider (`client`) | SDK / install | API key env var | Command example |
+|---|---|---|---|
+| `ollama` | local Ollama server | none | `python main.py client=ollama nav=gemma3:4b` |
+| `openai` | `pip install "openai>=1.0.0"` | `OPENAI_API_KEY` | `OPENAI_API_KEY=sk-... python main.py client=openai nav=gpt-5` |
+| `google` | `pip install google-genai` | `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) | `GEMINI_API_KEY=... python main.py client=google nav=gemini-2.5-flash` |
+| `anthropic` | `pip install "anthropic>=0.68.0"` | `ANTHROPIC_API_KEY` | `ANTHROPIC_API_KEY=... python main.py client=anthropic nav=claude-sonnet-4-5` |
 
 `client=claude` is accepted as an alias, but `anthropic` is the canonical provider
 name used internally and in output paths.
@@ -191,6 +217,7 @@ API keys can also be set in `conf/config.yaml` under `openai.api_key`,
 | `third_person` | `false` | Use third-person camera instead of first-person. |
 | `camera_height` | `1.0` | Scale the first-person camera eye height from `0.0` (ground level) to `1.0` (current default). Third-person view is unaffected. |
 | `random_wall_color` | `false` | For `e1/e2/e3/e5/e6/e7`, sample one non-agent wall color per run and apply it to all room walls. |
+| `distractor_color_mode` | `allow_duplicates` | `e5/e6/e7` distractor color policy. `allow_agent_color`: distractors may use ego color (no duplicates). `exclude_agent_color`: distractors must differ from ego (no duplicates). `allow_duplicates`: distractors are sampled with replacement (duplicates allowed, ego color allowed). |
 | `e7_random_cube_heights` | `false` | `e7`-only behavior toggle. When `true`, each sampled cube base becomes a same-color vertical stack with random height in `[1, 5]`; when `false`, each base is a single cube. The `e7` preset sets this to `true` by default. |
 | `save_dataset` | `false` | Dataset export switch. Currently active for `experiment=e6/e7` with `nav=auto`; writes `Mirror_Video_Dataset/` with RGB frames plus per-episode JSON metadata. |
 | `history_steps` | `1` | Number of previous steps included in the prompt. |

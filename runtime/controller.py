@@ -127,6 +127,7 @@ class Controller:
         camera_height: float = 1.0,
         use_mirror: bool = True,
         random_wall_color: bool = False,
+        distractor_color_mode: str = "allow_duplicates",
         e7_random_cube_heights: bool = False,
         experiment_id: Optional[str] = None,
         num_runs: int = 10,
@@ -182,6 +183,7 @@ class Controller:
             camera_height=camera_height,
             use_mirror=use_mirror,
             random_wall_color=random_wall_color,
+            distractor_color_mode=distractor_color_mode,
             e7_random_cube_heights=e7_random_cube_heights,
         )
         self.task_spec = self.experiment_spec.resolve_task() if self.experiment_spec else None

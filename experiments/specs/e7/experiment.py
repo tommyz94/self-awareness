@@ -18,6 +18,7 @@ from env.scenes.mujoco_builder import (
 from experiments.specs.builtin_helpers import (
     _AGENT_COLOR_NAMES as _AGENT_COLOR_NAMES,
     build_mirror_room_scene as _build_mirror_room_scene,
+    mirror_window_covering_positions as _mirror_window_covering_positions,
     sample_non_agent_wall_rgba as _sample_non_agent_wall_rgba,
 )
 from experiments.specs.e5.experiment import (
@@ -164,7 +165,7 @@ def _build_cube_xml(*, include_mirror_cubes: bool) -> str:
                     geom_name=_cube_geom_name(index, mirror=True),
                     x=x,
                     z=z,
-                    rgba="0.55 0.55 0.55 0.75",
+                    rgba="0.55 0.55 0.55 1",
                 )
             )
     return "\n    <!-- e7 distractor cubes -->\n    " + "\n    ".join(cube_bodies)
@@ -505,6 +506,11 @@ def _initialize_run(
         spawn_pos=spawn_pos,
         distractor_positions=distractor_positions,
     )
+    mirror_window_z = _mirror_window_covering_positions(
+        scene_template,
+        positions=tuple(cube_positions),
+        base_window_z=mirror_window_z,
+    )
     cube_colors = [_random.choice(_AGENT_COLOR_NAMES) for _ in range(cube_count)]
     use_random_cube_heights = bool(runtime_options.e7_random_cube_heights)
     cube_objects: list[_SceneObjectSpec] = []
@@ -624,12 +630,12 @@ def _apply_cubes_reset(env, run_setup: _RunSetup) -> None:
             mirror_x = 2 * float(mirror_plane_x) - float(x)
             env._set_body_pos(mirror_addr, mirror_x, float(cube_y), float(z))
             if mirror_geom_id is not None:
-                env._set_color([mirror_geom_id], _rgba_for_color(cube.color or "", alpha=0.75))
+                env._set_color([mirror_geom_id], _rgba_for_color(cube.color or "", alpha=1.0))
         else:
             if mirror_addr is not None:
                 env._park_body(mirror_addr)
             if mirror_geom_id is not None:
-                env._set_color([mirror_geom_id], _rgba_for_color("gray", alpha=0.75))
+                env._set_color([mirror_geom_id], _rgba_for_color("gray", alpha=1.0))
 
 
 def _apply_mujoco_reset(env, run_setup: _RunSetup) -> None:

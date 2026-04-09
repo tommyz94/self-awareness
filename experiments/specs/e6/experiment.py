@@ -18,6 +18,7 @@ from experiments.specs.e5.experiment import (
     _randomized_mirror_window_z as _randomized_mirror_window_z,
     _reflect_pos_x as _reflect_pos_x,
     _resolve_mirror_plane_x as _resolve_mirror_plane_x,
+    _sample_distractor_colors as _sample_distractor_colors,
     _sample_distractor_start_positions as _sample_distractor_start_positions,
     _sample_cardinal_yaw as _sample_cardinal_yaw,
     _validate_distractor_slots as _validate_distractor_slots,
@@ -80,11 +81,11 @@ def _initialize_run(
         use_reflected_room=use_reflected_room,
         mirror_window_z=mirror_window_z,
     )
-    distractor_colors = [_random.choice(_AGENT_COLOR_NAMES) for _ in selected_placeholders]
-    if len(distractor_colors) > 1 and len(set(distractor_colors)) == 1:
-        pivot = _random.randrange(len(distractor_colors))
-        alternatives = [color for color in _AGENT_COLOR_NAMES if color != distractor_colors[pivot]]
-        distractor_colors[pivot] = _random.choice(alternatives)
+    distractor_colors = _sample_distractor_colors(
+        count=len(selected_placeholders),
+        agent_color=agent_color,
+        color_mode=runtime_options.distractor_color_mode,
+    )
     distractor_objects = [
         _SceneObjectSpec(
             object_id=obj.object_id,

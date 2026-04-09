@@ -35,6 +35,8 @@ def _build_run_setup(
         randomize_wall=True,
         randomize_wall_color=runtime_options.random_wall_color,
         mirror_window_center_jitter=2.5,
+        mirror_window_cover_cubes=False,
+        mirror_cubes_ignore_aperture=True,
         randomize_spawn_yaw=True,
     )
 

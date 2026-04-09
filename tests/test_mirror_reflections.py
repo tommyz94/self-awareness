@@ -127,6 +127,72 @@ def test_mujoco_reset_parks_mirrored_cubes_outside_aperture():
     assert (13, 1000.0, 0.0, 0.0) in parked_positions
 
 
+def test_mujoco_reset_keeps_mirrored_cube_when_aperture_is_ignored():
+    from env.backends.mujoco import MuJoCoEnv
+    from experiments.specs.types import RunSetup, SceneObjectSpec, SceneSpec
+
+    parked_positions: list[tuple[int, float, float, float]] = []
+    body_positions: list[tuple[int, float, float, float]] = []
+
+    fake_env = SimpleNamespace(
+        _x=0.0,
+        _z=0.0,
+        _yaw=0.0,
+        _spawn_y=-1.0,
+        _layout_kind="two_room",
+        _mirror_present=True,
+        _secondary_present=False,
+        _mirror_plane_x=-0.1,
+        _mirror_aperture_mode="window",
+        _mirror_window_z=(-1.0, 1.0),
+        _cube_jnt_addrs={"red": 1, "green": 2, "blue": 3},
+        _mirror_cube_jnt_addrs={"red": 11, "green": 12, "blue": 13},
+        _robot_geom_ids=[],
+        _mirror_geom_ids=[],
+        _cube_geom_ids={},
+        _is_in_mirror_aperture=lambda z: -1.0 <= z <= 1.0,
+        _object_pos_2d={},
+        _set_color=lambda *args, **kwargs: None,
+        _apply_arm_rest_pose=lambda: None,
+        _sync_robot=lambda: None,
+        _sync_mirror=lambda: None,
+        _reset_applier=None,
+        _mj=SimpleNamespace(mj_forward=lambda *args, **kwargs: None),
+        _model=object(),
+        _data=object(),
+    )
+
+    def _set_body_pos(addr: int, x: float, y: float, z: float) -> None:
+        body_positions.append((addr, x, y, z))
+
+    def _park_body(addr: int) -> None:
+        parked_positions.append((addr, 1000.0, 0.0, 0.0))
+
+    fake_env._set_body_pos = _set_body_pos
+    fake_env._park_body = _park_body
+    run_setup = RunSetup(
+        agent_color_name="red",
+        scene_spec=SceneSpec(
+            scene_id="mirror_room",
+            mirror_enabled=True,
+            objects=[
+                SceneObjectSpec(
+                    object_id="cube_red",
+                    kind="cube",
+                    position=(-10.0, 2.5),
+                    color="red",
+                    metadata={"reflect_in_mirror": True, "reflect_ignore_aperture": True},
+                ),
+            ],
+        ),
+    )
+
+    MuJoCoEnv.reset(fake_env, run_setup)
+
+    assert (11, 9.8, -0.75, 2.5) in body_positions
+    assert (11, 1000.0, 0.0, 0.0) not in parked_positions
+
+
 def test_segmentation_helper_detects_visible_mirror_ego_pixels():
     np = pytest.importorskip("numpy")
     from env.backends.mujoco import _segmentation_has_geom_pixels
@@ -139,3 +205,62 @@ def test_segmentation_helper_detects_visible_mirror_ego_pixels():
     assert _segmentation_has_geom_pixels(seg, {42}, geom_obj_type=5, min_pixels=1) is True
     assert _segmentation_has_geom_pixels(seg, {42}, geom_obj_type=5, min_pixels=5) is False
     assert _segmentation_has_geom_pixels(seg, {99}, geom_obj_type=5, min_pixels=1) is False
+
+
+@pytest.mark.parametrize("experiment_id", ["e1", "e2", "e3", "e5"])
+def test_cube_experiments_always_include_a_cube_with_agent_color(experiment_id: str):
+    from experiments.specs import get_experiment
+    from experiments.specs.types import ExperimentRuntimeOptions
+
+    spec = get_experiment(experiment_id)
+    run_setup = spec.initialize_run(1, ExperimentRuntimeOptions())
+    cubes = [obj for obj in run_setup.scene_spec.objects if obj.kind == "cube" and obj.color is not None]
+
+    assert cubes
+    assert run_setup.agent_color_name in {str(obj.color) for obj in cubes}
+
+
+@pytest.mark.parametrize("experiment_id", ["e3", "e5", "e7"])
+def test_mirrored_cube_experiments_expand_mirror_window_to_cover_cube_positions(experiment_id: str):
+    from experiments.specs import get_experiment
+    from experiments.specs.types import ExperimentRuntimeOptions
+
+    spec = get_experiment(experiment_id)
+    run_setup = spec.initialize_run(1, ExperimentRuntimeOptions())
+    scene_spec = run_setup.scene_spec
+    cubes = [obj for obj in scene_spec.objects if obj.kind == "cube"]
+
+    assert scene_spec.mirror_enabled is True
+    assert scene_spec.mirror_aperture_mode == "window"
+    assert scene_spec.mirror_window_z is not None
+    assert cubes
+
+    z_min, z_max = scene_spec.mirror_window_z
+    assert all(z_min <= float(obj.position[1]) <= z_max for obj in cubes)
+
+
+def test_e1_keeps_compact_mirror_window_width():
+    from experiments.specs import get_experiment
+    from experiments.specs.types import ExperimentRuntimeOptions
+
+    spec = get_experiment("e1")
+    run_setup = spec.initialize_run(1, ExperimentRuntimeOptions())
+    scene_spec = run_setup.scene_spec
+
+    assert scene_spec.mirror_enabled is True
+    assert scene_spec.mirror_window_z is not None
+    z_min, z_max = scene_spec.mirror_window_z
+    assert (z_max - z_min) == pytest.approx(2.0)
+
+
+def test_e1_cubes_ignore_aperture_for_mirror_reflection():
+    from experiments.specs import get_experiment
+    from experiments.specs.types import ExperimentRuntimeOptions
+
+    spec = get_experiment("e1")
+    run_setup = spec.initialize_run(1, ExperimentRuntimeOptions())
+    cubes = [obj for obj in run_setup.scene_spec.objects if obj.kind == "cube"]
+
+    assert cubes
+    assert all(obj.metadata.get("reflect_in_mirror") is True for obj in cubes)
+    assert all(obj.metadata.get("reflect_ignore_aperture") is True for obj in cubes)

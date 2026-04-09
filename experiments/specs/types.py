@@ -161,6 +161,7 @@ class ExperimentRuntimeOptions:
     camera_height: float = 1.0
     use_mirror: bool = True
     random_wall_color: bool = False
+    distractor_color_mode: str = "allow_duplicates"
     e7_random_cube_heights: bool = False
 
 

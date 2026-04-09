@@ -5,6 +5,7 @@
       type="box"
       size=".25 .25 .25"
       rgba="{rgba}"
+      material="agent_flat_mat"
       contype="0"
       conaffinity="0"/>
 </body>

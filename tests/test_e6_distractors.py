@@ -92,6 +92,37 @@ def test_e6_run_setup_uses_pool_colors_for_agent_and_distractors_only():
     assert run_setup.agent_color_name in COLOR_POOL
 
 
+def test_e6_distractor_color_mode_excludes_agent_color_when_requested():
+    from experiments.specs import get_experiment
+    from experiments.specs.types import ExperimentRuntimeOptions
+
+    spec = get_experiment("e6")
+    run_setup = spec.initialize_run(
+        1,
+        ExperimentRuntimeOptions(distractor_color_mode="exclude_agent_color"),
+    )
+    distractor_colors = [obj.color for obj in run_setup.scene_spec.objects if obj.kind == "distractor_robot"]
+
+    assert distractor_colors
+    assert run_setup.agent_color_name not in set(distractor_colors)
+    assert len(set(distractor_colors)) == len(distractor_colors)
+
+
+def test_e6_distractor_color_mode_allow_agent_color_keeps_unique_distractor_colors():
+    from experiments.specs import get_experiment
+    from experiments.specs.types import ExperimentRuntimeOptions
+
+    spec = get_experiment("e6")
+    run_setup = spec.initialize_run(
+        1,
+        ExperimentRuntimeOptions(distractor_color_mode="allow_agent_color"),
+    )
+    distractor_colors = [obj.color for obj in run_setup.scene_spec.objects if obj.kind == "distractor_robot"]
+
+    assert distractor_colors
+    assert len(set(distractor_colors)) == len(distractor_colors)
+
+
 def test_e6_supports_runtime_random_wall_color():
     from experiments.specs import get_experiment
     from experiments.specs.types import ExperimentRuntimeOptions

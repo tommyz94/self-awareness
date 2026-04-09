@@ -20,6 +20,7 @@ from experiments.specs.builtin_helpers import (
     _AGENT_COLOR_NAMES as _AGENT_COLOR_NAMES,
     build_cube_objects as _build_cube_objects,
     build_mirror_room_scene as _build_mirror_room_scene,
+    mirror_window_covering_positions as _mirror_window_covering_positions,
     sample_non_agent_wall_rgba as _sample_non_agent_wall_rgba,
 )
 from utils.colors import rgba_for_color as _rgba_for_color
@@ -37,7 +38,7 @@ _ASSETS_DIR = _Path(__file__).resolve().parents[3] / "assets" / "mujoco"
 _CUBE_XML_PATH = _ASSETS_DIR / "cube.xml"
 _MUJOCO_SPAWN_Y = -1.0
 _CUBE_XML_RGBA = {"red": "1 0 0 1", "green": "0 0.8 0 1", "blue": "0 0.3 1 1"}
-_MIRROR_CUBE_XML_RGBA = {"red": "1 0 0 0.75", "green": "0 0.8 0 0.75", "blue": "0 0.3 1 0.75"}
+_MIRROR_CUBE_XML_RGBA = {"red": "1 0 0 1", "green": "0 0.8 0 1", "blue": "0 0.3 1 1"}
 _INITIAL_CUBE_POSITIONS = {
     "red": (-13.0, -6.0),
     "green": (-13.0, 6.0),
@@ -61,6 +62,14 @@ _DISTRACTOR_TURN_SWITCH_RESAMPLE = 4
 _DISTRACTOR_START_MIN_SEPARATION = 1.1
 _MIN_DISTRACTORS_PER_RUN = 1
 _MAX_DISTRACTORS_PER_RUN = 6
+_DISTRACTOR_COLOR_MODE_ALLOW_AGENT = "allow_agent_color"
+_DISTRACTOR_COLOR_MODE_EXCLUDE_AGENT = "exclude_agent_color"
+_DISTRACTOR_COLOR_MODE_ALLOW_DUPLICATES = "allow_duplicates"
+_DISTRACTOR_COLOR_MODES = {
+    _DISTRACTOR_COLOR_MODE_ALLOW_AGENT,
+    _DISTRACTOR_COLOR_MODE_EXCLUDE_AGENT,
+    _DISTRACTOR_COLOR_MODE_ALLOW_DUPLICATES,
+}
 
 
 def _resolve_mirror_plane_x(scene_spec: _SceneSpec) -> float:
@@ -76,6 +85,40 @@ def _reflect_pos_x(position: tuple[float, float], mirror_plane_x: float) -> tupl
 
 def _sample_cardinal_yaw() -> float:
     return _random.choice((0.0, _math.pi / 2, _math.pi, 3 * _math.pi / 2))
+
+
+def _sample_distractor_colors(
+    *,
+    count: int,
+    agent_color: str,
+    color_mode: str,
+) -> list[str]:
+    mode = str(color_mode).strip().lower()
+    if mode not in _DISTRACTOR_COLOR_MODES:
+        raise ValueError(
+            "Unsupported distractor_color_mode="
+            f"{color_mode!r}. Valid values: {sorted(_DISTRACTOR_COLOR_MODES)}"
+        )
+    if count <= 0:
+        return []
+    if mode == _DISTRACTOR_COLOR_MODE_ALLOW_DUPLICATES:
+        return [_random.choice(_AGENT_COLOR_NAMES) for _ in range(count)]
+
+    if mode == _DISTRACTOR_COLOR_MODE_EXCLUDE_AGENT:
+        pool = [color for color in _AGENT_COLOR_NAMES if color != agent_color]
+    else:
+        pool = list(_AGENT_COLOR_NAMES)
+
+    if not pool:
+        return []
+    if count <= len(pool):
+        return _random.sample(pool, count)
+
+    # Fallback for robustness: keep unique colors first, then allow repeats.
+    colors = list(pool)
+    while len(colors) < count:
+        colors.append(_random.choice(pool))
+    return colors
 
 
 def _randomized_mirror_window_z(
@@ -356,6 +399,11 @@ def _initialize_run(
         scene_template,
         center_jitter=0.6,
     )
+    mirror_window_z = _mirror_window_covering_positions(
+        scene_template,
+        positions=tuple(cube_positions.values()),
+        base_window_z=mirror_window_z,
+    )
     distractor_placeholders = [
         obj
         for obj in scene_template.objects
@@ -370,11 +418,11 @@ def _initialize_run(
         use_reflected_room=use_reflected_room,
         mirror_window_z=mirror_window_z,
     )
-    distractor_colors = [_random.choice(_AGENT_COLOR_NAMES) for _ in selected_placeholders]
-    if len(distractor_colors) > 1 and len(set(distractor_colors)) == 1:
-        pivot = _random.randrange(len(distractor_colors))
-        alternatives = [color for color in _AGENT_COLOR_NAMES if color != distractor_colors[pivot]]
-        distractor_colors[pivot] = _random.choice(alternatives)
+    distractor_colors = _sample_distractor_colors(
+        count=len(selected_placeholders),
+        agent_color=agent_color,
+        color_mode=runtime_options.distractor_color_mode,
+    )
     distractor_objects = [
         _SceneObjectSpec(
             object_id=obj.object_id,
