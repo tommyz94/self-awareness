@@ -1,5 +1,5 @@
 """
-Room exploration task spec (e6).
+Room exploration task spec (e6 - e7).
 
 The explore task asks the agent to navigate and observe a mirrored room with
 moving distractor agents. It does not include cube selection.

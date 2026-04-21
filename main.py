@@ -6,6 +6,26 @@ from runtime.controller import Controller
 
 @hydra.main(version_base=None, config_path="conf", config_name="config")
 def main(cfg: DictConfig) -> None:
+    if cfg.get("seed") is not None:
+        import random
+        random.seed(cfg.seed)
+        try:
+            import numpy as np
+            np.random.seed(cfg.seed)
+        except ImportError:
+            pass
+
+    if cfg.get("msr_level") is not None:
+        import os
+        os.environ["MSR_LEVEL"] = str(cfg.msr_level)
+
+    if cfg.get("guided_prompt"):
+        import os
+        os.environ["GUIDED_PROMPT"] = "1"
+    else:
+        import os
+        os.environ.pop("GUIDED_PROMPT", None)
+
     controller = Controller(
         nav_mode=cfg.nav,
         client_type=cfg.client,

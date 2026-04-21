@@ -33,7 +33,7 @@ _DEFAULT_SINGLE_RUN_COLOR = "red"
 _VALID_CUBE_SELECTIONS = set(_COLOR_POOL)
 _VALID_CLIENT_TYPES = {"ollama", "openai", "google", "anthropic", "claude"}
 _CANONICAL_CLIENT_TYPES = {"ollama", "openai", "google", "anthropic"}
-_EXPERIMENT_SCOPED_OUTPUT_ROOTS = {"e1", "e2", "e3", "e4"}
+_EXPERIMENT_SCOPED_OUTPUT_ROOTS = {"e1", "e2", "e3", "e4", "e5", "e6", "e7"}
 _AUTO_NAV_NAME = "auto"
 _E6_AUTOPILOT_SLEEP_SEC = 0.5
 _E6_AUTOPILOT_TARGET_REACHED_EPS = 1.0
@@ -161,7 +161,7 @@ class Controller:
         self.env_type = env_type
         self.mujoco_headless = bool(mujoco_headless)
         self.client_type = canonical_client_type
-        self.ollama_host = os.getenv("OLLAMA_HOST", ollama_host)
+        self.ollama_host = ollama_host
         if self.client_type == "openai":
             self.api_key = openai_api_key
         elif self.client_type == "google":
@@ -229,18 +229,23 @@ class Controller:
         )
 
         llm_slug = re.sub(r'[:/\\]', '_', nav_mode)   # e.g. "gemma3_4b", "human"
+        session_id = time.strftime("%Y%m%d_%H%M%S")
+        
+        import os
+        msr_level_str = os.getenv("MSR_LEVEL", "2")
+        msr_tag = f"level_{msr_level_str}"
+
         if experiment_id in _EXPERIMENT_SCOPED_OUTPUT_ROOTS:
             self.output_dir = str(
-                Path(output_dir) / env_type / experiment_id / self.client_type / llm_slug
+                Path(output_dir) / env_type / experiment_id / self.client_type / llm_slug / msr_tag / session_id
             )
         else:
-            self.output_dir = str(Path(output_dir) / env_type / self.client_type / llm_slug)
-        self.obs_dir    = Path(self.output_dir) / "obs"
-        self.runs_dir   = Path(self.output_dir) / "runs"
-        if experiment_id and experiment_id not in _EXPERIMENT_SCOPED_OUTPUT_ROOTS:
-            self.runs_dir = self.runs_dir / experiment_id
-        self.obs_dir.mkdir(parents=True, exist_ok=True)
-        self.runs_dir.mkdir(parents=True, exist_ok=True)
+            self.output_dir = str(Path(output_dir) / env_type / self.client_type / llm_slug / msr_tag / session_id)
+
+        Path(self.output_dir).mkdir(parents=True, exist_ok=True)
+
+        self.current_run_dir: Optional[Path] = None
+        self.current_obs_dir: Optional[Path] = None
         if self._dataset_enabled:
             self._initialize_dataset_layout()
         elif self.save_dataset:
@@ -272,9 +277,7 @@ class Controller:
             self.current_object_positions_2d: dict = {}
             self._reset_state()
 
-            self.logger = Logger(output_file=str(self.runs_dir / self.log_file))
-            if not self.is_human_nav:
-                self.logger.reset()
+            self.logger: Optional[Logger] = None
         except Exception:
             self._close_resources()
             raise
@@ -466,10 +469,10 @@ class Controller:
         }
 
     def _save_human_observation(self) -> None:
-        if not self.save_obs:
+        if not self.save_obs or self.current_obs_dir is None:
             return
         self._obs_counter += 1
-        obs_path = self.obs_dir / f"{self._obs_counter:06d}.jpg"
+        obs_path = self.current_obs_dir / f"{self._obs_counter:06d}.jpg"
         self.sim_env.capture_image(str(obs_path))
 
     def _is_e4_corridor_run(self) -> bool:
@@ -712,7 +715,6 @@ class Controller:
         self.current_run_setup = run_setup
         self._reset_state()
         self.current_object_positions_2d = self.sim_env.object_positions_2d
-        self.logger.reset()
 
     def _record_step(
         self,
@@ -786,6 +788,17 @@ class Controller:
                         "differs from the experiment scene_template. Static geometry per "
                         "experiment is required in v1."
                     )
+
+        # Initialize run-specific output directory
+        self.current_run_dir = Path(self.output_dir) / f"run_{run_id:02d}"
+        self.current_obs_dir = self.current_run_dir / "obs"
+        self.current_run_dir.mkdir(parents=True, exist_ok=True)
+        self.current_obs_dir.mkdir(parents=True, exist_ok=True)
+
+        # Re-initialize logger for this run
+        self.logger = Logger(output_file=str(self.current_run_dir / self.log_file))
+        self.logger.reset()
+
         self._apply_run_setup(run_setup)
         print(
             f"\n--- Run {run_id}/{self.num_runs} | agent={run_setup.agent_color_name}"
@@ -864,7 +877,7 @@ class Controller:
                 if outcomes and self.experiment_spec is not None:
                     print_metrics(outcomes, self.experiment_id)
                     if self.json_export:
-                        save_experiment_json(outcomes, self.experiment_id, str(self.runs_dir))
+                        save_experiment_json(outcomes, self.experiment_id, self.output_dir)
                 return
 
             if self.experiment_spec is not None:
@@ -902,7 +915,7 @@ class Controller:
         if outcomes and self.experiment_spec is not None:
             print_metrics(outcomes, self.experiment_id)
             if self.json_export:
-                save_experiment_json(outcomes, self.experiment_id, str(self.runs_dir))
+                save_experiment_json(outcomes, self.experiment_id, self.output_dir)
 
     def _run_single_human_e4_episode(self, run_id: int) -> RunOutcome:
         self._human_active_run_id = run_id
@@ -1193,7 +1206,7 @@ class Controller:
 
         print_metrics(outcomes, self.experiment_id)
         if self.json_export:
-            save_experiment_json(outcomes, self.experiment_id, str(self.runs_dir))
+            save_experiment_json(outcomes, self.experiment_id, self.output_dir)
         return outcomes
 
     # ------------------------------------------------------------------
@@ -1201,183 +1214,200 @@ class Controller:
     # ------------------------------------------------------------------
 
     def _run_llm_nav(self):
-        print(f"Running LLM navigation with model: {self.llm_model} (client={self.client_type})")
-        completed = False
-        selected_cube = None
-        self._initialize_single_run()
+        print(f"Running LLM navigation with model: {self.llm_model} (client={self.client_type}) | runs={self.num_runs}")
 
-        if self.client_type == "ollama":
-            try:
-                available_models = list_models(self.ollama_host)
-                if self.llm_model not in available_models:
-                    preview = ", ".join(available_models[:8]) if available_models else "none"
-                    print(
-                        "Navigation stopped: model not found in local Ollama.\n"
-                        f"Requested: {self.llm_model}\n"
-                        f"Available (first 8): {preview}\n"
-                        f"Ollama host: {self.ollama_host}"
-                    )
+        for run_id in range(1, self.num_runs + 1):
+            run_setup = (
+                self.experiment_spec.initialize_run(run_id, self.experiment_runtime_options)
+                if self.experiment_spec is not None
+                else RunSetup(
+                    agent_color_name=_DEFAULT_SINGLE_RUN_COLOR,
+                    scene_spec=SceneSpec(
+                        scene_id="mirror_room",
+                        mirror_enabled=True,
+                        objects=build_cube_objects(self._default_single_run_cubes()),
+                    ),
+                    cube_positions=self._default_single_run_cubes(),
+                )
+            )
+            self._reset_run(run_id, run_setup)
+
+            completed = False
+            selected_cube = None
+
+            if self.client_type == "ollama" and run_id == 1:
+                try:
+                    available_models = list_models(self.ollama_host)
+                    if self.llm_model not in available_models:
+                        preview = ", ".join(available_models[:8]) if available_models else "none"
+                        print(
+                            "Navigation stopped: model not found in local Ollama.\n"
+                            f"Requested: {self.llm_model}\n"
+                            f"Available (first 8): {preview}\n"
+                            f"Ollama host: {self.ollama_host}"
+                        )
+                        return
+                except Exception as exc:
+                    print(f"Warning: could not query Ollama models before start: {exc}")
+
+            while True:
+                self.sim_env.tick(30)
+                if self.sim_env.update_frame() is False:
+                    print("Window closed. Stopping navigation.")
                     return
-            except Exception as exc:
-                print(f"Warning: could not query Ollama models before start: {exc}")
 
-        while True:
-            self.sim_env.tick(30)
-            if self.sim_env.update_frame() is False:
-                print("Window closed. Stopping navigation.")
-                break
+                step = self.iteration + 1
+                observation_metadata = self.sim_env.get_observation_metadata()
+                print(f"[Step {step}] Capturing RGB observation...")
+                capture_t0 = time.perf_counter()
+                img_path = self.current_obs_dir / f"{step:06d}.jpg"
+                try:
+                    img_path = Path(self.sim_env.capture_image(str(img_path)))
+                except Exception as exc:
+                    print(f"Navigation stopped: capture failed at step {step}: {exc}")
+                    break
+                print(f"[Step {step}] Capture in {time.perf_counter() - capture_t0:.2f}s")
 
-            step = self.iteration + 1
-            observation_metadata = self.sim_env.get_observation_metadata()
-            print(f"[Step {step}] Capturing RGB observation...")
-            capture_t0 = time.perf_counter()
-            img_path = self.obs_dir / f"{step:06d}.jpg"
-            try:
-                img_path = Path(self.sim_env.capture_image(str(img_path)))
-            except Exception as exc:
-                print(f"Navigation stopped: capture failed at step {step}: {exc}")
-                break
-            print(f"[Step {step}] Capture in {time.perf_counter() - capture_t0:.2f}s")
+                if self.print_reasoning:
+                    print(f"[Step {step}] Thinking:")
+                print(f"[Step {step}] Querying model...")
+                query_t0 = time.perf_counter()
+                try:
+                    view_description, reasoning, move, summary, selected_cube_reply, thinking, identification, task_payload = get_next_move(
+                        self.base_instruction,
+                        model=self.llm_model,
+                        image_path=str(img_path),
+                        history=self.step_history,
+                        previous_pos=self.previous_pos,
+                        current_pos=self.current_pos,
+                        bumped_wall=self.bumped_wall,
+                        stream_thinking=self.print_reasoning,
+                        wrong_color=self.wrong_color,
+                        host=self.ollama_host,
+                        third_person=self.third_person,
+                        current_dir=self.current_dir,
+                        client_type=self.client_type,
+                        api_key=self.api_key,
+                    )
+                except Exception as exc:
+                    print(f"Navigation stopped: model call failed at step {step}: {exc}")
+                    break
 
-            if self.print_reasoning:
-                print(f"[Step {step}] Thinking:")
-            print(f"[Step {step}] Querying model...")
-            query_t0 = time.perf_counter()
-            try:
-                view_description, reasoning, move, summary, selected_cube_reply, thinking, identification, task_payload = get_next_move(
-                    self.base_instruction,
-                    model=self.llm_model,
-                    image_path=str(img_path),
-                    history=self.step_history,
-                    previous_pos=self.previous_pos,
-                    current_pos=self.current_pos,
-                    bumped_wall=self.bumped_wall,
-                    stream_thinking=self.print_reasoning,
-                    wrong_color=self.wrong_color,
-                    host=self.ollama_host,
-                    third_person=self.third_person,
-                    current_dir=self.current_dir,
-                    client_type=self.client_type,
-                    api_key=self.api_key,
+                move = move.lower().strip()
+                print(f"[Step {step}] action={move} ({time.perf_counter() - query_t0:.2f}s)")
+
+                self.iteration += 1
+                self.step_history.append({
+                    "action": move,
+                    "summary": summary,
+                    "reasoning": reasoning,
+                    "view_description": view_description,
+                    "facing_before": self.current_dir,
+                })
+                self.step_history = self.step_history[-self.history_steps:]
+                self.logger.log(role="Assistant", iteration=self.iteration,
+                                reasoning=reasoning, action=move, summary=summary)
+
+                id_str = (
+                    f"<br><b>Selected Cube:</b> {selected_cube_reply}"
+                    f"<br><b>Identification:</b> color={identification['my_color']} "
+                    f"source={identification['source']} confidence={identification['confidence']}"
+                    if move == "done" else ""
                 )
-            except Exception as exc:
-                print(f"Navigation stopped: model call failed at step {step}: {exc}")
-                break
-
-            move = move.lower().strip()
-            print(f"[Step {step}] action={move} ({time.perf_counter() - query_t0:.2f}s)")
-
-            self.iteration += 1
-            self.step_history.append({
-                "action": move,
-                "summary": summary,
-                "reasoning": reasoning,
-                "view_description": view_description,
-                "facing_before": self.current_dir,
-            })
-            self.step_history = self.step_history[-self.history_steps:]
-            self.logger.log(role="Assistant", iteration=self.iteration,
-                            reasoning=reasoning, action=move, summary=summary)
-
-            id_str = (
-                f"<br><b>Selected Cube:</b> {selected_cube_reply}"
-                f"<br><b>Identification:</b> color={identification['my_color']} "
-                f"source={identification['source']} confidence={identification['confidence']}"
-                if move == "done" else ""
-            )
-            self.sim_env.set_caption(
-                "<div style='max-width:800px; word-wrap:break-word;'>"
-                f"<b>View Description:</b> {view_description}<br>"
-                f"<b>Reasoning:</b> {reasoning}<br>"
-                f"<b>Summary:</b> {summary}<br>"
-                f"<b>Action:</b> {move}"
-                + id_str
-                + "</div>"
-            )
-
-            previous_pos = self.current_pos
-            if move in ("w", "s", "a", "d"):
-                x, z, direction, bumped = self.sim_env.step(move)
-                self.bumped_wall = bumped
-                self.previous_pos = previous_pos
-                self.current_pos = (x, z)
-                self.current_dir = direction
-                self.trajectory.append(self.current_pos)
-                self._record_step(
-                    move=move,
-                    view_description=view_description,
-                    reasoning=reasoning,
-                    summary=summary,
-                    identification=identification,
-                    goal_status=task_payload.get("goal_status") if task_payload else None,
-                    inner_reasoning=thinking,
-                    view_position=observation_metadata.view_position,
-                    view_direction=observation_metadata.view_direction,
-                    mirror_visible=observation_metadata.mirror_visible,
-                    ego_reflection_visible=observation_metadata.ego_reflection_visible,
+                self.sim_env.set_caption(
+                    "<div style='max-width:800px; word-wrap:break-word;'>"
+                    f"<b>Run:</b> {run_id}/{self.num_runs}<br>"
+                    f"<b>View Description:</b> {view_description}<br>"
+                    f"<b>Reasoning:</b> {reasoning}<br>"
+                    f"<b>Summary:</b> {summary}<br>"
+                    f"<b>Action:</b> {move}"
+                    + id_str
+                    + "</div>"
                 )
-            elif move == "done":
-                print("Model requested stop with action 'done'.")
-                completed = True
-                selected_cube = (
-                    selected_cube_reply
-                    if selected_cube_reply and selected_cube_reply != "none"
-                    else None
+
+                previous_pos = self.current_pos
+                if move in ("w", "s", "a", "d"):
+                    x, z, direction, bumped = self.sim_env.step(move)
+                    self.bumped_wall = bumped
+                    self.previous_pos = previous_pos
+                    self.current_pos = (x, z)
+                    self.current_dir = direction
+                    self.trajectory.append(self.current_pos)
+                    self._record_step(
+                        move=move,
+                        view_description=view_description,
+                        reasoning=reasoning,
+                        summary=summary,
+                        identification=identification,
+                        goal_status=task_payload.get("goal_status") if task_payload else None,
+                        inner_reasoning=thinking,
+                        view_position=observation_metadata.view_position,
+                        view_direction=observation_metadata.view_direction,
+                        mirror_visible=observation_metadata.mirror_visible,
+                        ego_reflection_visible=observation_metadata.ego_reflection_visible,
+                    )
+                elif move == "done":
+                    print("Model requested stop with action 'done'.")
+                    completed = True
+                    selected_cube = (
+                        selected_cube_reply
+                        if selected_cube_reply and selected_cube_reply != "none"
+                        else None
+                    )
+                    self._record_step(
+                        move=move,
+                        view_description=view_description,
+                        reasoning=reasoning,
+                        summary=summary,
+                        identification=identification,
+                        goal_status=task_payload.get("goal_status") if task_payload else None,
+                        selected_cube=selected_cube,
+                        bumped_wall=False,
+                        inner_reasoning=thinking,
+                        view_position=observation_metadata.view_position,
+                        view_direction=observation_metadata.view_direction,
+                        mirror_visible=observation_metadata.mirror_visible,
+                        ego_reflection_visible=observation_metadata.ego_reflection_visible,
+                    )
+                    break
+                else:
+                    print(f"Unsupported action '{move}'. Stopping loop.")
+                    break
+
+                if self.sim_env.update_frame() is False:
+                    print("Window closed. Stopping navigation.")
+                    return
+
+                if self.iteration >= self.max_steps:
+                    print("Max iterations reached. Stopping loop.")
+                    break
+
+            if self.heatmap:
+                _save_heatmap_if_supported(
+                    run_id=run_id,
+                    trajectory=self.trajectory,
+                    agent_color=self.agent_color_name or "red",
+                    object_positions_2d=self.current_object_positions_2d,
+                    output_dir=str(self.current_run_dir),
+                    run_setup=self.current_run_setup,
+                    task_spec=None,
                 )
-                self._record_step(
-                    move=move,
-                    view_description=view_description,
-                    reasoning=reasoning,
-                    summary=summary,
-                    identification=identification,
-                    goal_status=task_payload.get("goal_status") if task_payload else None,
-                    selected_cube=selected_cube,
-                    bumped_wall=False,
-                    inner_reasoning=thinking,
-                    view_position=observation_metadata.view_position,
-                    view_direction=observation_metadata.view_direction,
-                    mirror_visible=observation_metadata.mirror_visible,
-                    ego_reflection_visible=observation_metadata.ego_reflection_visible,
+            if self.json_export:
+                _outcome = RunOutcome(
+                    run_id=run_id, agent_color=self.agent_color_name or "red",
+                    wrong_color=None, selected_cube=selected_cube,
+                    completed=completed, steps=self.iteration,
+                    trajectory=self.trajectory.copy(),
+                    cube_positions_2d=self.current_object_positions_2d.copy(),
                 )
-                break
-            else:
-                print(f"Unsupported action '{move}'. Stopping loop.")
-                break
-
-            if self.sim_env.update_frame() is False:
-                print("Window closed. Stopping navigation.")
-                break
-
-            if self.iteration >= self.max_steps:
-                print("Max iterations reached. Stopping loop.")
-                break
-
-        if self.heatmap:
-            _save_heatmap_if_supported(
-                run_id=1,
-                trajectory=self.trajectory,
-                agent_color=self.agent_color_name or "red",
-                object_positions_2d=self.current_object_positions_2d,
-                output_dir=str(self.runs_dir),
-                run_setup=self.current_run_setup,
-                task_spec=None,
-            )
-        if self.json_export:
-            _outcome = RunOutcome(
-                run_id=1, agent_color=self.agent_color_name or "red",
-                wrong_color=None, selected_cube=selected_cube,
-                completed=completed, steps=self.iteration,
-                trajectory=self.trajectory.copy(),
-                cube_positions_2d=self.current_object_positions_2d.copy(),
-            )
-            save_run_json(
-                1,
-                _outcome,
-                self.step_records,
-                str(self.runs_dir),
-                task_output=_outcome.task_result,
-                run_setup=self.current_run_setup,
-            )
+                save_run_json(
+                    run_id,
+                    _outcome,
+                    self.step_records,
+                    str(self.current_run_dir),
+                    task_output=_outcome.task_result,
+                    run_setup=self.current_run_setup,
+                )
 
     # ------------------------------------------------------------------
     # Experiment: single episode
@@ -1391,7 +1421,7 @@ class Controller:
                 run_id,
                 outcome,
                 self.step_records,
-                str(self.runs_dir),
+                str(self.current_run_dir),
                 task_output=outcome.task_result,
                 run_setup=self.current_run_setup,
             )
@@ -1401,7 +1431,7 @@ class Controller:
                 trajectory=self.trajectory,
                 agent_color=self.agent_color_name,
                 object_positions_2d=self.current_object_positions_2d,
-                output_dir=str(self.runs_dir),
+                output_dir=str(self.current_run_dir),
                 run_setup=self.current_run_setup,
                 task_spec=self.task_spec,
             )
@@ -1415,7 +1445,7 @@ class Controller:
 
             step = self.iteration + 1
             observation_metadata = self.sim_env.get_observation_metadata()
-            img_path = self.obs_dir / f"{run_id:02d}_{step:06d}.jpg"
+            img_path = self.current_obs_dir / f"{step:06d}.jpg"
             try:
                 img_path = Path(self.sim_env.capture_image(str(img_path)))
             except Exception as exc:
@@ -1459,12 +1489,13 @@ class Controller:
                 "action": move,
                 "summary": summary,
                 "reasoning": reasoning,
+                "inner_reasoning": thinking,
                 "view_description": view_description,
                 "facing_before": self.current_dir,
             })
             self.step_history = self.step_history[-self.history_steps:]
             self.logger.log(role="Assistant", iteration=self.iteration,
-                            reasoning=reasoning, action=move, summary=summary)
+                            thinking=thinking, reasoning=reasoning, action=move, summary=summary)
 
             self.sim_env.set_caption(
                 "<div style='max-width:800px; word-wrap:break-word;'>"
@@ -1598,5 +1629,5 @@ class Controller:
 
         print_metrics(outcomes, self.experiment_id)
         if self.json_export:
-            save_experiment_json(outcomes, self.experiment_id, str(self.runs_dir))
+            save_experiment_json(outcomes, self.experiment_id, self.output_dir)
         return outcomes

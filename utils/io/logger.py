@@ -30,16 +30,19 @@ class Logger:
         iteration: int,
         reasoning: str,
         action: str,
-        summary: str
+        summary: str,
+        thinking: str = None
     ) -> None:
         """
         Append a structured log entry to the log file.
 
-        Each entry contains role, iteration count, reasoning,
+        Each entry contains role, iteration count, thinking (if available), reasoning,
         action taken, and a summary, separated by dividers.
         """
-        entry = (
-            f"Role: {role}; Iteration {iteration}\n"
+        entry = f"Role: {role}; Iteration {iteration}\n"
+        if thinking:
+            entry += f"Thinking: {thinking}\n"
+        entry += (
             f"Reasoning: {reasoning}\n"
             f"Action: {action}\n"
             f"Summary: {summary}\n"

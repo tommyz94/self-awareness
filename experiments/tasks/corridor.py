@@ -12,7 +12,7 @@ _E4_ROWS_PER_SIDE = 10
 def build_instruction(_run_setup: RunSetup) -> str:
     return (
         "Navigate to the corridor end and call done on the final row: "
-        "step 10 in mirror mode or step 20 in long-corridor mode."
+        "when you are one step away from the mirror wall in mirror mode or one step away from the far wall in long-corridor mode."
     )
 
 
@@ -57,8 +57,8 @@ def build_system_prompt(run_setup: RunSetup, *, third_person: bool = False) -> s
         "  d = move forward-right diagonally (changes position; facing direction stays the same)\n"
         "  done = task complete\n"
         "Stop rule:\n"
-        "  - mirror mode: call done exactly at step 10 on the final row before the mirror wall.\n"
-        "  - long mode: call done exactly at step 20 on the final row before the far wall.\n"
+        "  - mirror mode: call done when you are 1 step away from the mirror wall.\n"
+        "  - long mode: call done when you are 1 step away from the far wall.\n"
         "  - You must infer whether the episode is mirror mode or long mode from the visual observations.\n"
         "Rules:\n"
         "  - action must always be one of: w, a, d, done.\n"

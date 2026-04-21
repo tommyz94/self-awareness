@@ -7,7 +7,10 @@ nav: human
 client: ollama
 print_reasoning: false
 distractors: 0
-max_steps: 20
+max_steps: 100
+msr_level: 2
+seed: null
+guided_prompt: false
 third_person: false
 camera_height: 1.0
 random_wall_color: false
@@ -19,7 +22,7 @@ num_runs: 1
 experiment_id: null
 
 ollama:
-  host: http://localhost:11434
+  host: http://localhost:11555
 
 openai:
   api_key: ""

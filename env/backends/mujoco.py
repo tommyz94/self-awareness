@@ -42,7 +42,7 @@ _WALL_TEXTURE_PATH = _TEXTURES_DIR / "wall_plaster.png"
 
 # Default mirror-room constants.
 _MIRROR_GAP = 1.0
-_MIRROR_W   = 2.0
+_MIRROR_W   = 8.0
 
 # Robot spawn position. Y is aligned so the imported humanoid stands on the floor.
 _SPAWN_X, _SPAWN_Y, _SPAWN_Z = -10.0, -1.0, 2.5
@@ -845,12 +845,8 @@ class MuJoCoEnv(BaseEnv):
             return
         if self._mirror_present and self._mirror_plane_x is not None:
             mirror_x = 2 * self._mirror_plane_x - self._x
-            in_window = self._is_in_mirror_aperture(self._z)
-            if in_window:
-                mirror_yaw = -self._yaw  # flip yaw for reflection
-                self._set_body_pose(self._mirror_jnt_addr, mirror_x, self._spawn_y, self._z, mirror_yaw)
-            else:
-                self._park_body(self._mirror_jnt_addr)
+            mirror_yaw = -self._yaw  # flip yaw for reflection
+            self._set_body_pose(self._mirror_jnt_addr, mirror_x, self._spawn_y, self._z, mirror_yaw)
             return
         if self._secondary_active:
             self._set_body_pose(
@@ -1143,11 +1139,6 @@ class MuJoCoEnv(BaseEnv):
             geom_id = mirror_cube_geom_ids.get(slot_name)
             if (
                 slot_index < len(cube_objects)
-                and cube_objects[slot_index]["reflect_in_mirror"]
-                and (
-                    cube_objects[slot_index]["reflect_ignore_aperture"]
-                    or self._is_in_mirror_aperture(float(cube_objects[slot_index]["position"][1]))
-                )
                 and self._mirror_plane_x is not None
             ):
                 cx, cz = cube_objects[slot_index]["position"]

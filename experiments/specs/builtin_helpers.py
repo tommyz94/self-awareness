@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import colorsys
 import math
+import os
 import random
 from dataclasses import replace
 from typing import Dict, Optional, Sequence, Tuple
@@ -227,8 +228,23 @@ def build_cube_run_setup(
         cube_color_names[1]: slots[1],
         cube_color_names[2]: slots[2],
     }
-    spawn_pos = scene_template.spawn_pos
-    spawn_yaw = _sample_cardinal_yaw() if randomize_spawn_yaw else scene_template.spawn_yaw
+
+    msr_level = os.getenv("MSR_LEVEL", "2")
+    
+    # Override reflection logic for easy levels to prevent backwards spawning
+    if msr_level in ["0", "1"]:
+        use_reflected_room = False
+
+    if msr_level == "0":
+        spawn_pos = (-1.2, 2.0)
+        spawn_yaw = 0.0
+    elif msr_level == "1":
+        spawn_pos = scene_template.spawn_pos
+        spawn_yaw = 0.0
+    else:
+        spawn_pos = scene_template.spawn_pos
+        spawn_yaw = _sample_cardinal_yaw() if randomize_spawn_yaw else scene_template.spawn_yaw
+
     if use_reflected_room:
         spawn_pos = _reflect_pos_x(spawn_pos, mirror_plane_x)
 
@@ -242,6 +258,15 @@ def build_cube_run_setup(
             positions=tuple(cube_positions.values()),
             base_window_z=mirror_window_z,
         )
+
+    if msr_level == "0" and mirror_window_z is not None:
+        # The mirror window shifts to cover cubes, so we must align our Z pos to its final center
+        center_z = (mirror_window_z[0] + mirror_window_z[1]) / 2.0
+        final_x = -1.2
+        if use_reflected_room:
+            final_x = 2 * mirror_plane_x - (-1.2)
+        spawn_pos = (final_x, round(center_z, 3))
+
     excluded_wall_colors = [agent_color, *cube_color_names]
     wall_color_rgba = (
         sample_non_agent_wall_rgba(excluded_color_names=excluded_wall_colors)

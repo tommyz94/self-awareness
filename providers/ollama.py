@@ -40,12 +40,19 @@ def _normalize_messages(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return normalized_messages
 
 
+def _normalize_host(host: str) -> str:
+    """Ensure host starts with http:// or https://."""
+    if not host.startswith(("http://", "https://")):
+        return f"http://{host}"
+    return host
+
+
 def chat(
     host: str,
     model: str,
     messages: List[Dict[str, Any]],
     temperature: float = 0.2,
-    timeout_sec: int = 180,
+    timeout_sec: int = 600,
     output_format: Any = "json",
     stream_thinking: bool = False,
 ) -> Tuple[str, Optional[str]]:
@@ -63,6 +70,7 @@ def chat(
         "options": {"temperature": temperature},
     }
 
+    host = _normalize_host(host)
     req = urllib.request.Request(
         f"{host.rstrip('/')}/api/chat",
         data=json.dumps(payload).encode("utf-8"),
@@ -91,9 +99,11 @@ def chat(
                     if thinking_token:
                         print(thinking_token, end="", flush=True)
                         thinking_acc += thinking_token
+                    if content_token:
+                        print(content_token, end="", flush=True)
                     content_acc += content_token
-                if thinking_acc:
-                    print()  # newline after streamed thinking
+                if thinking_acc or content_acc:
+                    print()  # newline after streamed output
                 return content_acc, thinking_acc or None
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace")
@@ -117,6 +127,7 @@ def list_models(host: str, timeout_sec: int = 10) -> List[str]:
     """
     Return the list of model names available in local Ollama.
     """
+    host = _normalize_host(host)
     req = urllib.request.Request(
         f"{host.rstrip('/')}/api/tags",
         headers={"Content-Type": "application/json"},

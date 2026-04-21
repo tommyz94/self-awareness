@@ -1,5 +1,6 @@
 import json
 import math
+import os
 from pathlib import Path
 from typing import List
 
@@ -31,6 +32,7 @@ def _serialize_run_setup(run_setup: RunSetup | None) -> dict | None:
         return None
     scene_spec = run_setup.scene_spec
     data = {
+        "msr_level": str(os.getenv("MSR_LEVEL", "2")),
         "agent_color": run_setup.agent_color_name,
         "scene_id": scene_spec.scene_id,
         "wrong_color": run_setup.wrong_color,
@@ -101,6 +103,7 @@ def save_experiment_json(outcomes: List[RunOutcome], experiment_id: str, output_
         "experiment_type": experiment_id,  # kept for legacy tooling
         "task_id": task_id,
         "scene_id": scene_id,
+        "msr_level": str(os.getenv("MSR_LEVEL", "2")),
         "num_runs": len(outcomes),
     }
     if is_summary_task:

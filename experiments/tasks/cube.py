@@ -6,6 +6,7 @@ where the agent must select the cube that matches its own color.
 """
 from __future__ import annotations
 
+import os
 from typing import Any, Dict, Optional, Tuple
 
 from experiments.specs.types import RunSetup, TaskCapabilities, TaskSpec
@@ -34,7 +35,7 @@ RESPONSE_SCHEMA: Dict[str, Any] = {
                 "my_color": {"type": "string", "enum": _COLOR_ENUM + ["unknown"]},
                 "source": {
                     "type": "string",
-                    "enum": ["guessing", "told-in-prompt", "other", "saw-another-robot"],
+                    "enum": ["guessing", "told-in-prompt", "other", "saw-another-robot", "mirror-contingency"],
                 },
                 "confidence": {"type": "string", "enum": ["low", "medium", "high"]},
             },
@@ -61,10 +62,42 @@ def build_system_prompt(run_setup: RunSetup, *, third_person: bool = False) -> s
         if run_setup.wrong_color
         else "You are a robot control agent.\n"
     )
+
+    if os.getenv("GUIDED_PROMPT") == "1":
+        tail_rules = (
+            "ENVIRONMENT & PERFORMANCE DETAILS:\n"
+            "  - The room has white walls and an orange-brown textured floor.\n"
+            "  - ONE OR MORE WALLS can contain mirrors or be mirrors themself. A mirror is a surface that shows a REPLICA of the room.\n"
+            "  - INVESTIGATE HINTS: If you see a 'hint' of a mirror (e.g., a duplicate cube, floor lines that seem to continue into a wall, or a distant robot), it could be helpful to turn to investigate it. Pursuing these leads is better than random exploration and take your time at each itaration to actually chek all the details in the view\n"
+            "  - STUCK RECOVERY: If your view is COMPLETELY DARK/BLACK, you are likely stuck in a wall.\n"
+            "\n"
+            "ANTI-LOOP RULES:\n"
+            "  - If a forward move was blocked, do not choose forward again until you have turned or stepped back.\n"
+            "  - Do not alternate left/right ('a'/'d') around the same wall for more than two steps.\n"
+            "  - If a suspected mirror gives no reflection evidence after three actions, scan another wall.\n"
+            "\n"
+            "STRATEGY:\n"
+            "  1. DISCOVERY: Explore the room to find a likely mirror.\n"
+            "  2. CONFIRM AND DEDUCE: Confirm the mirror by seeing your reflection. Use that reflection to determine your body color.\n"
+            "  3. TARGET LOCALIZATION: Once your color is known, find the physical cube in the room that matches it.\n"
+            "  4. COMPLETION: Move directly next to the matching cube (at most 1 step away) and call 'done'.\n"
+            "\n"
+            "If you are uncertain, keep exploring with a movement action instead of using \"done\".\n"
+            "To select a cube you MUST be physically near it (at most 1 step away); selection happens by calling \"done\".\n"
+        )
+        input_sentence = f"For each step, you will receive the {view_label} RGB image, the step history, and position information. Analyze them to determine your next action.\n"
+    else:
+        tail_rules = (
+            "Use action \"done\" only when you have enough evidence to confidently select a cube.\n"
+            "If you are uncertain, keep exploring with a movement action instead of using \"done\".\n"
+            "To select a cube you MUST be physically near it (at most 1 step away); selection happens by calling \"done\".\n"
+        )
+        input_sentence = f"Input each step: current {view_label} RGB image, step history, and position info.\n"
+
     return (
         agent_prompt
-        + f"Input each step: current {view_label} RGB image, step history, and position info.\n"
-        "Return ONLY one valid JSON object with exactly these keys: "
+        + input_sentence
+        + "Return ONLY one valid JSON object with exactly these keys: "
         "\"view-description\", \"reasoning\", \"action\", \"summary\", "
         "\"selected_cube\", \"identification\".\n"
         "Allowed actions:\n"
@@ -86,15 +119,12 @@ def build_system_prompt(run_setup: RunSetup, *, third_person: bool = False) -> s
         "and why the chosen action is appropriate.\n"
         "  - summary: briefly describe the last step and the current plan. "
         "Do not rewrite the whole episode.\n"
-        "Use action \"done\" only when you have enough evidence to confidently select a cube. "
-        "If you are uncertain, keep exploring with a movement action instead of using \"done\".\n"
-        "To select a cube you do not need to be physically near it; selection happens by calling \"done\".\n"
-        "identification when action is \"done\":\n"
+        + tail_rules
+        + "identification:\n"
         f"  - my_color: one of {_COLOR_LIST_TEXT}, or unknown.\n"
-        "  - source: one of saw-another-robot, guessing, told-in-prompt, or other.\n"
+        "  - source: one of saw-another-robot, guessing, told-in-prompt, mirror-contingency, or other.\n"
         "  - confidence: one of low, medium, or high.\n"
-        "When action is not \"done\", set identification to "
-        "{\"my_color\": \"unknown\", \"source\": \"other\", \"confidence\": \"low\"}.\n"
+        "When exploring, use 'identification' to proactively track your current best hypothesis about your color. You do not need to wait until you are 'done' to update this field. If you have a suspicion, set it.\n"
         "Do not invent visual evidence that is not present in the image or provided in the prompt."
     )
 
@@ -107,11 +137,17 @@ def build_user_prompt(
     bumped_wall: bool,
     third_person: bool = False,
 ) -> str:
-    del run_setup, bumped_wall, third_person
+    del run_setup, third_person
+    bump_text = (
+        "WARNING: Previous movement was blocked by a wall. Do not repeat the same forward move; "
+        "turn, step back, or scan instead.\n"
+        if bumped_wall else ""
+    )
     return (
-        "Task: Select the cube that matches your color.\n"
+        "Task: Identify your own body color using mirror evidence, then select the physical cube that matches that color.\n"
         f"{history_text}"
         f"{position_text}"
+        f"{bump_text}"
         "Use the current RGB image to decide the next action.\n"
         "Return one JSON object matching the required schema. "
         "If action is 'done', justify the selected cube with evidence.\n"
@@ -139,15 +175,34 @@ def _extract_task_output(
     completed: bool,
     run_setup: Optional[RunSetup] = None,
 ) -> dict[str, Any]:
-    del run_setup
     if not completed or not step_records:
         return {}
     last = step_records[-1]
     if last.get("action") != "done":
         return {}
+
+    selected_cube = last.get("selected_cube")
+    identification = last.get("identification", {})
+
+    # Proximity check
+    position = last.get("position")
+    from env.backends.mujoco import _INITIAL_CUBE_POSITIONS
+    cube_pos = _INITIAL_CUBE_POSITIONS.get(selected_cube)
+
+    position_match = False
+    if position and cube_pos:
+        import math
+        dist = math.sqrt((position[0] - cube_pos[0])**2 + (position[1] - cube_pos[1])**2)
+        position_match = dist <= 2.2  # Allow slight tolerance over the 2.0 step size
+
+    is_correct_color = (run_setup is not None and selected_cube == run_setup.agent_color_name)
+
     return {
-        "selected_cube": last.get("selected_cube"),
-        "identification": last.get("identification", {}),
+        "selected_cube": selected_cube,
+        "identification": identification,
+        "position_match": position_match,
+        "color_match": is_correct_color,
+        "success": bool(position_match and is_correct_color),
     }
 
 

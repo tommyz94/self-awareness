@@ -13,7 +13,7 @@ _FIRST_PERSON_CAMERA = {
     "name": "first_person",
     "pos": "0.15 1.45 0",
     "zaxis": "-1 0 0",
-    "fovy": "90",
+    "fovy": "110",
 }
 _THIRD_PERSON_CAMERA = {
     "name": "third_person",
