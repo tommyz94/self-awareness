@@ -8,7 +8,9 @@ from runtime.controller import Controller
 def main(cfg: DictConfig) -> None:
     if cfg.get("seed") is not None:
         import random
+        import os
         random.seed(cfg.seed)
+        os.environ["EXPERIMENT_SEED"] = str(cfg.seed)
         try:
             import numpy as np
             np.random.seed(cfg.seed)

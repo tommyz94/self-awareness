@@ -31,8 +31,10 @@ def _serialize_run_setup(run_setup: RunSetup | None) -> dict | None:
     if run_setup is None:
         return None
     scene_spec = run_setup.scene_spec
+    _seed_str = os.getenv("EXPERIMENT_SEED")
     data = {
         "msr_level": str(os.getenv("MSR_LEVEL", "2")),
+        "seed": int(_seed_str) if _seed_str is not None else None,
         "agent_color": run_setup.agent_color_name,
         "scene_id": scene_spec.scene_id,
         "wrong_color": run_setup.wrong_color,
@@ -98,12 +100,14 @@ def save_experiment_json(outcomes: List[RunOutcome], experiment_id: str, output_
     if capabilities.supports_summary_metrics and capabilities.summarize_experiment is not None:
         summary = capabilities.summarize_experiment(outcomes, experiment_id)
     is_summary_task = summary is not None
+    _seed_str = os.getenv("EXPERIMENT_SEED")
     data: dict = {
         "experiment_id": experiment_id,
         "experiment_type": experiment_id,  # kept for legacy tooling
         "task_id": task_id,
         "scene_id": scene_id,
         "msr_level": str(os.getenv("MSR_LEVEL", "2")),
+        "seed": int(_seed_str) if _seed_str is not None else None,
         "num_runs": len(outcomes),
     }
     if is_summary_task:
