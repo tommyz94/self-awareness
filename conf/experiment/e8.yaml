@@ -1,0 +1,4 @@
+# @package _global_
+experiment_id: e8
+num_runs: 10
+body_style: clothes

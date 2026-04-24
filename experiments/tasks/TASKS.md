@@ -40,6 +40,17 @@ It owns:
 - non-cube response schema and parsing behavior
 - explore-task capability metadata
 
+### `self_description_explore.py`
+
+Exploration-based self-description task used by `e8`.
+
+It owns:
+
+- mirror-guided appearance-description prompt wording
+- structured `self_description` response schema
+- completion criteria for "enough mirror evidence"
+- non-cube task-output extraction for detailed self-description runs
+
 ## Notes
 
 - Shared tasks are the default.

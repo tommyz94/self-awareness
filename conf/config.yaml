@@ -13,6 +13,8 @@ seed: null
 guided_prompt: false
 third_person: false
 camera_height: 1.0
+body_style: default
+self_perception_mode: color
 random_wall_color: false
 distractor_color_mode: allow_duplicates
 e7_random_cube_heights: false
@@ -26,6 +28,14 @@ ollama:
 
 openai:
   api_key: ""
+
+openrouter:
+  api_key: ""
+  base_url: https://openrouter.ai/api/v1
+  http_referer: ""
+  app_title: ""
+  require_parameters: true
+  min_request_interval_sec: 0.0
 
 google:
   api_key: ""

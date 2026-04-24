@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 
@@ -62,13 +64,15 @@ def test_human_nav_initializes_single_run_before_loop(monkeypatch, tmp_path):
     assert all(obj.metadata.get("reflect_in_mirror") is True for obj in run_setup.scene_spec.objects)
 
 
-@pytest.mark.parametrize("experiment_id", ["e1", "e4"])
-def test_builtin_e1_e4_outputs_are_scoped_under_experiment_root(monkeypatch, tmp_path, experiment_id):
+@pytest.mark.parametrize("experiment_id", ["e0", "e1", "e2", "e3", "e4", "e5", "e6", "e7"])
+def test_builtin_experiment_outputs_are_scoped_under_experiment_root(monkeypatch, tmp_path, experiment_id):
     from runtime.controller import Controller
 
     fake_env = _FakeEnv()
     monkeypatch.setattr("runtime.controller._create_env", lambda **kwargs: fake_env)
     monkeypatch.setattr("runtime.controller.Logger", _FakeLogger)
+    monkeypatch.setattr("runtime.controller.time.strftime", lambda _fmt: "20260423_120000")
+    monkeypatch.setenv("MSR_LEVEL", "2")
 
     controller = Controller(
         nav_mode="human",
@@ -78,33 +82,17 @@ def test_builtin_e1_e4_outputs_are_scoped_under_experiment_root(monkeypatch, tmp
         output_dir=str(tmp_path / "outputs"),
     )
 
-    expected_root = tmp_path / "outputs" / "mujoco" / experiment_id / "ollama" / "human"
-    assert controller.output_dir == str(expected_root)
-    assert controller.obs_dir == expected_root / "obs"
-    assert controller.runs_dir == expected_root / "runs"
-
-
-@pytest.mark.parametrize("experiment_id", ["e5", "e6", "e7"])
-def test_e5_e6_e7_outputs_keep_legacy_runs_experiment_subdir(monkeypatch, tmp_path, experiment_id):
-    from runtime.controller import Controller
-
-    fake_env = _FakeEnv()
-    monkeypatch.setattr("runtime.controller._create_env", lambda **kwargs: fake_env)
-    monkeypatch.setattr("runtime.controller.Logger", _FakeLogger)
-
-    controller = Controller(
-        nav_mode="human",
-        experiment_id=experiment_id,
-        num_distractors=1,
-        mujoco_headless=False,
-        heatmap=False,
-        output_dir=str(tmp_path / "outputs"),
+    expected_root = (
+        tmp_path
+        / "outputs"
+        / "mujoco"
+        / experiment_id
+        / "ollama"
+        / "human"
+        / "level_2"
+        / "20260423_120000"
     )
-
-    expected_root = tmp_path / "outputs" / "mujoco" / "ollama" / "human"
-    assert controller.output_dir == str(expected_root)
-    assert controller.obs_dir == expected_root / "obs"
-    assert controller.runs_dir == expected_root / "runs" / experiment_id
+    assert Path(controller.output_dir) == expected_root
 
 
 def test_single_run_outputs_keep_legacy_root_layout(monkeypatch, tmp_path):
@@ -113,6 +101,8 @@ def test_single_run_outputs_keep_legacy_root_layout(monkeypatch, tmp_path):
     fake_env = _FakeEnv()
     monkeypatch.setattr("runtime.controller._create_env", lambda **kwargs: fake_env)
     monkeypatch.setattr("runtime.controller.Logger", _FakeLogger)
+    monkeypatch.setattr("runtime.controller.time.strftime", lambda _fmt: "20260423_120000")
+    monkeypatch.setenv("MSR_LEVEL", "2")
 
     controller = Controller(
         nav_mode="human",
@@ -121,10 +111,10 @@ def test_single_run_outputs_keep_legacy_root_layout(monkeypatch, tmp_path):
         output_dir=str(tmp_path / "outputs"),
     )
 
-    expected_root = tmp_path / "outputs" / "mujoco" / "ollama" / "human"
-    assert controller.output_dir == str(expected_root)
-    assert controller.obs_dir == expected_root / "obs"
-    assert controller.runs_dir == expected_root / "runs"
+    expected_root = (
+        tmp_path / "outputs" / "mujoco" / "ollama" / "human" / "level_2" / "20260423_120000"
+    )
+    assert Path(controller.output_dir) == expected_root
 
 
 @pytest.mark.parametrize("experiment_id", ["e6", "e7"])
@@ -181,6 +171,33 @@ def test_human_nav_initializes_selected_experiment_before_loop(monkeypatch, tmp_
     assert sum(obj.kind == "cube" for obj in run_setup.scene_spec.objects) == 3
     distractor_count = sum(obj.kind == "distractor_robot" for obj in run_setup.scene_spec.objects)
     assert 1 <= distractor_count <= 6
+
+
+def test_human_nav_initializes_e0_selected_experiment_before_loop(monkeypatch, tmp_path):
+    from runtime.controller import Controller
+
+    fake_env = _FakeEnv()
+    monkeypatch.setattr("runtime.controller._create_env", lambda **kwargs: fake_env)
+    monkeypatch.setattr("runtime.controller.Logger", _FakeLogger)
+
+    controller = Controller(
+        nav_mode="human",
+        experiment_id="e0",
+        mujoco_headless=False,
+        heatmap=False,
+        output_dir=str(tmp_path / "outputs"),
+    )
+
+    controller.run()
+
+    assert len(fake_env.reset_calls) == 1
+    run_setup = fake_env.reset_calls[0]
+    assert run_setup.scene_spec.scene_id == "mirror_room_direct_self_view"
+    assert run_setup.scene_spec.layout_kind == "two_room"
+    assert run_setup.scene_spec.mirror_enabled is True
+    assert run_setup.scene_spec.spawn_pos == (-1.2, 0.0)
+    assert run_setup.scene_spec.mirror_window_z == (-7.5, 7.5)
+    assert run_setup.scene_spec.objects == []
 
 
 def test_human_nav_initializes_e6_selected_experiment_before_loop(monkeypatch, tmp_path):

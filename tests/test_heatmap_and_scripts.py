@@ -1,6 +1,7 @@
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 import importlib
+import os
 import subprocess
 import sys
 
@@ -138,3 +139,145 @@ def test_readme_describes_non_cube_heatmaps_correctly():
 
     assert "still saves run JSON and heatmaps" not in readme
     assert "skips room-style heatmaps" in readme
+
+
+def test_openrouter_matrix_script_dry_run_builds_expected_jobs():
+    script = ROOT / "scripts" / "dev" / "openrouter_matrix.py"
+    config = ROOT / "scripts" / "dev" / "openrouter_matrix.example.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--config",
+            str(config),
+            "--models",
+            "meta-llama/llama-3.2-11b-vision-instruct",
+            "--experiments",
+            "e1,e2",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+        env={**os.environ, "OPENROUTER_API_KEY": "test-key"},
+    )
+
+    assert "Prepared 2 job(s)." in result.stdout
+    assert "client=openrouter" in result.stdout
+    assert "experiment=e1" in result.stdout
+    assert "experiment=e2" in result.stdout
+    assert "nav=meta-llama/llama-3.2-11b-vision-instruct" in result.stdout
+    assert "num_runs=" not in result.stdout
+
+
+def test_openrouter_smoke_script_help_renders():
+    script = ROOT / "scripts" / "dev" / "openrouter_smoke.py"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--help",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+
+    assert "Run minimal OpenRouter smoke test requests." in result.stdout
+    assert "--model" in result.stdout
+    assert "--model-file" in result.stdout
+    assert "--variant" in result.stdout
+    assert "--no-image" in result.stdout
+
+
+def test_openrouter_matrix_script_set_overrides_replace_config_values():
+    script = ROOT / "scripts" / "dev" / "openrouter_matrix.py"
+    config = ROOT / "scripts" / "dev" / "openrouter_matrix.example.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--config",
+            str(config),
+            "--models",
+            "meta-llama/llama-3.2-11b-vision-instruct",
+            "--experiments",
+            "e1",
+            "--set",
+            "seed=123",
+            "--set",
+            "mujoco.headless=false",
+            "--set",
+            "print_reasoning=false",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+        env={**os.environ, "OPENROUTER_API_KEY": "test-key"},
+    )
+
+    assert "seed=123" in result.stdout
+    assert "mujoco.headless=false" in result.stdout
+    assert "mujoco.headless=true" not in result.stdout
+    assert "print_reasoning=false" in result.stdout
+    assert "print_reasoning=true" not in result.stdout
+
+
+def test_openrouter_matrix_script_rejects_experiment_locked_overrides():
+    script = ROOT / "scripts" / "dev" / "openrouter_matrix.py"
+    config = ROOT / "scripts" / "dev" / "openrouter_matrix.example.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--config",
+            str(config),
+            "--models",
+            "meta-llama/llama-3.2-11b-vision-instruct",
+            "--experiments",
+            "e1",
+            "--set",
+            "num_runs=3",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        env={**os.environ, "OPENROUTER_API_KEY": "test-key"},
+    )
+
+    assert result.returncode != 0
+    assert "Refusing to override experiment-owned preset keys" in result.stderr
+
+
+def test_openrouter_matrix_script_allows_matrix_nav_for_e7_preset():
+    script = ROOT / "scripts" / "dev" / "openrouter_matrix.py"
+    config = ROOT / "scripts" / "dev" / "openrouter_matrix.example.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--config",
+            str(config),
+            "--models",
+            "meta-llama/llama-3.2-11b-vision-instruct",
+            "--experiments",
+            "e7",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+        env={**os.environ, "OPENROUTER_API_KEY": "test-key"},
+    )
+
+    assert "Prepared 1 job(s)." in result.stdout
+    assert "experiment=e7" in result.stdout
+    assert "nav=meta-llama/llama-3.2-11b-vision-instruct" in result.stdout
+    assert "max_steps=" not in result.stdout

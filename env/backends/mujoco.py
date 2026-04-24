@@ -284,12 +284,14 @@ def _build_two_room_xml(
     render_width: int = 640,
     render_height: int = 480,
     camera_height: float = 1.0,
+    body_style: str = "default",
 ) -> tuple[str, list[str], list[str]]:
     mirror_present = scene_spec.mirror_enabled
     humanoid_scene = build_humanoid_scene(
         mirror_present=mirror_present,
         spawn_pos=(scene_spec.spawn_pos[0], _SPAWN_Y, scene_spec.spawn_pos[1]),
         camera_height=camera_height,
+        body_style=body_style,
     )
     asset_xml = _inject_asset_entries(
         humanoid_scene.asset_xml,
@@ -300,34 +302,54 @@ def _build_two_room_xml(
     rh = scene_spec.height
     wt = scene_spec.wall_thickness
     z_window = scene_spec.mirror_window_z or (_MIRROR_GAP, _MIRROR_GAP + _MIRROR_W)
-    mg = z_window[0]
-    mw = z_window[1] - z_window[0]
+    room_min_z = -rw / 2
+    room_max_z = rw / 2
+    z0 = float(max(room_min_z, min(room_max_z, z_window[0])))
+    z1 = float(max(room_min_z, min(room_max_z, z_window[1])))
+    if z1 < z0:
+        z0, z1 = z1, z0
+    mg = z0
+    mw = z1 - z0
 
     cx = -(rl / 2 + wt / 2)   # center x of left room ≈ -7.6
 
     # Central wall segments
     if mirror_present:
-        left_len  = mg - (-rw / 2)            # 1.0 + 7.5 = 8.5
-        left_pz   = (-rw / 2 + mg) / 2        # -3.25
-        right_len = rw / 2 - (mg + mw)        # 7.5 - 3.0 = 4.5
-        right_pz  = (mg + mw + rw / 2) / 2   # 5.25
-        mir_pz    = mg + mw / 2               # 2.0
-        central_xml = f"""
+        left_len = max(0.0, mg - room_min_z)
+        right_len = max(0.0, room_max_z - (mg + mw))
+        mirror_len = max(0.0, mw)
+        central_parts = []
+        if left_len > 1e-6:
+            left_pz = (room_min_z + mg) / 2
+            central_parts.append(
+                f"""
     <!-- Central wall left of mirror -->
     <geom name="cwall_l" type="box"
           pos="0 {rh/2-0.95:.3f} {left_pz:.3f}"
           size="{wt/2:.3f} {rh/2:.3f} {left_len/2:.3f}"
-          material="wall_plaster_mat" contype="0" conaffinity="0"/>
+          material="wall_plaster_mat" contype="0" conaffinity="0"/>"""
+            )
+        if mirror_len > 1e-6:
+            mir_pz = mg + mirror_len / 2
+            central_parts.append(
+                f"""
     <!-- Mirror pane (semi-transparent) -->
     <geom name="mirror_pane" type="box"
           pos="0 {rh/2-0.95:.3f} {mir_pz:.3f}"
-          size="{wt/2:.3f} {rh/2:.3f} {mw/2:.3f}"
-          rgba=".85 .87 .90 .12" contype="0" conaffinity="0"/>
+          size="{wt/2:.3f} {rh/2:.3f} {mirror_len/2:.3f}"
+          rgba=".85 .87 .90 .12" contype="0" conaffinity="0"/>"""
+            )
+        if right_len > 1e-6:
+            right_pz = (mg + mirror_len + room_max_z) / 2
+            central_parts.append(
+                f"""
     <!-- Central wall right of mirror -->
     <geom name="cwall_r" type="box"
           pos="0 {rh/2-0.95:.3f} {right_pz:.3f}"
           size="{wt/2:.3f} {rh/2:.3f} {right_len/2:.3f}"
           material="wall_plaster_mat" contype="0" conaffinity="0"/>"""
+            )
+        central_xml = "".join(central_parts)
     else:
         central_xml = f"""
     <!-- Solid central wall (no mirror, E2) -->
@@ -411,11 +433,13 @@ def _build_corridor_xml(
     render_width: int = 640,
     render_height: int = 480,
     camera_height: float = 1.0,
+    body_style: str = "default",
 ) -> tuple[str, list[str], list[str]]:
     humanoid_scene = build_humanoid_scene(
         mirror_present=True,
         spawn_pos=(scene_spec.spawn_pos[0], _SPAWN_Y, scene_spec.spawn_pos[1]),
         camera_height=camera_height,
+        body_style=body_style,
     )
     length = scene_spec.length
     width = scene_spec.width
@@ -517,6 +541,7 @@ def _build_xml(
     render_width: int = 640,
     render_height: int = 480,
     camera_height: float = 1.0,
+    body_style: str = "default",
 ) -> tuple[str, list[str], list[str]]:
     if scene_spec.layout_kind == "corridor":
         return _build_corridor_xml(
@@ -524,12 +549,14 @@ def _build_xml(
             render_width=render_width,
             render_height=render_height,
             camera_height=camera_height,
+            body_style=body_style,
         )
     return _build_two_room_xml(
         scene_spec,
         render_width=render_width,
         render_height=render_height,
         camera_height=camera_height,
+        body_style=body_style,
     )
 
 
@@ -538,12 +565,14 @@ def _build_scene_result(
     render_width: int = 640,
     render_height: int = 480,
     camera_height: float = 1.0,
+    body_style: str = "default",
 ) -> MuJoCoSceneBuildResult:
     xml, robot_geom_names, mirror_geom_names = _build_xml(
         scene_spec,
         render_width=render_width,
         render_height=render_height,
         camera_height=camera_height,
+        body_style=body_style,
     )
     return MuJoCoSceneBuildResult(
         xml=xml,
@@ -577,6 +606,7 @@ class MuJoCoEnv(BaseEnv):
         backend_overrides: Optional[BackendOverrides] = None,
         third_person: bool = False,
         camera_height: float = 1.0,
+        body_style: str = "default",
         render_width: int = _TWO_ROOM_OFFWIDTH,
         render_height: int = _TWO_ROOM_OFFHEIGHT,
         headless: bool = True,
@@ -619,6 +649,7 @@ class MuJoCoEnv(BaseEnv):
         self._use_mirror = mirror_present
         self._third_person = third_person
         self._camera_height = camera_height
+        self._body_style = str(body_style or "default")
         self._turn_step = math.radians(float(scene_spec.turn_step_deg))
         self._corridor_forward_step = _E4_CORRIDOR_FORWARD_STEP if self._corridor_diagonal_actions else _MOVE_STEP
         self._corridor_lane_step = (
@@ -645,6 +676,7 @@ class MuJoCoEnv(BaseEnv):
                 render_width=render_width,
                 render_height=render_height,
                 camera_height=self._camera_height,
+                body_style=self._body_style,
             )
         self._model = mujoco.MjModel.from_xml_string(scene_build.xml)
         self._data  = mujoco.MjData(self._model)
@@ -1095,11 +1127,12 @@ class MuJoCoEnv(BaseEnv):
         if callable(apply_wall_color):
             apply_wall_color(run_setup.scene_spec.wall_color_rgba)
 
-        rgba = _rgba_for_color(run_setup.agent_color_name, alpha=1.0)
-        self._set_color(self._robot_geom_ids, rgba)
-        if self._secondary_present:
-            alpha = 1.0 if self._mirror_present else 1.0
-            self._set_color(self._mirror_geom_ids, [rgba[0], rgba[1], rgba[2], alpha])
+        if self._body_style != "clothes":
+            rgba = _rgba_for_color(run_setup.agent_color_name, alpha=1.0)
+            self._set_color(self._robot_geom_ids, rgba)
+            if self._secondary_present:
+                alpha = 1.0 if self._mirror_present else 1.0
+                self._set_color(self._mirror_geom_ids, [rgba[0], rgba[1], rgba[2], alpha])
 
         # Cubes
         self._object_pos_2d = {}

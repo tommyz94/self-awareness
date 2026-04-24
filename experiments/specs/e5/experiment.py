@@ -14,6 +14,7 @@ from env.backends.mujoco import (
 from env.scenes.mujoco_builder import (
     build_humanoid_scene as _build_humanoid_scene,
     build_humanoid_wrapper as _build_humanoid_wrapper,
+    sample_avatar_mesh_choice as _sample_avatar_mesh_choice,
 )
 from experiments.specs.builtin_helpers import (
     MIRROR_ROOM_CUBE_CORNER_SLOTS as _MIRROR_ROOM_CUBE_CORNER_SLOTS,
@@ -496,11 +497,19 @@ def _build_mujoco_scene(
     render_width: int,
     render_height: int,
     camera_height: float = 1.0,
+    body_style: str = "default",
 ) -> _MuJoCoSceneBuildResult:
+    avatar_choice = (
+        _sample_avatar_mesh_choice()
+        if str(body_style).strip().lower() == "clothes"
+        else None
+    )
     humanoid_scene = _build_humanoid_scene(
         mirror_present=True,
         spawn_pos=(scene_spec.spawn_pos[0], _MUJOCO_SPAWN_Y, scene_spec.spawn_pos[1]),
         camera_height=camera_height,
+        body_style=body_style,
+        avatar_choice=avatar_choice,
     )
     asset_xml = _inject_asset_entries(
         humanoid_scene.asset_xml,
@@ -519,6 +528,8 @@ def _build_mujoco_scene(
             root_joint_name=root_name,
             spawn_pos=(obj.position[0], _MUJOCO_SPAWN_Y, obj.position[1]),
             include_cameras=False,
+            body_style=body_style,
+            avatar_choice=avatar_choice,
         )
         extra_body_xml.append(body_xml)
         distractor_geom_names.extend(geom_names)
@@ -530,6 +541,8 @@ def _build_mujoco_scene(
             root_joint_name=mirror_root_name,
             spawn_pos=(obj.position[0], _MUJOCO_SPAWN_Y, obj.position[1]),
             include_cameras=False,
+            body_style=body_style,
+            avatar_choice=avatar_choice,
         )
         extra_body_xml.append(mirror_body_xml)
         mirror_distractor_geom_names.extend(mirror_geom_names)
@@ -628,6 +641,7 @@ def _apply_mujoco_reset(env, run_setup: _RunSetup) -> None:
         (obj for obj in run_setup.scene_spec.objects if obj.kind == "distractor_robot"),
         key=lambda obj: obj.object_id,
     )
+    textured_body_style = str(getattr(env, "_body_style", "default")).strip().lower() == "clothes"
     active_ids = {obj.object_id for obj in distractors}
     mirror_plane_x = (
         float(run_setup.scene_spec.mirror_plane_x)
@@ -644,10 +658,11 @@ def _apply_mujoco_reset(env, run_setup: _RunSetup) -> None:
         if root_addr is not None:
             env._set_body_pose(root_addr, float(x), env._spawn_y, float(z), yaw)
         env._apply_arm_rest_pose_for_prefix(f"{obj.object_id}_")
-        env._set_color(
-            env._geom_ids_with_prefix(f"{obj.object_id}_"),
-            _rgba_for_color(obj.color or "", alpha=1.0),
-        )
+        if not textured_body_style:
+            env._set_color(
+                env._geom_ids_with_prefix(f"{obj.object_id}_"),
+                _rgba_for_color(obj.color or "", alpha=1.0),
+            )
 
         mirror_root_addr = env._jnt_addr_if_exists(mirror_root_name)
         if mirror_root_addr is not None:
@@ -657,10 +672,11 @@ def _apply_mujoco_reset(env, run_setup: _RunSetup) -> None:
             else:
                 env._park_body(mirror_root_addr)
         env._apply_arm_rest_pose_for_prefix(f"mirror_{obj.object_id}_")
-        env._set_color(
-            env._geom_ids_with_prefix(f"mirror_{obj.object_id}_"),
-            _rgba_for_color(obj.color or "", alpha=1.0),
-        )
+        if not textured_body_style:
+            env._set_color(
+                env._geom_ids_with_prefix(f"mirror_{obj.object_id}_"),
+                _rgba_for_color(obj.color or "", alpha=1.0),
+            )
         bounds = _distractor_nav_bounds(
             run_setup.scene_spec,
             mirror_plane_x=mirror_plane_x,
@@ -814,6 +830,7 @@ def _resolve_backend_overrides(
             render_width,
             render_height,
             camera_height=runtime_options.camera_height,
+            body_style=runtime_options.body_style,
         )
 
     return _BackendOverrides(

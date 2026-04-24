@@ -4,6 +4,7 @@ Multi-provider chat dispatcher for the navigation VLM.
 Routes calls to the appropriate backend based on ``client_type``:
   - ``ollama``  — local Ollama server (default)
   - ``openai``  — OpenAI Responses API  (requires openai>=1.0.0)
+  - ``openrouter`` — OpenRouter Chat Completions API (requires openai>=1.0.0)
   - ``google``  — Google Gemini API     (requires google-genai>=1.0.0)
   - ``anthropic`` — Anthropic Claude API (requires anthropic>=0.68.0)
 
@@ -25,7 +26,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional, Tuple
 
 _CLIENT_TYPE_ALIASES = {"claude": "anthropic"}
-_CANONICAL_CLIENTS = {"ollama", "openai", "google", "anthropic"}
+_CANONICAL_CLIENTS = {"ollama", "openai", "openrouter", "google", "anthropic"}
 _VALID_CLIENTS = _CANONICAL_CLIENTS | set(_CLIENT_TYPE_ALIASES)
 
 
@@ -43,8 +44,13 @@ def chat(
     stream_thinking: bool = False,
     host: Optional[str] = None,
     api_key: Optional[str] = None,
+    base_url: Optional[str] = None,
+    http_referer: Optional[str] = None,
+    app_title: Optional[str] = None,
+    require_parameters: Optional[bool] = None,
+    min_request_interval_sec: Optional[float] = None,
     temperature: float = 0.2,
-    timeout_sec: int = 180,
+    timeout_sec: int = 600,
 ) -> Tuple[str, Optional[str]]:
     """
     Dispatch a chat request to the configured provider and return
@@ -53,7 +59,8 @@ def chat(
     Parameters
     ----------
     client_type:
-        One of ``"ollama"``, ``"openai"``, ``"google"``, or ``"anthropic"``.
+        One of ``"ollama"``, ``"openai"``, ``"openrouter"``,
+        ``"google"``, or ``"anthropic"``.
         ``"claude"`` is accepted as an alias for ``"anthropic"``.
     model:
         Model name understood by the chosen provider.
@@ -102,6 +109,26 @@ def chat(
             model=model,
             messages=messages,
             api_key=api_key or "",
+            temperature=temperature,
+            output_schema=output_schema,
+            stream_thinking=stream_thinking,
+            timeout_sec=timeout_sec,
+        )
+
+    if client_type == "openrouter":
+        from providers.openrouter import chat as openrouter_chat
+
+        return openrouter_chat(
+            model=model,
+            messages=messages,
+            api_key=api_key or "",
+            base_url=base_url or "https://openrouter.ai/api/v1",
+            http_referer=http_referer or "",
+            app_title=app_title or "",
+            require_parameters=True if require_parameters is None else require_parameters,
+            min_request_interval_sec=(
+                0.0 if min_request_interval_sec is None else float(min_request_interval_sec)
+            ),
             temperature=temperature,
             output_schema=output_schema,
             stream_thinking=stream_thinking,

@@ -168,6 +168,11 @@ def get_next_move(
     current_dir: str = "N",
     client_type: str = "ollama",
     api_key: Optional[str] = None,
+    base_url: Optional[str] = None,
+    http_referer: Optional[str] = None,
+    app_title: Optional[str] = None,
+    require_parameters: Optional[bool] = None,
+    min_request_interval_sec: Optional[float] = None,
 ) -> Tuple[str, str, str, str, Optional[str], Optional[str], Dict[str, str], Dict[str, Any]]:
     """
     Query a VLM with an observation image path plus step history.
@@ -213,6 +218,11 @@ def get_next_move(
         stream_thinking=stream_thinking,
         host=host,
         api_key=api_key,
+        base_url=base_url,
+        http_referer=http_referer,
+        app_title=app_title,
+        require_parameters=require_parameters,
+        min_request_interval_sec=min_request_interval_sec,
     )
 
     last_action = history[-1]["action"] if history else None

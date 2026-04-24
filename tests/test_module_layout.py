@@ -396,6 +396,21 @@ def test_e1_e2_e3_experiment_spec_regression():
     assert rs3.wrong_color != rs3.agent_color_name
 
 
+def test_e0_experiment_spec_regression():
+    from experiments.specs.registry import get_experiment
+
+    e0 = get_experiment("e0")
+    rs0 = e0.run_initializer(1)
+
+    assert e0.task_id == "self_perception_task"
+    assert rs0.scene_spec.scene_id == "mirror_room_direct_self_view"
+    assert rs0.scene_spec.mirror_enabled is True
+    assert rs0.scene_spec.spawn_pos == (-1.2, 0.0)
+    assert rs0.scene_spec.spawn_yaw == 0.0
+    assert rs0.scene_spec.mirror_window_z == (-7.5, 7.5)
+    assert rs0.scene_spec.objects == []
+
+
 def test_mujoco_asset_paths_resolve_from_new_canonical_locations():
     from env.backends import mujoco as mujoco_backend
     from env.scenes import mujoco_builder

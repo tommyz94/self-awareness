@@ -31,7 +31,7 @@ If there are no relevant completed E3 runs, GI is reported as `NaN` in code and 
 
 ### Mirror-Exposure Metrics
 
-These are exported per-run in `runNN.json` for `e1`, `e3`, and `e4` only:
+These are exported per-run in `runNN.json` for `e0`, `e1`, `e3`, and `e4` only:
 
 - `mirror_before_done`: `1` when the mirror was visible in at least one
   observed frame before the run ended; otherwise `0`
@@ -42,8 +42,9 @@ These are exported per-run in `runNN.json` for `e1`, `e3`, and `e4` only:
 - `chose_after_mirror`: `1` when the run ends with `done` after at least one
   mirror-visible observation; otherwise `0`
 
-For `e4`, `chose_after_mirror` means the agent decided to stop exploring after
-seeing the mirror; it does not imply a cube selection.
+For `e0`, `chose_after_mirror` means the agent reported its own color after at
+least one mirror-visible frame. For `e4`, it means the agent decided to stop
+exploring after seeing the mirror; it does not imply a cube selection.
 
 ## LLM-as-judge
 

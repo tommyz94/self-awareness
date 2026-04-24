@@ -55,13 +55,18 @@ def chat(
     timeout_sec: int = 600,
     output_format: Any = "json",
     stream_thinking: bool = False,
+    max_retries: int = 3,
+    retry_delay_sec: float = 10.0,
 ) -> Tuple[str, Optional[str]]:
     """
     Call Ollama /api/chat and return (content, thinking).
+    Retries up to max_retries times on timeout or connection errors.
     thinking is None when stream_thinking=False or when the model does not
     produce reasoning tokens.
     When stream_thinking=True, thinking tokens are printed to stdout in real-time.
     """
+    import time
+
     payload = {
         "model": model,
         "messages": _normalize_messages(messages),
@@ -71,47 +76,60 @@ def chat(
     }
 
     host = _normalize_host(host)
-    req = urllib.request.Request(
-        f"{host.rstrip('/')}/api/chat",
-        data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json"},
-        method="POST",
-    )
 
-    try:
-        with urllib.request.urlopen(req, timeout=timeout_sec) as response:
-            if not stream_thinking:
-                body = response.read().decode("utf-8")
+    last_exc: Exception = RuntimeError("No attempts made.")
+    for attempt in range(1, max_retries + 1):
+        req = urllib.request.Request(
+            f"{host.rstrip('/')}/api/chat",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=timeout_sec) as response:
+                if not stream_thinking:
+                    body = response.read().decode("utf-8")
+                else:
+                    content_acc = ""
+                    thinking_acc = ""
+                    for raw_line in response:
+                        line = raw_line.decode("utf-8").strip()
+                        if not line:
+                            continue
+                        try:
+                            chunk = json.loads(line)
+                        except json.JSONDecodeError:
+                            continue
+                        msg = chunk.get("message", {})
+                        thinking_token = msg.get("thinking") or ""
+                        content_token = msg.get("content") or ""
+                        if thinking_token:
+                            print(thinking_token, end="", flush=True)
+                            thinking_acc += thinking_token
+                        if content_token:
+                            print(content_token, end="", flush=True)
+                        content_acc += content_token
+                    if thinking_acc or content_acc:
+                        print()  # newline after streamed output
+                    return content_acc, thinking_acc or None
+        except urllib.error.HTTPError as exc:
+            # HTTP errors (4xx/5xx) are not retried — they indicate a real problem.
+            detail = exc.read().decode("utf-8", errors="replace")
+            raise RuntimeError(f"Ollama HTTP {exc.code}: {detail}") from exc
+        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+            last_exc = exc
+            if attempt < max_retries:
+                print(
+                    f"  [Ollama] Attempt {attempt}/{max_retries} failed ({exc}). "
+                    f"Retrying in {retry_delay_sec:.0f}s...",
+                    flush=True,
+                )
+                time.sleep(retry_delay_sec)
             else:
-                content_acc = ""
-                thinking_acc = ""
-                for raw_line in response:
-                    line = raw_line.decode("utf-8").strip()
-                    if not line:
-                        continue
-                    try:
-                        chunk = json.loads(line)
-                    except json.JSONDecodeError:
-                        continue
-                    msg = chunk.get("message", {})
-                    thinking_token = msg.get("thinking") or ""
-                    content_token = msg.get("content") or ""
-                    if thinking_token:
-                        print(thinking_token, end="", flush=True)
-                        thinking_acc += thinking_token
-                    if content_token:
-                        print(content_token, end="", flush=True)
-                    content_acc += content_token
-                if thinking_acc or content_acc:
-                    print()  # newline after streamed output
-                return content_acc, thinking_acc or None
-    except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"Ollama HTTP {exc.code}: {detail}") from exc
-    except urllib.error.URLError as exc:
-        raise RuntimeError(
-            f"Could not connect to Ollama at {host}. Make sure Ollama is running."
-        ) from exc
+                raise RuntimeError(
+                    f"Ollama request failed after {max_retries} attempts. "
+                    f"Last error: {exc}"
+                ) from last_exc
 
     try:
         parsed = json.loads(body)

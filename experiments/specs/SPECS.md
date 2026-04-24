@@ -35,6 +35,7 @@ Compatibility bridge that re-exports the shared types and delegates
 
 Each experiment lives in its own subfolder, for example:
 
+- `e0/`
 - `e1/`
 - `e2/`
 - `e3/`
@@ -42,6 +43,7 @@ Each experiment lives in its own subfolder, for example:
 - `e5/`
 - `e6/`
 - `e7/`
+- `e8/`
 
 The only required file is `experiment.py`, which must export exactly one
 public symbol:
@@ -61,7 +63,7 @@ Optional per-experiment helpers such as `scene.py`, `task.py`, and
 - Reflectable scene objects are currently expressed through
   `SceneObjectSpec.metadata["reflect_in_mirror"] = True`, which the backends
   use to decide whether a visual mirror clone should be rendered.
-- `e5`, `e6`, and `e7` are current examples of experiment-specific scene
+- `e5`, `e6`, `e7`, and `e8` are current examples of experiment-specific scene
   variants with mirrored humanoid distractors.
 - New experiments should be added here instead of editing the runtime
   controller or maintaining a hand-written central registry.

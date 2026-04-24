@@ -31,9 +31,9 @@ from utils.io.logger import Logger
 
 _DEFAULT_SINGLE_RUN_COLOR = "red"
 _VALID_CUBE_SELECTIONS = set(_COLOR_POOL)
-_VALID_CLIENT_TYPES = {"ollama", "openai", "google", "anthropic", "claude"}
-_CANONICAL_CLIENT_TYPES = {"ollama", "openai", "google", "anthropic"}
-_EXPERIMENT_SCOPED_OUTPUT_ROOTS = {"e1", "e2", "e3", "e4", "e5", "e6", "e7"}
+_VALID_CLIENT_TYPES = {"ollama", "openai", "openrouter", "google", "anthropic", "claude"}
+_CANONICAL_CLIENT_TYPES = {"ollama", "openai", "openrouter", "google", "anthropic"}
+_EXPERIMENT_SCOPED_OUTPUT_ROOTS = {"e0", "e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8"}
 _AUTO_NAV_NAME = "auto"
 _E6_AUTOPILOT_SLEEP_SEC = 0.5
 _E6_AUTOPILOT_TARGET_REACHED_EPS = 1.0
@@ -47,6 +47,7 @@ def _create_env(
     backend_overrides: Optional[BackendOverrides],
     third_person: bool,
     camera_height: float,
+    body_style: str,
     mujoco_headless: bool = True,
 ) -> BaseEnv:
     if env_type != "mujoco":
@@ -60,6 +61,7 @@ def _create_env(
         backend_overrides=backend_overrides,
         third_person=third_person,
         camera_height=camera_height,
+        body_style=body_style,
         headless=mujoco_headless,
     )
 
@@ -115,6 +117,47 @@ def _save_heatmap_if_supported(
     )
 
 
+def _slugify_path_token(value: str) -> str:
+    return re.sub(r"[^a-zA-Z0-9._-]+", "_", str(value).strip().lower()).strip("_")
+
+
+def _experiment_variant_tag(
+    experiment_id: Optional[str],
+    *,
+    body_style: str,
+    self_perception_mode: str,
+) -> Optional[str]:
+    if experiment_id == "e0":
+        return "__".join(
+            token
+            for token in (
+                _slugify_path_token(body_style or "default"),
+                _slugify_path_token(self_perception_mode or "color"),
+            )
+            if token
+        )
+    if str(body_style or "default").strip().lower() != "default":
+        token = _slugify_path_token(body_style)
+        return token or None
+    return None
+
+
+def _should_display_agent_color(
+    *,
+    task_spec: Optional[object],
+    run_setup: Optional[RunSetup],
+) -> bool:
+    task_id = getattr(task_spec, "task_id", None)
+    if task_id == "cube_task":
+        return True
+    if task_id == "self_perception_task":
+        mode = ""
+        if run_setup is not None:
+            mode = str(run_setup.metadata.get("self_perception_mode", "color")).strip().lower()
+        return mode == "color"
+    return False
+
+
 class Controller:
     def __init__(
         self,
@@ -129,11 +172,19 @@ class Controller:
         random_wall_color: bool = False,
         distractor_color_mode: str = "allow_duplicates",
         e7_random_cube_heights: bool = False,
+        body_style: str = "default",
+        self_perception_mode: str = "color",
         experiment_id: Optional[str] = None,
         num_runs: int = 10,
         history_steps: int = 1,
         ollama_host: str = "http://localhost:11434",
         openai_api_key: str = "",
+        openrouter_api_key: str = "",
+        openrouter_base_url: str = "https://openrouter.ai/api/v1",
+        openrouter_http_referer: str = "",
+        openrouter_app_title: str = "",
+        openrouter_require_parameters: bool = True,
+        openrouter_min_request_interval_sec: float = 0.0,
         google_api_key: str = "",
         anthropic_api_key: str = "",
         output_dir: str = "outputs",
@@ -164,18 +215,41 @@ class Controller:
         self.ollama_host = ollama_host
         if self.client_type == "openai":
             self.api_key = openai_api_key
+        elif self.client_type == "openrouter":
+            self.api_key = openrouter_api_key
         elif self.client_type == "google":
             self.api_key = google_api_key
         elif self.client_type == "anthropic":
             self.api_key = anthropic_api_key
         else:
             self.api_key = ""
+        self.provider_base_url = (
+            openrouter_base_url if self.client_type == "openrouter" else None
+        )
+        self.provider_http_referer = (
+            openrouter_http_referer if self.client_type == "openrouter" else None
+        )
+        self.provider_app_title = (
+            openrouter_app_title if self.client_type == "openrouter" else None
+        )
+        self.provider_require_parameters = (
+            bool(openrouter_require_parameters)
+            if self.client_type == "openrouter"
+            else None
+        )
+        self.provider_min_request_interval_sec = (
+            max(0.0, float(openrouter_min_request_interval_sec))
+            if self.client_type == "openrouter"
+            else None
+        )
         self.third_person = third_person
         if not 0.0 <= camera_height <= 1.0:
             raise ValueError(
                 f"camera_height must be in [0.0, 1.0], got {camera_height}."
             )
         self.camera_height = camera_height
+        self.body_style = str(body_style or "default")
+        self.self_perception_mode = str(self_perception_mode or "color")
         self.experiment_id = experiment_id
         self.experiment_spec = get_experiment(experiment_id) if experiment_id else None
         self.experiment_runtime_options = ExperimentRuntimeOptions(
@@ -185,6 +259,8 @@ class Controller:
             random_wall_color=random_wall_color,
             distractor_color_mode=distractor_color_mode,
             e7_random_cube_heights=e7_random_cube_heights,
+            body_style=self.body_style,
+            self_perception_mode=self.self_perception_mode,
         )
         self.task_spec = self.experiment_spec.resolve_task() if self.experiment_spec else None
         self.scene_template = (
@@ -234,11 +310,17 @@ class Controller:
         import os
         msr_level_str = os.getenv("MSR_LEVEL", "2")
         msr_tag = f"level_{msr_level_str}"
+        variant_tag = _experiment_variant_tag(
+            experiment_id,
+            body_style=self.body_style,
+            self_perception_mode=self.self_perception_mode,
+        )
 
         if experiment_id in _EXPERIMENT_SCOPED_OUTPUT_ROOTS:
-            self.output_dir = str(
-                Path(output_dir) / env_type / experiment_id / self.client_type / llm_slug / msr_tag / session_id
-            )
+            experiment_root = Path(output_dir) / env_type / experiment_id / self.client_type / llm_slug
+            if variant_tag:
+                experiment_root = experiment_root / variant_tag
+            self.output_dir = str(experiment_root / msr_tag / session_id)
         else:
             self.output_dir = str(Path(output_dir) / env_type / self.client_type / llm_slug / msr_tag / session_id)
 
@@ -264,6 +346,7 @@ class Controller:
                 backend_overrides=self.backend_overrides,
                 third_person=third_person,
                 camera_height=camera_height,
+                body_style=self.body_style,
                 mujoco_headless=mujoco_headless,
             )
 
@@ -724,6 +807,7 @@ class Controller:
         summary: str,
         identification: dict,
         goal_status: Optional[dict] = None,
+        task_payload: Optional[dict] = None,
         selected_cube: Optional[str] = None,
         bumped_wall: Optional[bool] = None,
         inner_reasoning: Optional[str] = None,
@@ -747,6 +831,8 @@ class Controller:
         }
         if goal_status is not None:
             record["goal_status"] = goal_status
+        if task_payload:
+            record["task_payload"] = dict(task_payload)
         if view_position is not None:
             record["view_position"] = [float(value) for value in view_position]
         if view_direction is not None:
@@ -800,11 +886,13 @@ class Controller:
         self.logger.reset()
 
         self._apply_run_setup(run_setup)
-        print(
-            f"\n--- Run {run_id}/{self.num_runs} | agent={run_setup.agent_color_name}"
-            + (f" | misleading={run_setup.wrong_color}" if run_setup.wrong_color else "")
-            + " ---"
-        )
+        header = f"\n--- Run {run_id}/{self.num_runs}"
+        if _should_display_agent_color(task_spec=self.task_spec, run_setup=run_setup):
+            header += f" | agent={run_setup.agent_color_name}"
+        if run_setup.wrong_color:
+            header += f" | misleading={run_setup.wrong_color}"
+        header += " ---"
+        print(header)
 
     def _new_outcome(self, run_id: int, selected_cube: Optional[str], completed: bool) -> RunOutcome:
         """Construct a RunOutcome with all context fields populated."""
@@ -1288,6 +1376,13 @@ class Controller:
                         current_dir=self.current_dir,
                         client_type=self.client_type,
                         api_key=self.api_key,
+                        base_url=getattr(self, "provider_base_url", None),
+                        http_referer=getattr(self, "provider_http_referer", None),
+                        app_title=getattr(self, "provider_app_title", None),
+                        require_parameters=getattr(self, "provider_require_parameters", None),
+                        min_request_interval_sec=getattr(
+                            self, "provider_min_request_interval_sec", None
+                        ),
                     )
                 except Exception as exc:
                     print(f"Navigation stopped: model call failed at step {step}: {exc}")
@@ -1340,6 +1435,7 @@ class Controller:
                         summary=summary,
                         identification=identification,
                         goal_status=task_payload.get("goal_status") if task_payload else None,
+                        task_payload=task_payload,
                         inner_reasoning=thinking,
                         view_position=observation_metadata.view_position,
                         view_direction=observation_metadata.view_direction,
@@ -1361,6 +1457,7 @@ class Controller:
                         summary=summary,
                         identification=identification,
                         goal_status=task_payload.get("goal_status") if task_payload else None,
+                        task_payload=task_payload,
                         selected_cube=selected_cube,
                         bumped_wall=False,
                         inner_reasoning=thinking,
@@ -1470,6 +1567,13 @@ class Controller:
                     current_dir=self.current_dir,
                     client_type=self.client_type,
                     api_key=self.api_key,
+                    base_url=getattr(self, "provider_base_url", None),
+                    http_referer=getattr(self, "provider_http_referer", None),
+                    app_title=getattr(self, "provider_app_title", None),
+                    require_parameters=getattr(self, "provider_require_parameters", None),
+                    min_request_interval_sec=getattr(
+                        self, "provider_min_request_interval_sec", None
+                    ),
                 )
             except Exception as exc:
                 print(f"  [Step {step}] Model call failed: {exc}")
@@ -1497,9 +1601,24 @@ class Controller:
             self.logger.log(role="Assistant", iteration=self.iteration,
                             thinking=thinking, reasoning=reasoning, action=move, summary=summary)
 
+            show_agent_color = _should_display_agent_color(
+                task_spec=self.task_spec,
+                run_setup=self.current_run_setup,
+            )
+            self_description = {}
+            if task_payload:
+                maybe_self_description = task_payload.get("self_description")
+                if isinstance(maybe_self_description, dict):
+                    self_description = maybe_self_description
             self.sim_env.set_caption(
                 "<div style='max-width:800px; word-wrap:break-word;'>"
-                f"<b>Run:</b> {run_id}/{self.num_runs} &nbsp; <b>Agent:</b> {self.agent_color_name}<br>"
+                f"<b>Run:</b> {run_id}/{self.num_runs}"
+                + (
+                    f" &nbsp; <b>Agent:</b> {self.agent_color_name}"
+                    if show_agent_color and self.agent_color_name
+                    else ""
+                )
+                + "<br>"
                 f"<b>View Description:</b> {view_description}<br>"
                 f"<b>Reasoning:</b> {reasoning}<br>"
                 f"<b>Summary:</b> {summary}<br>"
@@ -1509,6 +1628,16 @@ class Controller:
                     f"<br><b>Identification:</b> color={identification['my_color']} "
                     f"source={identification['source']} confidence={identification['confidence']}"
                     if move == "done" and self.task_spec and self.task_spec.task_id == "cube_task" else ""
+                )
+                + (
+                    f"<br><b>Self Description:</b> {self_description.get('overall', '')}"
+                    if move == "done" and self_description.get("overall")
+                    else ""
+                )
+                + (
+                    f"<br><b>Clothing:</b> {self_description.get('clothing', '')}"
+                    if move == "done" and self_description.get("clothing")
+                    else ""
                 )
                 + "</div>"
             )

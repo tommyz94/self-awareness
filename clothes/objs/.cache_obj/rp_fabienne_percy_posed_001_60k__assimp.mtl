@@ -1,0 +1,12 @@
+# File produced by Open Asset Import Library (http://www.assimp.sf.net)
+# (assimp v5.2.0)
+
+newmtl rp_fabienne_percy_posed_001_60k_mat
+Kd 0.588 0.588 0.588
+Ka 0 0 0
+Ke 0 0 0
+Tf 0 0 0
+d 1
+illum 1
+map_Kd tex\rp_fabienne_percy_posed_001_dif_8k.jpg
+

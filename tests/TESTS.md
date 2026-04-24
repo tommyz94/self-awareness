@@ -68,5 +68,6 @@ python main.py +experiment=e1 env=mujoco nav=<local-ollama-model> num_runs=1
 python main.py +experiment=e2 env=mujoco nav=<local-ollama-model> num_runs=1
 python main.py +experiment=e3 env=mujoco nav=<local-ollama-model> num_runs=1
 python main.py env=mujoco nav=human mujoco.headless=false experiment=e1 num_runs=2
+OPENROUTER_API_KEY=... python3 scripts/dev/openrouter_smoke.py --model qwen/qwen-vl-max:nitro
 python -m experiments.evaluation.judge outputs/.../run01.json
 ```

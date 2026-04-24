@@ -5,6 +5,7 @@ Thumbs.db
 CLAUDE.md
 scripts/dev/keys.sh
 Mirror_View_Dataset/
+Mirror_Video_Dataset/
 outputs/
 TODO.md
 wandb/
@@ -65,6 +66,18 @@ secrets.json
 outputs/
 logs/
 slurm/
+outputs*.zip
+
+# Cache/generated assets from clothed-avatar rendering
+.cache_png/
+**/.cache_png/
+
+# Personal/local launch helpers not part of the standard repo setup
+/overnight_runs.sh
+/scripts/dev/run_openrouter_matrix_requested.sh
+/scripts/dev/openrouter_matrix.requested.json
+/scripts/dev/openrouter_matrix.smoke.json
+/scripts/dev/openrouter_matrix.smoke.safe.json
 
 # Pacchetti o dipendenze installate (a seconda del workflow)
 # Se committi la cartella venv, rimuovi queste righe

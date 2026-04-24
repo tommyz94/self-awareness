@@ -2,11 +2,15 @@ from experiments.specs.types import TaskSpec
 from experiments.tasks.cube import CUBE_TASK_SPEC
 from experiments.tasks.corridor import CORRIDOR_TASK_SPEC
 from experiments.tasks.explore import EXPLORE_TASK_SPEC
+from experiments.tasks.self_description_explore import SELF_DESCRIPTION_EXPLORE_TASK_SPEC
+from experiments.tasks.self_perception import SELF_PERCEPTION_TASK_SPEC
 
 _TASK_REGISTRY = {
     "cube_task": CUBE_TASK_SPEC,
     "corridor_task": CORRIDOR_TASK_SPEC,
     "explore_task": EXPLORE_TASK_SPEC,
+    "self_description_explore_task": SELF_DESCRIPTION_EXPLORE_TASK_SPEC,
+    "self_perception_task": SELF_PERCEPTION_TASK_SPEC,
 }
 
 

@@ -1,0 +1,46 @@
+{
+  "client": "openrouter",
+  "python_bin": "./.venv/bin/python",
+  "main_script": "main.py",
+  "copy_env": [
+    "OPENROUTER_API_KEY"
+  ],
+  "env_vars": {
+    "PYTHONUNBUFFERED": "1"
+  },
+  "models": [
+    "meta-llama/llama-3.2-11b-vision-instruct",
+    "qwen/qwen2.5-vl-7b-instruct"
+  ],
+  "experiments": [
+    "e1",
+    "e2",
+    "e3"
+  ],
+  "shared_args": {
+    "mujoco.headless": true,
+    "msr_level": 2,
+    "print_reasoning": true
+  },
+  "per_experiment_args": {
+    "e2": {
+      "history_steps": 2
+    },
+    "e3": {
+      "random_wall_color": true
+    }
+  },
+  "pair_args": {
+    "qwen/qwen2.5-vl-7b-instruct": {
+      "e3": {
+        "third_person": true
+      }
+    }
+  },
+  "launcher": {
+    "terminal_app": "Terminal",
+    "keep_open": true,
+    "pause_seconds_between_launches": 0.2,
+    "log_dir": "logs/openrouter_matrix"
+  }
+}

@@ -4,6 +4,16 @@ Hydra experiment preset overrides.
 
 ## Files
 
+### `e0.yaml`
+
+Direct mirror self-perception sanity check. The agent starts directly in front
+of a wide, unobstructed mirror with no cubes or distractors and must report its
+own body color immediately. The preset fixes `num_runs: 10` and `max_steps: 1`
+so the task remains a single-step perceptual readout. Runtime overrides can
+switch this to a detailed appearance report with
+`self_perception_mode=description`, which is especially useful together with
+`body_style=clothes`.
+
 ### `e1.yaml`
 
 Mirror-room cube task with the mirror enabled and 30° `a`/`d` turns. Cube and
@@ -65,9 +75,17 @@ cube a same-color vertical stack with random height in `[1, 5]`; set
 100 automatic ego-agent actions per episode, and supports
 `save_dataset` (default `false`) with the same schema used in `e6`.
 
+### `e8.yaml`
+
+Embodiment-prior-bias preset derived from `e5`. `e8` keeps the same distractor
+count and room layout as `e5`, but changes the task to exploration-based
+self-description from mirror evidence. It sets `body_style: clothes` so the
+ego agent, mirror reflection, and distractors use clothed avatar meshes when
+available. It keeps `num_runs: 10` by default.
+
 ## Notes
 
 - These files are thin preset selectors, not full standalone configs.
 - They are loaded with `experiment=<id>`.
 - The real experiment logic lives under `experiments/specs/<id>/`.
-- `random_wall_color=true` enables one random shared wall color per run for `e1/e2/e3/e5/e6/e7` (default stays white/off).
+- `random_wall_color=true` enables one random shared wall color per run for `e0/e1/e2/e3/e5/e6/e7/e8` (default stays white/off).

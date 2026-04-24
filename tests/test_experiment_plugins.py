@@ -50,7 +50,7 @@ def _plugin_module(experiment_id: str) -> ModuleType:
 def test_builtin_experiment_plugins_are_discovered():
     experiments = discover_experiments(force_reload=True)
 
-    assert {"e1", "e2", "e3", "e4"} <= set(experiments)
+    assert {"e0", "e1", "e2", "e3", "e4", "e8"} <= set(experiments)
 
 
 def test_loader_only_imports_experiment_modules(tmp_path, monkeypatch):

@@ -15,6 +15,10 @@ Local Ollama HTTP adapter, including model listing support.
 
 OpenAI Responses API adapter for image + prompt navigation calls.
 
+### `openrouter.py`
+
+OpenRouter chat-completions adapter for OpenAI-compatible model routing.
+
 ### `google.py`
 
 Gemini API adapter for multimodal navigation calls.

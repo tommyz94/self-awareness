@@ -14,6 +14,7 @@ from env.backends.mujoco import (
 from env.scenes.mujoco_builder import (
     build_humanoid_scene as _build_humanoid_scene,
     build_humanoid_wrapper as _build_humanoid_wrapper,
+    sample_avatar_mesh_choice as _sample_avatar_mesh_choice,
 )
 from experiments.specs.builtin_helpers import (
     _AGENT_COLOR_NAMES as _AGENT_COLOR_NAMES,
@@ -176,11 +177,19 @@ def _build_mujoco_scene(
     render_width: int,
     render_height: int,
     camera_height: float = 1.0,
+    body_style: str = "default",
 ) -> _MuJoCoSceneBuildResult:
+    avatar_choice = (
+        _sample_avatar_mesh_choice()
+        if str(body_style).strip().lower() == "clothes"
+        else None
+    )
     humanoid_scene = _build_humanoid_scene(
         mirror_present=True,
         spawn_pos=(scene_spec.spawn_pos[0], _MUJOCO_SPAWN_Y, scene_spec.spawn_pos[1]),
         camera_height=camera_height,
+        body_style=body_style,
+        avatar_choice=avatar_choice,
     )
     asset_xml = _inject_asset_entries(
         humanoid_scene.asset_xml,
@@ -199,6 +208,8 @@ def _build_mujoco_scene(
             root_joint_name=root_name,
             spawn_pos=(obj.position[0], _MUJOCO_SPAWN_Y, obj.position[1]),
             include_cameras=False,
+            body_style=body_style,
+            avatar_choice=avatar_choice,
         )
         extra_body_xml.append(body_xml)
         distractor_geom_names.extend(geom_names)
@@ -210,6 +221,8 @@ def _build_mujoco_scene(
             root_joint_name=mirror_root_name,
             spawn_pos=(obj.position[0], _MUJOCO_SPAWN_Y, obj.position[1]),
             include_cameras=False,
+            body_style=body_style,
+            avatar_choice=avatar_choice,
         )
         extra_body_xml.append(mirror_body_xml)
         mirror_distractor_geom_names.extend(mirror_geom_names)
@@ -655,6 +668,7 @@ def _resolve_backend_overrides(
             render_width,
             render_height,
             camera_height=runtime_options.camera_height,
+            body_style=runtime_options.body_style,
         )
 
     return _BackendOverrides(

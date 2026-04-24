@@ -128,6 +128,7 @@ def _resolve_backend_overrides(
             render_width,
             render_height,
             camera_height=runtime_options.camera_height,
+            body_style=runtime_options.body_style,
         )
 
     return _BackendOverrides(

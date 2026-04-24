@@ -1,0 +1,4 @@
+# @package _global_
+experiment_id: e0
+num_runs: 10
+max_steps: 1

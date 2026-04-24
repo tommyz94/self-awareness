@@ -1,5 +1,5 @@
 """
-Unit tests for the OpenAI, Google, and Anthropic provider adapters.
+Unit tests for the OpenAI, OpenRouter, Google, and Anthropic provider adapters.
 
 All external SDK calls are mocked so these tests run without any installed
 provider package or live API key.
@@ -139,6 +139,77 @@ class TestOpenAISchemaHandoff:
         assert text_format["type"] == "json_schema"
         assert text_format["json_schema"]["schema"] is _SCHEMA
         assert captured["input"][0]["role"] == "user"
+
+
+# ===========================================================================
+# OpenRouter adapter tests
+# ===========================================================================
+
+
+class TestOpenRouterTextConversion:
+    def test_system_message_stays_plain_text_without_images(self, tmp_path):
+        from providers.openrouter import _build_messages
+
+        items = _build_messages([_SYSTEM_MSG])
+        assert items == [{
+            "role": "system",
+            "content": "You are a robot.",
+        }]
+
+
+class TestOpenRouterImageConversion:
+    def test_image_path_becomes_image_url_item_after_text(self, tmp_path):
+        from providers.openrouter import _build_messages
+
+        img = _fake_image_path(tmp_path)
+        msg = {"role": "user", "content": "Look.", "images": [img]}
+        items = _build_messages([msg])
+
+        assert items[0]["content"][0] == {"type": "text", "text": "Look."}
+        image_item = items[0]["content"][1]
+        assert image_item["type"] == "image_url"
+        url = image_item["image_url"]["url"]
+        assert url.startswith("data:image/jpeg;base64,")
+        assert base64.b64decode(url.split(",", 1)[1]) == Path(img).read_bytes()
+
+
+class TestOpenRouterSchemaHandoff:
+    def test_schema_passed_to_chat_completions_with_provider_guard(self, monkeypatch):
+        captured: dict = {}
+
+        mock_response = SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content='{"action": "w"}'))]
+        )
+
+        mock_client = MagicMock()
+        mock_client.chat.completions.create.side_effect = lambda **kwargs: (
+            captured.update(kwargs) or mock_response
+        )
+
+        mock_openai = MagicMock()
+        mock_openai.OpenAI.return_value = mock_client
+
+        with patch.dict(sys.modules, {"openai": mock_openai}):
+            import providers.openrouter as openrouter_provider
+
+            monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
+            content, thinking = openrouter_provider.chat(
+                model="meta-llama/llama-3.2-11b-vision-instruct",
+                messages=[_USER_TEXT_MSG],
+                output_schema=_SCHEMA,
+                http_referer="https://example.com",
+                app_title="self-awareness",
+            )
+
+        assert thinking is None
+        assert content == '{"action": "w"}'
+        assert captured["response_format"]["type"] == "json_schema"
+        assert captured["response_format"]["json_schema"]["schema"] is _SCHEMA
+        assert captured["extra_headers"] == {
+            "HTTP-Referer": "https://example.com",
+            "X-OpenRouter-Title": "self-awareness",
+        }
+        assert captured["extra_body"] == {"provider": {"require_parameters": True}}
 
 
 # ===========================================================================
@@ -432,6 +503,28 @@ class TestAnthropicSchemaHandoff:
 
 
 class TestDispatchCanonicalization:
+    def test_openrouter_routes_to_openrouter_provider(self, monkeypatch):
+        import llm.dispatch as chat_module
+
+        called = {}
+
+        def fake_chat(**kwargs):
+            called.update(kwargs)
+            return '{"action": "w"}', None
+
+        monkeypatch.setattr("providers.openrouter.chat", fake_chat)
+
+        content, thinking = chat_module.chat(
+            client_type="openrouter",
+            model="meta-llama/llama-3.2-11b-vision-instruct",
+            messages=[_USER_TEXT_MSG],
+            output_schema=_SCHEMA,
+        )
+
+        assert thinking is None
+        assert content == '{"action": "w"}'
+        assert called["model"] == "meta-llama/llama-3.2-11b-vision-instruct"
+
     def test_claude_alias_routes_to_anthropic(self, monkeypatch):
         import llm.dispatch as chat_module
 
@@ -462,6 +555,46 @@ class TestDispatchCanonicalization:
 
 
 class TestControllerCanonicalization:
+    def test_controller_uses_openrouter_client_for_paths_and_api_key(self, monkeypatch, tmp_path):
+        from runtime.controller import Controller
+
+        class _FakeEnv:
+            position = (0.0, 0.0)
+            direction = "N"
+            object_positions_2d = {}
+
+            def bind_keys(self, callback):
+                return None
+
+            def close(self):
+                return None
+
+        class _FakeLogger:
+            def __init__(self, output_file):
+                self.output_file = output_file
+
+            def reset(self):
+                return None
+
+        monkeypatch.setattr("runtime.controller._create_env", lambda **kwargs: _FakeEnv())
+        monkeypatch.setattr("runtime.controller.Logger", _FakeLogger)
+
+        controller = Controller(
+            nav_mode="meta-llama/llama-3.2-11b-vision-instruct",
+            client_type="openrouter",
+            openrouter_api_key="openrouter-key",
+            output_dir=str(tmp_path / "outputs"),
+            env_type="mujoco",
+            mujoco_headless=True,
+        )
+
+        try:
+            assert controller.client_type == "openrouter"
+            assert controller.api_key == "openrouter-key"
+            assert "/openrouter/" in controller.output_dir.replace("\\", "/")
+        finally:
+            controller._close_resources()
+
     def test_controller_uses_canonical_anthropic_client_for_paths_and_api_key(self, monkeypatch, tmp_path):
         from runtime.controller import Controller
 

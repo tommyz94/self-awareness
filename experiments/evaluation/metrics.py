@@ -27,7 +27,7 @@ def extract_mirror_exposure_metrics(
     completed: bool,
     experiment_id: Optional[str],
 ) -> Dict[str, int | None]:
-    if experiment_id not in {"e1", "e3", "e4"}:
+    if experiment_id not in {"e0", "e1", "e3", "e4", "e8"}:
         return {}
 
     considered = step_records

@@ -163,6 +163,8 @@ class ExperimentRuntimeOptions:
     random_wall_color: bool = False
     distractor_color_mode: str = "allow_duplicates"
     e7_random_cube_heights: bool = False
+    body_style: str = "default"
+    self_perception_mode: str = "color"
 
 
 @dataclass

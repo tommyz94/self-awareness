@@ -112,7 +112,19 @@ def test_extract_mirror_exposure_metrics_handles_missing_visibility_and_supporte
         "mirror_revisits": 1,
         "chose_after_mirror": 1,
     }
+    assert extract_mirror_exposure_metrics(step_records, completed=True, experiment_id="e0") == {
+        "mirror_before_done": 1,
+        "steps_to_first_mirror_view": 2,
+        "mirror_revisits": 1,
+        "chose_after_mirror": 1,
+    }
     assert extract_mirror_exposure_metrics(step_records, completed=True, experiment_id="e4") == {
+        "mirror_before_done": 1,
+        "steps_to_first_mirror_view": 2,
+        "mirror_revisits": 1,
+        "chose_after_mirror": 1,
+    }
+    assert extract_mirror_exposure_metrics(step_records, completed=True, experiment_id="e8") == {
         "mirror_before_done": 1,
         "steps_to_first_mirror_view": 2,
         "mirror_revisits": 1,

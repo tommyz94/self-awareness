@@ -16,7 +16,7 @@ It defines the main runtime knobs:
 - environment backend selection
 - navigation model and provider
 - prompt/history settings
-- camera/view controls such as `third_person` and `camera_height`
+- camera/view controls such as `third_person`, `camera_height`, `body_style`, and `self_perception_mode`
 - scene appearance controls such as `random_wall_color` and `e7_random_cube_heights`
 - experiment mode and run count
 - backend-specific headless options
@@ -24,7 +24,7 @@ It defines the main runtime knobs:
 
 ### `experiment/`
 
-Preset overrides for `e1` through `e7`.
+Preset overrides for `e0` through `e8`.
 
 Each preset keeps the public CLI simple by setting:
 
