@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import replace as _replace
 
 from experiments.specs.builtin_helpers import (
-    MIRROR_ROOM_WALL_CORNER_SLOTS as _MIRROR_ROOM_WALL_CORNER_SLOTS,
     build_cube_run_setup as _build_cube_run_setup,
     build_mirror_room_scene as _build_mirror_room_scene,
 )
@@ -13,8 +12,18 @@ from experiments.specs.types import (
     SceneSpec as _SceneSpec,
 )
 
+_E1_WIDE_MIRROR_SLOTS = [
+    (-14.85, -3.0),
+    (-14.85, 0.0),
+    (-14.85, 3.0),
+    (-0.35, -3.0),
+    (-0.35, 0.0),
+    (-0.35, 3.0),
+]
+
 _SCENE_TEMPLATE = _replace(
     _build_mirror_room_scene(mirror_enabled=True),
+    mirror_window_z=(-4.0, 4.0),
     turn_step_deg=30.0,
 )
 
@@ -31,12 +40,9 @@ def _build_run_setup(
     del run_id
     return _build_cube_run_setup(
         scene_template,
-        cube_slots=_MIRROR_ROOM_WALL_CORNER_SLOTS,
+        cube_slots=_E1_WIDE_MIRROR_SLOTS,
         randomize_wall=True,
         randomize_wall_color=runtime_options.random_wall_color,
-        mirror_window_center_jitter=2.5,
-        mirror_window_cover_cubes=False,
-        mirror_cubes_ignore_aperture=True,
         randomize_spawn_yaw=True,
     )
 

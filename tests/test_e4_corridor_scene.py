@@ -193,8 +193,8 @@ def test_mujoco_reset_long_variant_places_secondary_on_opposite_far_end():
     assert math.isclose(dummy_env._secondary_yaw, math.pi)
 
 def test_e1_e2_e3_registry_presets_keep_cube_task_behavior():
-    from experiments.specs.builtin_helpers import MIRROR_ROOM_WALL_CORNER_SLOTS
     from experiments.specs.registry import get_experiment
+    from experiments.specs.e1.experiment import _E1_WIDE_MIRROR_SLOTS
 
     e1 = get_experiment("e1")
     e2 = get_experiment("e2")
@@ -228,13 +228,18 @@ def test_e1_e2_e3_registry_presets_keep_cube_task_behavior():
     assert mirror_plane_x is not None
     reflected_corner_slots = {
         (round(2 * mirror_plane_x - x, 3), z)
-        for (x, z) in MIRROR_ROOM_WALL_CORNER_SLOTS
+        for (x, z) in _E1_WIDE_MIRROR_SLOTS
     }
     e1_positions = {tuple(obj.position) for obj in e1_run.scene_spec.objects if obj.kind == "cube"}
     e2_positions = {tuple(obj.position) for obj in e2_run.scene_spec.objects if obj.kind == "cube"}
     e3_positions = {tuple(obj.position) for obj in e3_run.scene_spec.objects if obj.kind == "cube"}
-    corner_slots = set(MIRROR_ROOM_WALL_CORNER_SLOTS) | reflected_corner_slots
-    assert e1_positions <= corner_slots
+    e1_slots = set(_E1_WIDE_MIRROR_SLOTS) | reflected_corner_slots
+    assert e1_positions <= e1_slots
+    from experiments.specs.builtin_helpers import MIRROR_ROOM_WALL_CORNER_SLOTS
+    corner_slots = set(MIRROR_ROOM_WALL_CORNER_SLOTS) | {
+        (round(2 * mirror_plane_x - x, 3), z)
+        for (x, z) in MIRROR_ROOM_WALL_CORNER_SLOTS
+    }
     assert e2_positions <= corner_slots
     assert e3_positions <= corner_slots
 

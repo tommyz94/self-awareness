@@ -1174,11 +1174,22 @@ class MuJoCoEnv(BaseEnv):
                 slot_index < len(cube_objects)
                 and self._mirror_plane_x is not None
             ):
-                cx, cz = cube_objects[slot_index]["position"]
-                mirror_x = 2 * self._mirror_plane_x - float(cx)
-                self._set_body_pos(addr, mirror_x, _CUBE_Y, float(cz))
-                if geom_id is not None:
-                    self._set_color([geom_id], _rgba_for_color(cube_objects[slot_index]["color"], alpha=1.0))
+                cube = cube_objects[slot_index]
+                cx, cz = cube["position"]
+                reflects = bool(cube.get("reflect_in_mirror", False))
+                in_aperture = bool(
+                    cube.get("reflect_ignore_aperture", False)
+                    or self._is_in_mirror_aperture(float(cz))
+                )
+                if reflects and in_aperture:
+                    mirror_x = 2 * self._mirror_plane_x - float(cx)
+                    self._set_body_pos(addr, mirror_x, _CUBE_Y, float(cz))
+                    if geom_id is not None:
+                        self._set_color([geom_id], _rgba_for_color(cube["color"], alpha=1.0))
+                else:
+                    self._park_body(addr)
+                    if geom_id is not None:
+                        self._set_color([geom_id], _rgba_for_color("gray", alpha=1.0))
             else:
                 self._park_body(addr)
                 if geom_id is not None:

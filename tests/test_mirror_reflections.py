@@ -239,7 +239,7 @@ def test_mirrored_cube_experiments_expand_mirror_window_to_cover_cube_positions(
     assert all(z_min <= float(obj.position[1]) <= z_max for obj in cubes)
 
 
-def test_e1_keeps_compact_mirror_window_width():
+def test_e1_uses_wide_eight_unit_mirror_window():
     from experiments.specs import get_experiment
     from experiments.specs.types import ExperimentRuntimeOptions
 
@@ -250,10 +250,10 @@ def test_e1_keeps_compact_mirror_window_width():
     assert scene_spec.mirror_enabled is True
     assert scene_spec.mirror_window_z is not None
     z_min, z_max = scene_spec.mirror_window_z
-    assert (z_max - z_min) == pytest.approx(2.0)
+    assert (z_max - z_min) == pytest.approx(8.0)
 
 
-def test_e1_cubes_ignore_aperture_for_mirror_reflection():
+def test_e1_cubes_stay_inside_wide_mirror_aperture():
     from experiments.specs import get_experiment
     from experiments.specs.types import ExperimentRuntimeOptions
 
@@ -262,5 +262,8 @@ def test_e1_cubes_ignore_aperture_for_mirror_reflection():
     cubes = [obj for obj in run_setup.scene_spec.objects if obj.kind == "cube"]
 
     assert cubes
+    assert run_setup.scene_spec.mirror_window_z is not None
+    z_min, z_max = run_setup.scene_spec.mirror_window_z
     assert all(obj.metadata.get("reflect_in_mirror") is True for obj in cubes)
-    assert all(obj.metadata.get("reflect_ignore_aperture") is True for obj in cubes)
+    assert all(obj.metadata.get("reflect_ignore_aperture") is False for obj in cubes)
+    assert all(z_min <= float(obj.position[1]) <= z_max for obj in cubes)
