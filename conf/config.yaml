@@ -45,6 +45,8 @@ anthropic:
 
 mujoco:
   headless: false
+  render_width: 640
+  render_height: 480
 
 outputs:
   dir: outputs

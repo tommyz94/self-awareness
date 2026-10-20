@@ -278,7 +278,7 @@ def _prepare_jobs(
     for experiment in selected_experiments:
         locked_keys = _preset_locked_keys(repo_root, experiment)
         for model in selected_models:
-            job_name = f"{experiment}__{_slug(model)}"
+            job_name = f"{_slug(experiment)}__{_slug(model)}"
             log_file = batch_dir / f"{job_name}.log"
             python_command = _build_python_command(
                 repo_root,

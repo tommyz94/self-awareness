@@ -16,6 +16,7 @@ from experiments.evaluation.metrics import (
     print_metrics,
 )
 from experiments.specs.builtin_helpers import build_cube_objects
+from experiments.naming import resolve_experiment_selection
 from experiments.specs import (
     BackendOverrides,
     ExperimentRuntimeOptions,
@@ -33,7 +34,7 @@ _DEFAULT_SINGLE_RUN_COLOR = "red"
 _VALID_CUBE_SELECTIONS = set(_COLOR_POOL)
 _VALID_CLIENT_TYPES = {"ollama", "openai", "openrouter", "google", "anthropic", "claude"}
 _CANONICAL_CLIENT_TYPES = {"ollama", "openai", "openrouter", "google", "anthropic"}
-_EXPERIMENT_SCOPED_OUTPUT_ROOTS = {"e0", "e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8"}
+_EXPERIMENT_SCOPED_OUTPUT_ROOTS = {"e0", "e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "corridor"}
 _AUTO_NAV_NAME = "auto"
 _E6_AUTOPILOT_SLEEP_SEC = 0.5
 _E6_AUTOPILOT_TARGET_REACHED_EPS = 1.0
@@ -49,6 +50,8 @@ def _create_env(
     camera_height: float,
     body_style: str,
     mujoco_headless: bool = True,
+    mujoco_render_width: int = 640,
+    mujoco_render_height: int = 480,
 ) -> BaseEnv:
     if env_type != "mujoco":
         raise ValueError(
@@ -63,6 +66,8 @@ def _create_env(
         camera_height=camera_height,
         body_style=body_style,
         headless=mujoco_headless,
+        render_width=mujoco_render_width,
+        render_height=mujoco_render_height,
     )
 
 
@@ -195,7 +200,13 @@ class Controller:
         save_dataset: bool = False,
         env_type: str = "mujoco",
         mujoco_headless: bool = False,
+        mujoco_render_width: int = 640,
+        mujoco_render_height: int = 480,
+        paper_experiment_id: Optional[str] = None,
     ):
+        experiment_id, paper_experiment_id = resolve_experiment_selection(
+            experiment_id, paper_experiment_id
+        )
         canonical_client_type = canonicalize_client_type(client_type)
         if canonical_client_type not in _CANONICAL_CLIENT_TYPES:
             raise ValueError(
@@ -251,6 +262,7 @@ class Controller:
         self.body_style = str(body_style or "default")
         self.self_perception_mode = str(self_perception_mode or "color")
         self.experiment_id = experiment_id
+        self.paper_experiment_id = paper_experiment_id
         self.experiment_spec = get_experiment(experiment_id) if experiment_id else None
         self.experiment_runtime_options = ExperimentRuntimeOptions(
             distractors=num_distractors,
@@ -348,6 +360,8 @@ class Controller:
                 camera_height=camera_height,
                 body_style=self.body_style,
                 mujoco_headless=mujoco_headless,
+                mujoco_render_width=mujoco_render_width,
+                mujoco_render_height=mujoco_render_height,
             )
 
             if self.is_human_nav:
@@ -558,10 +572,20 @@ class Controller:
         obs_path = self.current_obs_dir / f"{self._obs_counter:06d}.jpg"
         self.sim_env.capture_image(str(obs_path))
 
+    def _build_run_context(self) -> dict:
+        paper_id = getattr(self, "paper_experiment_id", None)
+        if paper_id is None:
+            return {}
+        return {
+            "experiment_suite": "paper",
+            "experiment_preset": f"paper/{paper_id}",
+            "paper_experiment_id": paper_id,
+            "implementation_experiment_id": self.experiment_id,
+        }
+
     def _is_e4_corridor_run(self) -> bool:
         return bool(
-            self.experiment_id == "e4"
-            and self.task_spec is not None
+            self.task_spec is not None
             and self.task_spec.task_id == "corridor_task"
             and self.current_run_setup is not None
             and self.current_run_setup.scene_spec.layout_kind == "corridor"
@@ -848,7 +872,7 @@ class Controller:
             expected = scene_geometry_signature(self.scene_template)
             actual = scene_geometry_signature(run_setup.scene_spec)
             if actual != expected:
-                if self.experiment_id == "e4":
+                if self.task_spec is not None and self.task_spec.task_id == "corridor_task":
                     expected_scene = self.scene_template
                     actual_scene = run_setup.scene_spec
                     compatible_e4_variant = (
@@ -941,7 +965,7 @@ class Controller:
 
     def _run_human_nav(self):
         if not self._human_cube_task_enabled():
-            if self._is_e4_corridor_run() or self.experiment_id == "e4":
+            if self.task_spec is not None and self.task_spec.task_id == "corridor_task":
                 outcomes: list[RunOutcome] = []
                 for run_id in range(1, self.num_runs + 1):
                     run_setup = (
@@ -965,7 +989,10 @@ class Controller:
                 if outcomes and self.experiment_spec is not None:
                     print_metrics(outcomes, self.experiment_id)
                     if self.json_export:
-                        save_experiment_json(outcomes, self.experiment_id, self.output_dir)
+                        save_experiment_json(
+                            outcomes, self.experiment_id, self.output_dir,
+                            run_context=self._build_run_context(),
+                        )
                 return
 
             if self.experiment_spec is not None:
@@ -1003,7 +1030,10 @@ class Controller:
         if outcomes and self.experiment_spec is not None:
             print_metrics(outcomes, self.experiment_id)
             if self.json_export:
-                save_experiment_json(outcomes, self.experiment_id, self.output_dir)
+                save_experiment_json(
+                    outcomes, self.experiment_id, self.output_dir,
+                    run_context=self._build_run_context(),
+                )
 
     def _run_single_human_e4_episode(self, run_id: int) -> RunOutcome:
         self._human_active_run_id = run_id
@@ -1294,7 +1324,10 @@ class Controller:
 
         print_metrics(outcomes, self.experiment_id)
         if self.json_export:
-            save_experiment_json(outcomes, self.experiment_id, self.output_dir)
+            save_experiment_json(
+                outcomes, self.experiment_id, self.output_dir,
+                run_context=self._build_run_context(),
+            )
         return outcomes
 
     # ------------------------------------------------------------------
@@ -1504,6 +1537,7 @@ class Controller:
                     str(self.current_run_dir),
                     task_output=_outcome.task_result,
                     run_setup=self.current_run_setup,
+                    run_context=self._build_run_context(),
                 )
 
     # ------------------------------------------------------------------
@@ -1521,6 +1555,7 @@ class Controller:
                 str(self.current_run_dir),
                 task_output=outcome.task_result,
                 run_setup=self.current_run_setup,
+                run_context=self._build_run_context(),
             )
         if self.heatmap:
             _save_heatmap_if_supported(
@@ -1733,6 +1768,8 @@ class Controller:
 
     def _run_experiment(self) -> List[RunOutcome]:
         spec = self.experiment_spec
+        if getattr(self, "paper_experiment_id", None) is not None:
+            print(f"Paper {self.paper_experiment_id.upper()} (implementation {self.experiment_id})")
         print(f"Starting experiment {self.experiment_id.upper()} | model={self.llm_model} | client={self.client_type} | runs={self.num_runs}")
 
         if self.client_type == "ollama":
@@ -1758,5 +1795,8 @@ class Controller:
 
         print_metrics(outcomes, self.experiment_id)
         if self.json_export:
-            save_experiment_json(outcomes, self.experiment_id, self.output_dir)
+            save_experiment_json(
+                outcomes, self.experiment_id, self.output_dir,
+                run_context=self._build_run_context(),
+            )
         return outcomes

@@ -44,6 +44,7 @@ def main(cfg: DictConfig) -> None:
         e7_random_cube_heights=cfg.get("e7_random_cube_heights", False),
         save_dataset=cfg.get("save_dataset", False),
         experiment_id=cfg.experiment_id,
+        paper_experiment_id=cfg.get("paper_experiment_id"),
         num_runs=cfg.num_runs,
         history_steps=cfg.history_steps,
         ollama_host=cfg.ollama.host,
@@ -63,6 +64,8 @@ def main(cfg: DictConfig) -> None:
         save_obs=cfg.outputs.save_obs,
         env_type=cfg.env,
         mujoco_headless=cfg.mujoco.headless,
+        mujoco_render_width=cfg.mujoco.render_width,
+        mujoco_render_height=cfg.mujoco.render_height,
     )
     controller.run()
 

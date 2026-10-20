@@ -1,38 +1,14 @@
 # `conf/`
 
-Hydra configuration root for the simulator.
+Hydra configuration root. Select presets with `experiment=paper/e1` through
+`paper/e5`, or `experiment=extras/<name>`. Bare numeric presets retain the
+historical implementation IDs for compatibility.
 
-This folder contains the shared runtime config plus the experiment preset
-overrides loaded with `+experiment=...`.
+`config.yaml` defines provider settings, observation and navigation controls,
+rendering, outputs, and default runtime options. It must not contain API keys.
+`experiment/` contains thin preset selectors; experiment logic remains in
+`experiments/specs/`.
 
-## Files
-
-### `config.yaml`
-
-Base config loaded by `main.py`.
-
-It defines the main runtime knobs:
-
-- environment backend selection
-- navigation model and provider
-- prompt/history settings
-- camera/view controls such as `third_person`, `camera_height`, `body_style`, and `self_perception_mode`
-- scene appearance controls such as `random_wall_color` and `e7_random_cube_heights`
-- experiment mode and run count
-- backend-specific headless options
-- output/logging toggles
-
-### `experiment/`
-
-Preset overrides for `e0` through `e8`.
-
-Each preset keeps the public CLI simple by setting:
-
-- `experiment_id`
-- default `num_runs`
-- any experiment-specific override that should not live in the base config
-
-## Notes
-
-- `conf/` is a canonical folder, not a wrapper.
-- See `experiment/EXPERIMENT.md` for the preset-by-preset overview.
+The public paper presets set seven episodes per seed and the benchmark runtime
+settings. Extras retain their own defaults. See
+`experiment/EXPERIMENT.md` and `docs/EXPERIMENTS.md`.

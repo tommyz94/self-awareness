@@ -44,3 +44,10 @@ Shared human finish-dialog helper used by the runtime controller.
 - For MuJoCo human cube-task runs, press `f` to open the finish dialog, use
   `1/2/3` to choose the cube, type reasoning directly, then press `Enter` to
   submit.
+
+## Paper names
+
+`Controller` accepts `paper/e1` through `paper/e5`, plus named `extras/`
+aliases, and resolves them before selecting a scene. Paper JSON exports retain
+the implementation ID and add `paper_experiment_id`; no metric formula is
+changed by this metadata.

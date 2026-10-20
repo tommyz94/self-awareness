@@ -1,5 +1,11 @@
 # `scripts/dev/`
 
+Historical analysis tools use implementation IDs e1/e2/e3/e5/e7.
+Paper E4 is implementation e5; paper E5 is implementation e7.
+Use `experiment=paper/e1` through `paper/e5` for new manuscript-facing runs.
+Metric conventions remain pending the collaborator's final evaluator.
+See `docs/REPRODUCIBILITY.md` before rebuilding or pruning any data.
+
 Developer-local shell helpers.
 
 ## Files

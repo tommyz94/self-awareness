@@ -61,6 +61,7 @@ def test_mujoco_reset_parks_mirrored_cubes_outside_aperture():
     body_positions: list[tuple[int, float, float, float]] = []
 
     fake_env = SimpleNamespace(
+        _body_style="default",
         _x=0.0,
         _z=0.0,
         _yaw=0.0,
@@ -135,6 +136,7 @@ def test_mujoco_reset_keeps_mirrored_cube_when_aperture_is_ignored():
     body_positions: list[tuple[int, float, float, float]] = []
 
     fake_env = SimpleNamespace(
+        _body_style="default",
         _x=0.0,
         _z=0.0,
         _yaw=0.0,

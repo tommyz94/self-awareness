@@ -78,6 +78,8 @@ nest-asyncio==1.6.0
 notebook==7.4.0
 notebook_shim==0.2.4
 numpy==2.0.2
+mujoco>=3.2,<4
+pandas>=2
 opencv-python
 omegaconf==2.3.0
 openai

@@ -1,0 +1,5 @@
+# Offline verification and analysis dependencies.
+-r requirements.txt
+pytest>=8,<10
+pandas>=2
+matplotlib>=3.8

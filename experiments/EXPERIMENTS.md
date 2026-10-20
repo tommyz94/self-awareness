@@ -2,6 +2,10 @@
 
 Experiment definitions and evaluation tooling.
 
+`naming.py` maps manuscript-facing `paper/e1` through `paper/e5` and named
+research extras to stable implementation IDs. Existing data are not renamed.
+See `docs/EXPERIMENTS.md` for the mapping.
+
 The canonical layout is now split by responsibility:
 
 - `specs/` defines experiment plugins, scene templates, and run-setup wiring

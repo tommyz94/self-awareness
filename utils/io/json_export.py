@@ -54,9 +54,11 @@ def save_run_json(
     output_dir: str,
     task_output: dict = None,
     run_setup: RunSetup | None = None,
+    run_context: dict | None = None,
 ) -> str:
     path = Path(output_dir) / f"run{run_id:02d}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
+    context = run_context or {}
     run_setup_data = _serialize_run_setup(run_setup)
     if run_setup_data is None and outcome.scene_id is not None:
         run_setup_data = {
@@ -69,6 +71,9 @@ def save_run_json(
         "experiment_id": outcome.experiment_id,
         "scene_id": outcome.scene_id,
         "task_id": outcome.task_id,
+        **({"run_context": context} if context else {}),
+        **({"paper_experiment_id": context["paper_experiment_id"]}
+           if context.get("paper_experiment_id") is not None else {}),
         "run_setup": run_setup_data,
         "task_output": task_output if task_output is not None else {},
         # Legacy flat fields (kept for judge / W&B compat)
@@ -86,7 +91,10 @@ def save_run_json(
     return str(path)
 
 
-def save_experiment_json(outcomes: List[RunOutcome], experiment_id: str, output_dir: str) -> str:
+def save_experiment_json(
+    outcomes: List[RunOutcome], experiment_id: str, output_dir: str,
+    run_context: dict | None = None,
+) -> str:
     path = Path(output_dir) / "experiment_summary.json"
     task_id = outcomes[0].task_id if outcomes and outcomes[0].task_id else None
     scene_id = outcomes[0].scene_id if outcomes and outcomes[0].scene_id else None
@@ -110,6 +118,10 @@ def save_experiment_json(outcomes: List[RunOutcome], experiment_id: str, output_
         "seed": int(_seed_str) if _seed_str is not None else None,
         "num_runs": len(outcomes),
     }
+    context = run_context or {}
+    if context.get("paper_experiment_id") is not None:
+        data["paper_experiment_id"] = context["paper_experiment_id"]
+        data["run_context"] = context
     if is_summary_task:
         sia = summary["sia"]
         gi = summary["gi"]

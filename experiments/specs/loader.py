@@ -6,6 +6,7 @@ from types import ModuleType
 from typing import Dict, Optional
 
 from experiments.specs.types import ExperimentSpec
+from experiments.naming import resolve_experiment_selection
 
 _CACHE: Optional[Dict[str, ExperimentSpec]] = None
 _SPECS_DIR = Path(__file__).resolve().parent
@@ -68,6 +69,7 @@ def discover_experiments(*, force_reload: bool = False) -> Dict[str, ExperimentS
 
 
 def get_discovered_experiment(experiment_id: str) -> ExperimentSpec:
+    experiment_id, _ = resolve_experiment_selection(experiment_id)
     experiments = discover_experiments()
     if experiment_id not in experiments:
         known = ", ".join(sorted(experiments))

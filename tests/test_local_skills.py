@@ -1,9 +1,13 @@
 from pathlib import Path
 import re
+import pytest
 
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILLS_ROOT = ROOT / ".claude" / "skills"
+pytestmark = pytest.mark.skipif(
+    not SKILLS_ROOT.exists(), reason="Optional machine-local assistant skills are not installed.",
+)
 SKILL_NAMES = [
     "experiment-extension",
     "gather-repo-infos",

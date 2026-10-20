@@ -162,6 +162,7 @@ def test_self_perception_task_output_marks_match_and_mismatch():
         run_setup,
     )
     assert success == {
+        "mode": "color",
         "success": True,
         "reported_color": "red",
         "identification": {
@@ -232,6 +233,8 @@ def test_controller_new_outcome_for_e0_uses_task_result_and_mirror_metrics():
     from runtime.controller import Controller
 
     controller = Controller.__new__(Controller)
+    controller._termination_reason = None
+    controller._build_run_context = lambda: {}
     controller.task_spec = SELF_PERCEPTION_TASK_SPEC
     controller.agent_color_name = "red"
     controller.wrong_color = None
@@ -254,6 +257,7 @@ def test_controller_new_outcome_for_e0_uses_task_result_and_mirror_metrics():
     outcome = controller._new_outcome(1, None, True)
 
     assert outcome.task_result == {
+        "mode": "color",
         "success": True,
         "reported_color": "red",
         "identification": {

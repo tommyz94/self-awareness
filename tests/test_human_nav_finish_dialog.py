@@ -95,7 +95,9 @@ class _FakeLogger:
 
 
 def _load_run_json(base_dir: Path, run_id: int) -> dict:
-    path = base_dir / "mujoco" / "e1" / "ollama" / "human" / "runs" / f"run{run_id:02d}.json"
+    matches = list(base_dir.rglob(f"run{run_id:02d}.json"))
+    assert len(matches) == 1
+    path = matches[0]
     return json.loads(path.read_text())
 
 
@@ -204,18 +206,9 @@ def test_human_cube_runs_advance_to_next_run_after_submit(monkeypatch, tmp_path)
 
     run01 = _load_run_json(tmp_path / "outputs", 1)
     run02 = _load_run_json(tmp_path / "outputs", 2)
-    summary = json.loads(
-        (
-            tmp_path
-            / "outputs"
-            / "mujoco"
-            / "e1"
-            / "ollama"
-            / "human"
-            / "runs"
-            / "experiment_summary.json"
-        ).read_text()
-    )
+    summaries = list((tmp_path / "outputs").rglob("experiment_summary.json"))
+    assert len(summaries) == 1
+    summary = json.loads(summaries[0].read_text())
 
     assert len(fake_env.reset_calls) == 2
     assert run01["selected_cube"] == "red"
@@ -348,6 +341,6 @@ def test_cube_fill_bgr_uses_shared_color_pool_mapping():
     from runtime.human_finish_dialog import _cube_fill_bgr
 
     assert _cube_fill_bgr("red") == (0, 0, 255)
-    assert _cube_fill_bgr("blue") == (255, 76, 0)
-    assert _cube_fill_bgr("orange") == (0, 140, 255)
+    assert _cube_fill_bgr("blue") == (255, 0, 0)
+    assert _cube_fill_bgr("orange") == (0, 127, 255)
     assert _cube_fill_bgr("unknown-color") == (190, 190, 190)

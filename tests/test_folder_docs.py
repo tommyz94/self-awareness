@@ -29,7 +29,6 @@ CANONICAL_DOCS = [
     ROOT / "experiments" / "METRICS.md",
     ROOT / "llm" / "LLM.md",
     ROOT / "utils" / "UTILS.md",
-    ROOT / "CLAUDE.md",
 ]
 BANNED_STALE_SNIPPETS = [
     "python -m experiments.llm_as_judge",
@@ -56,7 +55,14 @@ RENAMED_DOC_LEGACY_SECTIONS = {
 
 
 def _iter_in_scope_dirs():
-    for path in sorted(p for p in ROOT.rglob("*") if p.is_dir()):
+    # Start at source roots so private observation datasets are never scanned.
+    candidates = (
+        path
+        for root_name in sorted(INCLUDED_ROOTS)
+        for path in [ROOT / root_name, *(ROOT / root_name).rglob("*")]
+        if path.is_dir()
+    )
+    for path in sorted(candidates):
         rel = path.relative_to(ROOT)
         if not rel.parts:
             continue

@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 import importlib
@@ -255,9 +256,13 @@ def test_openrouter_matrix_script_rejects_experiment_locked_overrides():
     assert "Refusing to override experiment-owned preset keys" in result.stderr
 
 
-def test_openrouter_matrix_script_allows_matrix_nav_for_e7_preset():
+def test_openrouter_matrix_script_allows_matrix_nav_for_e7_preset(tmp_path):
     script = ROOT / "scripts" / "dev" / "openrouter_matrix.py"
     config = ROOT / "scripts" / "dev" / "openrouter_matrix.example.json"
+    data = json.loads(config.read_text())
+    data["experiments"].append("e7")
+    config = tmp_path / "matrix.json"
+    config.write_text(json.dumps(data))
 
     result = subprocess.run(
         [

@@ -130,6 +130,7 @@ def test_mujoco_reset_handles_corridor_runs_without_cube_joints():
     body_pos_calls = {"count": 0}
 
     dummy_env = SimpleNamespace(
+        _body_style="default",
         _secondary_present=False,
         _cube_jnt_addrs={},
         _mirror_cube_jnt_addrs={},
@@ -165,6 +166,7 @@ def test_mujoco_reset_long_variant_places_secondary_on_opposite_far_end():
 
     run_setup = _build_corridor_run_setup(use_mirror=False, step_target=20)
     dummy_env = SimpleNamespace(
+        _body_style="default",
         _secondary_present=True,
         _cube_jnt_addrs={},
         _mirror_cube_jnt_addrs={},
@@ -317,16 +319,16 @@ def test_corridor_task_prompts_have_no_cube_language_and_support_third_person():
     )
     combined = f"{system_prompt}\n{user_prompt}".lower()
 
-    assert "step 10" in build_instruction(run_setup).lower()
-    assert "step 20" in build_instruction(run_setup).lower()
+    assert "mirror wall" in build_instruction(run_setup).lower()
+    assert "far wall" in build_instruction(run_setup).lower()
     assert "current third-person rgb image" in system_prompt.lower()
     assert "a = move forward-left diagonally" in system_prompt.lower()
     assert "d = move forward-right diagonally" in system_prompt.lower()
     assert "action must always be one of: w, a, d, done" in system_prompt.lower()
     assert "goal_status" in system_prompt
     assert GOAL_STATUS_SCHEMA["required"] == ["status", "reason", "confidence"]
-    assert "done@10" in user_prompt.lower()
-    assert "done@20" in user_prompt.lower()
+    assert "reach the final row" in user_prompt.lower()
+    assert "stop at the correct step" in user_prompt.lower()
     assert "why you believe you are at the corridor end" in user_prompt.lower()
     assert "selected cube" not in combined
     assert "identification" not in combined
@@ -765,6 +767,8 @@ def test_controller_new_outcome_only_populates_task_result_for_completed_cube_do
     from experiments.tasks.cube import CUBE_TASK_SPEC
 
     controller = Controller.__new__(Controller)
+    controller._termination_reason = None
+    controller._build_run_context = lambda: {}
     controller.task_spec = CUBE_TASK_SPEC
     controller.agent_color_name = "red"
     controller.wrong_color = None
@@ -785,6 +789,9 @@ def test_controller_new_outcome_only_populates_task_result_for_completed_cube_do
     ]
     completed = controller._new_outcome(1, "red", True)
     assert completed.task_result == {
+        "position_match": False,
+        "color_match": True,
+        "success": False,
         "selected_cube": "red",
         "identification": {
             "my_color": "red",
@@ -1154,7 +1161,7 @@ def test_llm_e4_move_at_terminal_row_finishes_episode_with_failure(monkeypatch, 
     controller.llm_model = "dummy"
     controller.task_spec = CORRIDOR_TASK_SPEC
     controller.current_run_setup = _build_corridor_run_setup(use_mirror=True, step_target=10)
-    controller.obs_dir = tmp_path
+    controller.current_obs_dir = tmp_path
     controller.step_history = []
     controller.history_steps = 1
     controller.previous_pos = None

@@ -1,7 +1,9 @@
 # `experiments/specs/`
 
 Canonical home for experiment plugin definitions and shared experiment-spec
-types.
+types. Folder IDs are historical implementation names. Public paper presets
+are `paper/e1` through `paper/e5`; the mapping is in `experiments/naming.py`
+and `docs/EXPERIMENTS.md`.
 
 ## Canonical files
 

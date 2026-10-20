@@ -1,186 +1,94 @@
-# File temporanei del sistema operativo
+# Credentials and machine-local settings
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+id_rsa
+id_rsa.pub
+secrets.json
+config.ini
+/scripts/dev/keys.sh
+
+# OS, editors, local assistants
 .DS_Store
 Thumbs.db
-.pytest_cache/
-CLAUDE.md
-scripts/dev/keys.sh
-Mirror_View_Dataset/
-Mirror_Video_Dataset/
-outputs/
-TODO.md
-wandb/
-
-unity/
-docs/
-
-# File generati dagli IDE
 .idea/
 .vscode/
 .claude/
-*.iml
-*.ipr
-*.iws
-*.suo
-*.user
-*.sln
-*.vcxproj
-*.vcxproj.filters
-*.vcxproj.user
-*.sdf
-*.opensdf
-obj/
-bin/
-Debug/
-Release/
-build/
+CLAUDE.md
+TODO.md
+*.swp
+*.swo
+*~
+*.bak
+*.backup
 
-# File di Python
-__pycache__/
-*.pyc
-*.pyd
-dist/
-build/
-eggs/
-*.egg-info/
-venv/
+# Python environments, build products, caches
 .venv/
-Lib/
-Include/
-site-packages/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+.ipynb_checkpoints/
+.cache_png/
+.cache_obj/
+
+# Generated runs and private research handoffs (files stay on disk)
+/outputs/
+/outputs_*/
+/outputs*.zip
+/output/
+/tmp/
+/reports/
+/results/
+/result.csv
+/Mirror_View_Dataset/
+/Mirror_Video_Dataset/
+/final_outputs/*
+!/final_outputs/reports/
+/logs/
+/slurm/
+/wandb/
 *.log
 *.tmp
 
-# File di Jupyter Notebook
-.ipynb_checkpoints/
+# Generated figures; notebooks and curated source tables remain trackable
+/notebooks/*.png
+/notebooks/*.pdf
+/notebooks/figures/
+/notebooks/paper_assets/main_plots/
+/notebooks/paper_assets/appendix_plots/
+/paper_assets/
 
-# File di dati (potrebbe essere specifico al tuo progetto)
-data/local_data.csv
-data/temp_files/
-
-# File di configurazione (potrebbe contenere informazioni sensibili)
-config.ini
-secrets.json
-
-# File di log
-*.log
-outputs/
-logs/
-slurm/
-outputs*.zip
-
-# Cache/generated assets from clothed-avatar rendering
-.cache_png/
-**/.cache_png/
-
-# Personal/local launch helpers not part of the standard repo setup
-/overnight_runs.sh
+# Personal launch configurations; shared presets and extra experiments are source
 /scripts/dev/run_openrouter_matrix_requested.sh
 /scripts/dev/openrouter_matrix.requested.json
 /scripts/dev/openrouter_matrix.smoke.json
 /scripts/dev/openrouter_matrix.smoke.safe.json
 
-# Pacchetti o dipendenze installate (a seconda del workflow)
-# Se committi la cartella venv, rimuovi queste righe
-# Lib/
-# Include/
-# Scripts/
-# site-packages/
-
-# File specifici del tuo progetto che non vuoi tracciare
-my_private_file.txt
-results/
-
-# Esempi più specifici per alcuni linguaggi/framework
-
-# Node.js
-node_modules/
-package-lock.json
-yarn.lock
-npm-debug.log*
-yarn-error.log*
-
-# Java
-*.class
-*.jar
-target/
-
-# C++
-*.o
-*.exe
-
-# Go
-bin/
-pkg/
-*.out
-
-# Ruby on Rails
-.bundle
-log/*.log
-tmp/**/*
-!tmp/.keep
-vendor/bundle/
-public/assets
-.sass-cache
-.ruby-version
-.rbenv-vars
-
-# Docker
-docker-compose.override.yml
-*.dockerignore # Di solito si chiama .dockerignore, ma si può ignorare per esempio un file specifico
-
-# File di test coverage
-coverage/
-.nyc_output/
-
-# File di documentazione generata
-docs/_build/
-
-# File di backup
-*.bak
-*.backup
-*~
-
-# File di esportazione
-*.csv
-*.dat
-*.sql
-
-# File di cache di vari strumenti
-.gradle/
-.m2/
-.sass-cache/
-.sonar/
-
-# File temporanei di editor specifici
-*.swp
-*.swo
-.#*
-
-# File di output di compilazione LaTeX
+# LaTeX build intermediates (do not globally ignore PDF/CSV source artifacts)
 *.aux
 *.bbl
 *.blg
 *.dvi
-*.log
-*.pdf
-*.ps
 *.toc
-*.out
+*.synctex.gz
 
-# Ignora tutti i file .user (spesso specifici dell'utente)
-*.user
-
-# Ignora le cartelle vuote (utile in alcuni casi)
-# */
-
-# Ignora i file di history di bash o altri shell
+# Other local tools
+node_modules/
+npm-debug.log*
+yarn-error.log*
 .bash_history
 .zsh_history
 .fish_history
 .history
-
-# File di password o chiavi private (MAI committerli!)
-*.key
-*.pem
-id_rsa
-id_rsa.pub

@@ -1,0 +1,7 @@
+# @package _global_
+experiment_id: e0
+paper_experiment_id: null
+num_runs: 10
+max_steps: 1
+outputs:
+  dir: outputs/extras
