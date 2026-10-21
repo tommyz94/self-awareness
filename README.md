@@ -117,6 +117,13 @@ Historical analysis commands, selected counts, and data-preservation checks are
 documented in [reproducibility](docs/REPRODUCIBILITY.md). Generated data remain
 local; a public code checkout is not a download of the evaluation dataset.
 
+## Paper figures
+
+Source-only notebooks and the batch renderer cover all nine models, with the
+original figure styles preserved. See [plot sources](notebooks/NOTEBOOKS.md)
+for the standalone plotting dependencies and commands. Aggregate inputs and
+generated figures are supplied separately; metric conventions remain pending.
+
 ## Tests and development
 
 ```sh

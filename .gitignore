@@ -68,6 +68,11 @@ htmlcov/
 /notebooks/figures/
 /notebooks/paper_assets/main_plots/
 /notebooks/paper_assets/appendix_plots/
+/notebooks/paper_assets/all_models/
+# Original local notebook includes saved results; publish its source-only copy.
+/notebooks/archive/results_analysis_legacy.ipynb
+# Provisional PDF-transcribed values are local plotting inputs, not source code.
+/notebooks/plot_sources/cosmos_reported_metrics.json
 /paper_assets/
 
 # Personal launch configurations; shared presets and extra experiments are source
