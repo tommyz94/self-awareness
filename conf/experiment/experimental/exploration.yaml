@@ -1,0 +1,8 @@
+# @package _global_
+experiment_id: experimental/exploration
+paper_experiment_id: null
+num_runs: 100
+max_steps: 100
+nav: auto
+outputs:
+  dir: outputs/experimental

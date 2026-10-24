@@ -6,6 +6,8 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import pytest
+
 
 class _FakeTable:
     def __init__(self, columns):
@@ -133,6 +135,20 @@ def test_build_judge_export_contains_v2_fields():
     assert export["mean_score"] == 3.5
     assert export["results"][0]["metric_code"] == "M1"
     assert export["results"][0]["metric_name"] == "Mirror"
+
+
+@pytest.mark.parametrize("root", ["outputs/paper", "/tmp/custom-runs/pipeline.abc123"])
+def test_judge_export_uses_current_output_layout(root):
+    export = _build_export(
+        _sample_results_full(),
+        f"{root}/mujoco/e1/ollama/gemma3_4b/level_2/20261024_125444/run_01/run01.json",
+    )
+    assert export["env"] == "mujoco"
+    assert export["experiment_type"] == "e1"
+    assert export["nav_client"] == "ollama"
+    assert export["evaluated_model"] == "gemma3_4b"
+    assert export["run_stem"] == "run01"
+    assert export["total_score"] == 14
 
 
 def test_derive_run_context_experiment_path():

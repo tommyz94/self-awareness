@@ -1,8 +1,0 @@
-# @package _global_
-experiment_id: e8
-paper_experiment_id: null
-num_runs: 10
-max_steps: 100
-body_style: clothes
-outputs:
-  dir: outputs/extras

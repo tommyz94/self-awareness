@@ -5,7 +5,7 @@ import pytest
 
 
 def test_build_cube_objects_marks_cubes_as_reflectable():
-    from experiments.specs.builtin_helpers import build_cube_objects
+    from experiments.shared.scenes import build_cube_objects
 
     cubes = build_cube_objects(
         {
@@ -21,7 +21,7 @@ def test_build_cube_objects_marks_cubes_as_reflectable():
 
 def test_mujoco_two_room_xml_includes_mirror_cubes_only_for_mirror_scenes():
     from env.backends.mujoco import _build_two_room_xml
-    from experiments.specs.types import SceneObjectSpec, SceneSpec
+    from experiments.shared.types import SceneObjectSpec, SceneSpec
 
     mirror_scene = SceneSpec(
         scene_id="mirror_room",
@@ -55,7 +55,7 @@ def test_mujoco_two_room_xml_includes_mirror_cubes_only_for_mirror_scenes():
 
 def test_mujoco_reset_parks_mirrored_cubes_outside_aperture():
     from env.backends.mujoco import MuJoCoEnv
-    from experiments.specs.types import RunSetup, SceneObjectSpec, SceneSpec
+    from experiments.shared.types import RunSetup, SceneObjectSpec, SceneSpec
 
     parked_positions: list[tuple[int, float, float, float]] = []
     body_positions: list[tuple[int, float, float, float]] = []
@@ -130,7 +130,7 @@ def test_mujoco_reset_parks_mirrored_cubes_outside_aperture():
 
 def test_mujoco_reset_keeps_mirrored_cube_when_aperture_is_ignored():
     from env.backends.mujoco import MuJoCoEnv
-    from experiments.specs.types import RunSetup, SceneObjectSpec, SceneSpec
+    from experiments.shared.types import RunSetup, SceneObjectSpec, SceneSpec
 
     parked_positions: list[tuple[int, float, float, float]] = []
     body_positions: list[tuple[int, float, float, float]] = []
@@ -209,10 +209,10 @@ def test_segmentation_helper_detects_visible_mirror_ego_pixels():
     assert _segmentation_has_geom_pixels(seg, {99}, geom_obj_type=5, min_pixels=1) is False
 
 
-@pytest.mark.parametrize("experiment_id", ["e1", "e2", "e3", "e5"])
+@pytest.mark.parametrize("experiment_id", ["e1", "e2", "e3", "e4"])
 def test_cube_experiments_always_include_a_cube_with_agent_color(experiment_id: str):
-    from experiments.specs import get_experiment
-    from experiments.specs.types import ExperimentRuntimeOptions
+    from experiments import get_experiment
+    from experiments.shared.types import ExperimentRuntimeOptions
 
     spec = get_experiment(experiment_id)
     run_setup = spec.initialize_run(1, ExperimentRuntimeOptions())
@@ -222,10 +222,10 @@ def test_cube_experiments_always_include_a_cube_with_agent_color(experiment_id: 
     assert run_setup.agent_color_name in {str(obj.color) for obj in cubes}
 
 
-@pytest.mark.parametrize("experiment_id", ["e3", "e5", "e7"])
+@pytest.mark.parametrize("experiment_id", ["e3", "e4", "e5"])
 def test_mirrored_cube_experiments_expand_mirror_window_to_cover_cube_positions(experiment_id: str):
-    from experiments.specs import get_experiment
-    from experiments.specs.types import ExperimentRuntimeOptions
+    from experiments import get_experiment
+    from experiments.shared.types import ExperimentRuntimeOptions
 
     spec = get_experiment(experiment_id)
     run_setup = spec.initialize_run(1, ExperimentRuntimeOptions())
@@ -242,8 +242,8 @@ def test_mirrored_cube_experiments_expand_mirror_window_to_cover_cube_positions(
 
 
 def test_e1_uses_wide_eight_unit_mirror_window():
-    from experiments.specs import get_experiment
-    from experiments.specs.types import ExperimentRuntimeOptions
+    from experiments import get_experiment
+    from experiments.shared.types import ExperimentRuntimeOptions
 
     spec = get_experiment("e1")
     run_setup = spec.initialize_run(1, ExperimentRuntimeOptions())
@@ -256,8 +256,8 @@ def test_e1_uses_wide_eight_unit_mirror_window():
 
 
 def test_e1_cubes_stay_inside_wide_mirror_aperture():
-    from experiments.specs import get_experiment
-    from experiments.specs.types import ExperimentRuntimeOptions
+    from experiments import get_experiment
+    from experiments.shared.types import ExperimentRuntimeOptions
 
     spec = get_experiment("e1")
     run_setup = spec.initialize_run(1, ExperimentRuntimeOptions())

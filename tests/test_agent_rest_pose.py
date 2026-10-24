@@ -15,8 +15,8 @@ def test_mujoco_arm_rest_pose_keeps_arms_down_and_lightly_flexed():
 
 
 def test_e5_mujoco_reset_applies_arm_rest_pose_to_distractor_prefixes():
-    from experiments.specs.e5.experiment import _apply_mujoco_reset
-    from experiments.specs.types import RunSetup, SceneObjectSpec, SceneSpec
+    from experiments.shared.distractors import _apply_mujoco_reset
+    from experiments.shared.types import RunSetup, SceneObjectSpec, SceneSpec
 
     applied_prefixes: list[str] = []
 

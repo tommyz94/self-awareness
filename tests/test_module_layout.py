@@ -53,7 +53,6 @@ def test_repo_no_longer_contains_removed_flat_utils_modules():
         for candidate in paths:
             if candidate in {
                 Path(__file__).resolve(),
-                root / "tests" / "test_folder_docs.py",
                 root / "tests" / "test_heatmap_and_scripts.py",
             }:
                 continue
@@ -135,7 +134,6 @@ def test_repo_no_longer_contains_removed_env_and_experiments_wrapper_modules():
         for candidate in paths:
             if candidate in {
                 Path(__file__).resolve(),
-                root / "tests" / "test_folder_docs.py",
                 root / "tests" / "test_heatmap_and_scripts.py",
             }:
                 continue
@@ -370,7 +368,7 @@ def test_repo_no_longer_contains_removed_controllers_package():
 
 
 def test_e1_e2_e3_experiment_spec_regression():
-    from experiments.specs.registry import get_experiment
+    from experiments import get_experiment
 
     e1 = get_experiment("e1")
     e2 = get_experiment("e2")
@@ -397,9 +395,9 @@ def test_e1_e2_e3_experiment_spec_regression():
 
 
 def test_e0_experiment_spec_regression():
-    from experiments.specs.registry import get_experiment
+    from experiments import get_experiment
 
-    e0 = get_experiment("e0")
+    e0 = get_experiment("experimental/direct_perception")
     rs0 = e0.run_initializer(1)
 
     assert e0.task_id == "self_perception_task"

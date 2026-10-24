@@ -14,10 +14,10 @@ def test_mujoco_builder_scales_first_person_camera_height():
 
 
 def test_e5_mujoco_builder_respects_runtime_camera_height():
-    from experiments.specs import get_experiment
-    from experiments.specs.types import ExperimentRuntimeOptions
+    from experiments import get_experiment
+    from experiments.shared.types import ExperimentRuntimeOptions
 
-    spec = get_experiment("e5")
+    spec = get_experiment("e4")
     runtime_options = ExperimentRuntimeOptions(distractors=2, camera_height=0.5)
     scene_template = spec.resolve_scene_template(runtime_options)
     overrides = spec.resolve_backend_overrides(runtime_options, scene_template)

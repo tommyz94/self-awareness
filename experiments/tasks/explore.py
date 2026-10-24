@@ -1,5 +1,5 @@
 """
-Room exploration task spec (e6 - e7).
+Room exploration task for paper E5 and experimental exploration.
 
 The explore task asks the agent to navigate and observe a mirrored room with
 moving distractor agents. It does not include cube selection.
@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional, Tuple
 
-from experiments.specs.types import RunSetup, TaskCapabilities, TaskSpec
+from experiments.shared.types import RunSetup, TaskCapabilities, TaskSpec
 from llm.navigation.parser import _parse_json_reply
 from utils.colors import COLOR_POOL as _COLOR_POOL
 

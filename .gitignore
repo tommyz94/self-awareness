@@ -43,6 +43,14 @@ htmlcov/
 .cache_png/
 .cache_obj/
 
+# Optional local assets for experimental/embodiment
+/clothes/
+
+# Private notes and local batch launchers
+/docs/
+/overnight_runs.sh
+/run_msr_levels.sh
+
 # Generated runs and private research handoffs (files stay on disk)
 /outputs/
 /outputs_*/
@@ -54,8 +62,7 @@ htmlcov/
 /result.csv
 /Mirror_View_Dataset/
 /Mirror_Video_Dataset/
-/final_outputs/*
-!/final_outputs/reports/
+/final_outputs/
 /logs/
 /slurm/
 /wandb/
@@ -66,9 +73,7 @@ htmlcov/
 /notebooks/*.png
 /notebooks/*.pdf
 /notebooks/figures/
-/notebooks/paper_assets/main_plots/
-/notebooks/paper_assets/appendix_plots/
-/notebooks/paper_assets/all_models/
+/notebooks/paper_assets/
 # Original local notebook includes saved results; publish its source-only copy.
 /notebooks/archive/results_analysis_legacy.ipynb
 # Provisional PDF-transcribed values are local plotting inputs, not source code.

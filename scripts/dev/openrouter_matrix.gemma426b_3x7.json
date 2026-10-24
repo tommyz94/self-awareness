@@ -1,0 +1,33 @@
+{
+  "client": "openrouter",
+  "python_bin": "./.venv/bin/python",
+  "main_script": "main.py",
+  "copy_env": [
+    "OPENROUTER_API_KEY"
+  ],
+  "env_vars": {
+    "PYTHONUNBUFFERED": "1"
+  },
+  "models": [
+    "google/gemma-4-26b-a4b-it:nitro"
+  ],
+  "experiments": [
+    "e1",
+    "e2",
+    "e3",
+    "e4",
+    "e5"
+  ],
+  "repetitions": 3,
+  "shared_args": {
+    "mujoco.headless": true,
+    "openrouter.min_request_interval_sec": 1.0,
+    "outputs.dir": "outputs/paper/gemma426b_3x7"
+  },
+  "launcher": {
+    "terminal_app": "Terminal",
+    "keep_open": true,
+    "pause_seconds_between_launches": 0.5,
+    "log_dir": "logs/openrouter_matrix_gemma426b_3x7"
+  }
+}

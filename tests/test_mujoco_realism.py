@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from experiments.specs.builtin_helpers import build_cube_run_setup, build_mirror_room_scene
+from experiments.shared.scenes import build_cube_run_setup, build_mirror_room_scene
 
 
 def test_two_room_mujoco_xml_uses_textured_materials_and_explicit_lighting():

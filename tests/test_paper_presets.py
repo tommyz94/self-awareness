@@ -11,15 +11,15 @@ from hydra import compose, initialize_config_dir
 import pytest
 
 from experiments.evaluation.metrics import RunOutcome
-from experiments.naming import EXTRA_EXPERIMENTS, PAPER_EXPERIMENTS, resolve_experiment_selection
-from experiments.specs import ExperimentRuntimeOptions, get_experiment
+from experiments.naming import EXPERIMENTAL_EXPERIMENTS, PAPER_EXPERIMENTS, resolve_experiment_selection
+from experiments import ExperimentRuntimeOptions, get_experiment
 from utils.io.json_export import save_experiment_json, save_run_json
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 @pytest.mark.parametrize("paper_id,implementation_id", PAPER_EXPERIMENTS.items())
-def test_paper_preset_matches_historical_scene_and_task(paper_id, implementation_id):
+def test_paper_preset_matches_canonical_scene_and_task(paper_id, implementation_id):
     with initialize_config_dir(config_dir=str(ROOT / "conf"), version_base=None):
         cfg = compose(config_name="config", overrides=[f"experiment=paper/{paper_id}"])
 
@@ -33,18 +33,18 @@ def test_paper_preset_matches_historical_scene_and_task(paper_id, implementation
     assert cfg.body_style == "default"
 
     public = get_experiment(f"paper/{paper_id}")
-    historical = get_experiment(implementation_id)
-    options = ExperimentRuntimeOptions(e7_random_cube_heights=cfg.e7_random_cube_heights)
+    canonical = get_experiment(implementation_id)
+    options = ExperimentRuntimeOptions(random_cube_heights=cfg.random_cube_heights)
     state = random.getstate()
     try:
         random.seed(123)
         actual = asdict(public.initialize_run(1, options))
         random.seed(123)
-        expected = asdict(historical.initialize_run(1, options))
+        expected = asdict(canonical.initialize_run(1, options))
     finally:
         random.setstate(state)
     assert actual == expected
-    assert public.resolve_task() is historical.resolve_task()
+    assert public.resolve_task() is canonical.resolve_task()
     assert public.task_id == ("explore_task" if paper_id == "e5" else "cube_task")
 
 
@@ -55,38 +55,40 @@ def test_paper_preset_matches_historical_scene_and_task(paper_id, implementation
     ("exploration", "explore_task"),
     ("embodiment", "self_description_explore_task"),
     ("mirror_side_choice", "mirror_side_choice_task"),
-] if name in EXTRA_EXPERIMENTS])
+] if name in EXPERIMENTAL_EXPERIMENTS])
 def test_extra_presets_remain_resolvable(name, task_id):
     with initialize_config_dir(config_dir=str(ROOT / "conf"), version_base=None):
-        cfg = compose(config_name="config", overrides=[f"experiment=extras/{name}"])
+        cfg = compose(config_name="config", overrides=[f"experiment=experimental/{name}"])
     assert cfg.paper_experiment_id is None
-    assert get_experiment(f"extras/{name}").resolve_task().task_id == task_id
+    assert get_experiment(f"experimental/{name}").resolve_task().task_id == task_id
     assert get_experiment(cfg.experiment_id).task_id == task_id
 
 
 def test_numeric_ids_are_not_reinterpreted_and_conflicts_are_rejected():
     assert get_experiment("e4").experiment_id == "e4"
-    assert get_experiment("e5").task_id == "cube_task"
-    assert get_experiment("e7").task_id == "explore_task"
-    with pytest.raises(ValueError, match="requires implementation"):
-        resolve_experiment_selection("e4", "e4")
+    assert get_experiment("e4").task_id == "cube_task"
+    assert get_experiment("e5").task_id == "explore_task"
+    with pytest.raises(ValueError, match="Unknown experiment"):
+        get_experiment("e7")
+    with pytest.raises(ValueError, match="Conflicting"):
+        resolve_experiment_selection("e4", "e5")
     with pytest.raises(ValueError, match="Unknown paper"):
         resolve_experiment_selection("paper/e8")
 
 
 def test_paper_export_adds_identity_without_changing_legacy_fields(tmp_path):
-    context = {"paper_experiment_id": "e4", "implementation_experiment_id": "e5"}
+    context = {"paper_experiment_id": "e4", "experiment_id_scheme": "paper-v1"}
     outcome = RunOutcome(
         run_id=1, agent_color="red", wrong_color=None, selected_cube="red",
-        completed=True, steps=1, experiment_id="e5", task_id="cube_task",
+        completed=True, steps=1, experiment_id="e4", task_id="cube_task",
     )
     run_path = save_run_json(1, outcome, [], str(tmp_path), run_context=context)
-    summary_path = save_experiment_json([outcome], "e5", str(tmp_path), run_context=context)
+    summary_path = save_experiment_json([outcome], "e4", str(tmp_path), run_context=context)
     for path in (run_path, summary_path):
         data = json.loads(Path(path).read_text())
-        assert data["experiment_id"] == "e5"
+        assert data["experiment_id"] == "e4"
         assert data["paper_experiment_id"] == "e4"
-    assert context == {"paper_experiment_id": "e4", "implementation_experiment_id": "e5"}
+    assert context == {"paper_experiment_id": "e4", "experiment_id_scheme": "paper-v1"}
 
 
 def test_controller_resolves_public_preset_and_records_both_ids(monkeypatch, tmp_path):
@@ -99,10 +101,10 @@ def test_controller_resolves_public_preset_and_records_both_ids(monkeypatch, tmp
         output_dir=str(tmp_path), heatmap=False,
     )
     context = controller._build_run_context()
-    assert controller.experiment_id == "e5"
+    assert controller.experiment_id == "e4"
     assert controller.task_spec.task_id == "cube_task"
     assert context["paper_experiment_id"] == "e4"
-    assert context["implementation_experiment_id"] == "e5"
+    assert context["experiment_id_scheme"] == "paper-v1"
     assert context["experiment_preset"] == "paper/e4"
 
 
@@ -137,10 +139,10 @@ def test_controller_finalize_propagates_paper_context_without_changing_outcome(t
 
     controller = Controller.__new__(Controller)
     controller.paper_experiment_id = "e4"
-    controller.experiment_id = "e5"
+    controller.experiment_id = "e4"
     controller._build_run_context = lambda: {
         "paper_experiment_id": "e4", "experiment_preset": "paper/e4",
-        "implementation_experiment_id": "e5",
+        "experiment_id_scheme": "paper-v1",
     }
     controller.current_run_dir = tmp_path
     controller.current_run_setup = None
@@ -149,10 +151,10 @@ def test_controller_finalize_propagates_paper_context_without_changing_outcome(t
     controller.step_records = []
     controller.json_export = True
     controller.heatmap = False
-    outcome = RunOutcome(1, "red", None, "red", True, 1, experiment_id="e5", task_id="cube_task")
+    outcome = RunOutcome(1, "red", None, "red", True, 1, experiment_id="e4", task_id="cube_task")
     assert controller._finalize_episode(1, outcome) is outcome
     data = json.loads((tmp_path / "run01.json").read_text())
-    assert data["experiment_id"] == "e5"
+    assert data["experiment_id"] == "e4"
     assert data["paper_experiment_id"] == "e4"
     assert data["run_context"]["experiment_preset"] == "paper/e4"
     assert data["completed"] is True

@@ -49,45 +49,48 @@ def _derive_run_context(run_path: str | Path, run_name: str | None = None) -> Ru
     path = Path(run_path)
     parts = path.parts
 
-    try:
-        runs_idx = parts.index("runs")
-    except ValueError as exc:
-        raise ValueError(
-            f"Could not derive W&B context from run path {path!s}: missing 'runs' segment."
-        ) from exc
-
-    outputs_idx = None
-    for idx, part in enumerate(parts[:runs_idx]):
-        if part == "outputs":
-            outputs_idx = idx
-
-    if outputs_idx is not None:
-        between = parts[outputs_idx + 1 : runs_idx]
+    # Current layout: <root>/<env>/<experiment>/<client>/<model>/level_N/<timestamp>/run_NN/runNN.json.
+    if len(parts) >= 8 and re.fullmatch(r"level_\d+", parts[-4]) and re.fullmatch(r"run_\d+", parts[-2]):
+        env, experiment_type, nav_client, evaluated_model = parts[-8:-4]
     else:
-        between = ()
+        try:
+            runs_idx = parts.index("runs")
+        except ValueError as exc:
+            raise ValueError(
+                f"Could not derive W&B context from run path {path!s}: missing 'runs' segment."
+            ) from exc
 
-    tail = parts[runs_idx + 1 :]
-    experiment_match = None
-    if len(between) >= 4:
-        candidate = between[-3]
-        if re.fullmatch(r"e\d+", candidate):
-            experiment_match = candidate
+        outputs_idx = None
+        for idx, part in enumerate(parts[:runs_idx]):
+            if part == "outputs":
+                outputs_idx = idx
 
-    if experiment_match is not None:
-        env, experiment_type, nav_client, evaluated_model = between[-4:]
-    elif len(between) >= 3:
-        env, nav_client, evaluated_model = between[-3:]
-    elif len(between) == 2:
-        env, evaluated_model = between
-        nav_client = "legacy"
-    else:
-        raise ValueError(f"Could not derive env/client/model from run path {path!s}.")
+        if outputs_idx is not None:
+            between = parts[outputs_idx + 1 : runs_idx]
+        else:
+            between = ()
 
-    if experiment_match is None and len(tail) >= 2 and not tail[0].endswith(".json"):
-        experiment_type = tail[0]
-    elif experiment_match is None:
-        experiment_type = "single-run"
+        tail = parts[runs_idx + 1 :]
+        experiment_match = None
+        if len(between) >= 4:
+            candidate = between[-3]
+            if re.fullmatch(r"e\d+", candidate):
+                experiment_match = candidate
 
+        if experiment_match is not None:
+            env, experiment_type, nav_client, evaluated_model = between[-4:]
+        elif len(between) >= 3:
+            env, nav_client, evaluated_model = between[-3:]
+        elif len(between) == 2:
+            env, evaluated_model = between
+            nav_client = "legacy"
+        else:
+            raise ValueError(f"Could not derive env/client/model from run path {path!s}.")
+
+        if experiment_match is None and len(tail) >= 2 and not tail[0].endswith(".json"):
+            experiment_type = tail[0]
+        elif experiment_match is None:
+            experiment_type = "single-run"
     run_stem = path.stem
     group = f"{evaluated_model}/{experiment_type}"
     name = run_name or f"{group}/{run_stem}"

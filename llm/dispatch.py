@@ -5,8 +5,9 @@ Routes calls to the appropriate backend based on ``client_type``:
   - ``ollama``  — local Ollama server (default)
   - ``openai``  — OpenAI Responses API  (requires openai>=1.0.0)
   - ``openrouter`` — OpenRouter Chat Completions API (requires openai>=1.0.0)
-  - ``google``  — Google Gemini API     (requires google-genai>=1.0.0)
-  - ``anthropic`` — Anthropic Claude API (requires anthropic>=0.68.0)
+  - ``google``  — Google Gemini API or Vertex AI (requires google-genai>=1.0.0)
+  - ``anthropic`` — Anthropic Claude API or Claude on Vertex AI
+    (requires anthropic>=0.68.0, or anthropic[vertex] for Vertex AI)
 
 Usage
 -----
@@ -25,8 +26,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Tuple
 
-_CLIENT_TYPE_ALIASES = {"claude": "anthropic"}
-_CANONICAL_CLIENTS = {"ollama", "openai", "openrouter", "google", "anthropic"}
+_CLIENT_TYPE_ALIASES = {"claude": "anthropic", "huggingface": "hf"}
+_CANONICAL_CLIENTS = {"ollama", "openai", "openrouter", "google", "anthropic", "hf"}
 _VALID_CLIENTS = _CANONICAL_CLIENTS | set(_CLIENT_TYPE_ALIASES)
 
 
@@ -48,7 +49,21 @@ def chat(
     http_referer: Optional[str] = None,
     app_title: Optional[str] = None,
     require_parameters: Optional[bool] = None,
+    allow_fallbacks: Optional[bool] = None,
+    provider_order: Optional[Any] = None,
+    provider_only: Optional[Any] = None,
+    provider_ignore: Optional[Any] = None,
     min_request_interval_sec: Optional[float] = None,
+    vertexai: Optional[bool] = None,
+    project: Optional[str] = None,
+    location: Optional[str] = None,
+    hf_device: str = "auto",
+    hf_dtype: str = "auto",
+    max_output_tokens: Optional[int] = None,
+    structured_string_max_length: Optional[int] = None,
+    max_retries: Optional[int] = None,
+    initial_retry_delay_sec: Optional[float] = None,
+    max_retry_delay_sec: Optional[float] = None,
     temperature: float = 0.2,
     timeout_sec: int = 600,
 ) -> Tuple[str, Optional[str]]:
@@ -71,7 +86,7 @@ def chat(
         JSON Schema dict describing the expected response structure.
     stream_thinking:
         Ollama only — stream pre-output reasoning tokens to stdout.
-        Silently ignored for OpenAI and Google.
+        Silently ignored for OpenAI, Google, and Anthropic.
     host:
         Ollama only — server URL (default ``http://localhost:11434``).
     api_key:
@@ -126,11 +141,17 @@ def chat(
             http_referer=http_referer or "",
             app_title=app_title or "",
             require_parameters=True if require_parameters is None else require_parameters,
+            allow_fallbacks=allow_fallbacks,
+            provider_order=provider_order,
+            provider_only=provider_only,
+            provider_ignore=provider_ignore,
             min_request_interval_sec=(
                 0.0 if min_request_interval_sec is None else float(min_request_interval_sec)
             ),
             temperature=temperature,
             output_schema=output_schema,
+            max_output_tokens=max_output_tokens,
+            structured_string_max_length=structured_string_max_length,
             stream_thinking=stream_thinking,
             timeout_sec=timeout_sec,
         )
@@ -142,9 +163,31 @@ def chat(
             model=model,
             messages=messages,
             api_key=api_key or "",
+            vertexai=bool(vertexai),
+            project=project or "",
+            location=location or "",
+            max_output_tokens=max_output_tokens,
+            max_retries=max_retries,
+            initial_retry_delay_sec=initial_retry_delay_sec,
+            max_retry_delay_sec=max_retry_delay_sec,
             temperature=temperature,
             output_schema=output_schema,
             stream_thinking=stream_thinking,
+            timeout_sec=timeout_sec,
+        )
+
+    if client_type == "hf":
+        from providers.hf import chat as hf_chat
+
+        return hf_chat(
+            device=hf_device,
+            dtype=hf_dtype,
+            model=model,
+            messages=messages,
+            output_schema=output_schema,
+            stream_thinking=stream_thinking,
+            max_output_tokens=max_output_tokens,
+            temperature=temperature,
             timeout_sec=timeout_sec,
         )
 
@@ -154,6 +197,13 @@ def chat(
         model=model,
         messages=messages,
         api_key=api_key or "",
+        vertexai=bool(vertexai),
+        project=project or "",
+        location=location or "",
+        max_output_tokens=max_output_tokens,
+        max_retries=(
+            None if max_retries is None else int(max_retries)
+        ),
         temperature=temperature,
         output_schema=output_schema,
         stream_thinking=stream_thinking,

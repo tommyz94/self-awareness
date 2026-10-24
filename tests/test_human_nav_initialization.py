@@ -65,7 +65,7 @@ def test_human_nav_initializes_single_run_before_loop(monkeypatch, tmp_path):
     assert all(obj.metadata.get("reflect_in_mirror") is True for obj in run_setup.scene_spec.objects)
 
 
-@pytest.mark.parametrize("experiment_id", ["e0", "e1", "e2", "e3", "e4", "e5", "e6", "e7"])
+@pytest.mark.parametrize("experiment_id", ["experimental/direct_perception", "e1", "e2", "e3", "experimental/front_identity", "e4", "experimental/exploration", "e5"])
 def test_builtin_experiment_outputs_are_scoped_under_experiment_root(monkeypatch, tmp_path, experiment_id):
     from runtime.controller import Controller
 
@@ -87,13 +87,13 @@ def test_builtin_experiment_outputs_are_scoped_under_experiment_root(monkeypatch
         tmp_path
         / "outputs"
         / "mujoco"
-        / experiment_id
+        / experiment_id.removeprefix("experimental/")
         / "ollama"
         / "human"
         / "level_2"
         / "20260423_120000"
     )
-    if experiment_id == "e0":
+    if experiment_id == "experimental/direct_perception":
         expected_root = expected_root.parent.parent / "default__color" / expected_root.parent.name / expected_root.name
     assert Path(controller.output_dir) == expected_root
 
@@ -120,7 +120,7 @@ def test_single_run_outputs_keep_legacy_root_layout(monkeypatch, tmp_path):
     assert Path(controller.output_dir) == expected_root
 
 
-@pytest.mark.parametrize("experiment_id", ["e6", "e7"])
+@pytest.mark.parametrize("experiment_id", ["experimental/exploration", "e5"])
 def test_auto_nav_dispatches_to_auto_experiment_for_e6_e7(monkeypatch, tmp_path, experiment_id):
     from runtime.controller import Controller
 
@@ -158,7 +158,7 @@ def test_human_nav_initializes_selected_experiment_before_loop(monkeypatch, tmp_
 
     controller = Controller(
         nav_mode="human",
-        experiment_id="e5",
+        experiment_id="e4",
         num_distractors=2,
         mujoco_headless=False,
         heatmap=False,
@@ -185,7 +185,7 @@ def test_human_nav_initializes_e0_selected_experiment_before_loop(monkeypatch, t
 
     controller = Controller(
         nav_mode="human",
-        experiment_id="e0",
+        experiment_id="experimental/direct_perception",
         mujoco_headless=False,
         heatmap=False,
         output_dir=str(tmp_path / "outputs"),
@@ -212,7 +212,7 @@ def test_human_nav_initializes_e6_selected_experiment_before_loop(monkeypatch, t
 
     controller = Controller(
         nav_mode="human",
-        experiment_id="e6",
+        experiment_id="experimental/exploration",
         num_distractors=2,
         mujoco_headless=False,
         heatmap=False,
@@ -239,7 +239,7 @@ def test_human_nav_initializes_e7_selected_experiment_before_loop(monkeypatch, t
 
     controller = Controller(
         nav_mode="human",
-        experiment_id="e7",
+        experiment_id="e5",
         num_distractors=2,
         mujoco_headless=False,
         heatmap=False,
@@ -262,11 +262,11 @@ def test_human_nav_e4_ignores_use_mirror_override_and_uses_sampled_variant(monke
     fake_env = _FakeEnv()
     monkeypatch.setattr("runtime.controller._create_env", lambda **kwargs: fake_env)
     monkeypatch.setattr("runtime.controller.Logger", _FakeLogger)
-    monkeypatch.setattr("experiments.specs.corridor.experiment._sample_variant", lambda: "long")
+    monkeypatch.setattr("experiments.experimental.corridor.experiment._sample_variant", lambda: "long")
 
     controller = Controller(
         nav_mode="human",
-        experiment_id="corridor",
+        experiment_id="experimental/corridor",
         num_runs=1,
         use_mirror=True,
         mujoco_headless=False,
@@ -333,11 +333,11 @@ def test_human_nav_e4_run_setup_has_corridor_geometry_and_variant_metadata(monke
     fake_env = _FakeEnv()
     monkeypatch.setattr("runtime.controller._create_env", lambda **kwargs: fake_env)
     monkeypatch.setattr("runtime.controller.Logger", _FakeLogger)
-    monkeypatch.setattr("experiments.specs.corridor.experiment._sample_variant", lambda: "mirror")
+    monkeypatch.setattr("experiments.experimental.corridor.experiment._sample_variant", lambda: "mirror")
 
     controller = Controller(
         nav_mode="human",
-        experiment_id="corridor",
+        experiment_id="experimental/corridor",
         num_runs=1,
         mujoco_headless=False,
         heatmap=False,

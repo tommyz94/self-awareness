@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List
 
 from experiments.evaluation.metrics import RunOutcome
-from experiments.specs import RunSetup, SceneObjectSpec
+from experiments import RunSetup, SceneObjectSpec
 
 
 def _serialize_scene_object(obj: SceneObjectSpec | dict) -> dict:
@@ -58,7 +58,7 @@ def save_run_json(
 ) -> str:
     path = Path(output_dir) / f"run{run_id:02d}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
-    context = run_context or {}
+    context = run_context if run_context is not None else getattr(outcome, "run_context", {})
     run_setup_data = _serialize_run_setup(run_setup)
     if run_setup_data is None and outcome.scene_id is not None:
         run_setup_data = {
@@ -71,9 +71,12 @@ def save_run_json(
         "experiment_id": outcome.experiment_id,
         "scene_id": outcome.scene_id,
         "task_id": outcome.task_id,
-        **({"run_context": context} if context else {}),
-        **({"paper_experiment_id": context["paper_experiment_id"]}
-           if context.get("paper_experiment_id") is not None else {}),
+        "termination_reason": outcome.termination_reason,
+        "run_context": context,
+        **(
+            {"paper_experiment_id": context["paper_experiment_id"]}
+            if context.get("paper_experiment_id") is not None else {}
+        ),
         "run_setup": run_setup_data,
         "task_output": task_output if task_output is not None else {},
         # Legacy flat fields (kept for judge / W&B compat)
@@ -118,28 +121,60 @@ def save_experiment_json(
         "seed": int(_seed_str) if _seed_str is not None else None,
         "num_runs": len(outcomes),
     }
-    context = run_context or {}
+    context = run_context if run_context is not None else (
+        getattr(outcomes[0], "run_context", {}) if outcomes else {}
+    )
     if context.get("paper_experiment_id") is not None:
         data["paper_experiment_id"] = context["paper_experiment_id"]
+    if context.get("experiment_id_scheme") is not None or context.get("paper_experiment_id") is not None:
         data["run_context"] = context
     if is_summary_task:
-        sia = summary["sia"]
-        gi = summary["gi"]
-        data["sia"] = round(sia, 4)
-        data["gi"] = round(gi, 4) if not math.isnan(gi) else None
+        if task_id == "front_identity_task":
+            data["accuracy"] = round(summary["accuracy"], 4)
+            data["done_rate"] = round(summary["done_rate"], 4)
+            data["used_lateral_action_before_done_rate"] = round(summary["used_lateral_action_before_done_rate"], 4)
+            data["accuracy_with_lateral"] = (
+                round(summary["accuracy_with_lateral"], 4)
+                if summary["accuracy_with_lateral"] is not None
+                else None
+            )
+            data["accuracy_without_lateral"] = (
+                round(summary["accuracy_without_lateral"], 4)
+                if summary["accuracy_without_lateral"] is not None
+                else None
+            )
+        else:
+            sia = summary["sia"]
+            gi = summary["gi"]
+            data["sia"] = round(sia, 4)
+            data["gi"] = round(gi, 4) if not math.isnan(gi) else None
     data["runs"] = [
         {
             "run_id": o.run_id,
             "completed": o.completed,
             "steps": o.steps,
+            "termination_reason": o.termination_reason,
             **(
-                {
-                    "agent_color": o.agent_color,
-                    "wrong_color": o.wrong_color,
-                    "selected_cube": o.selected_cube,
-                    "correct": o.selected_cube == o.agent_color,
-                }
-                if is_summary_task else {}
+                (
+                    {
+                        "front_identity_variant": (o.task_result or {}).get("front_identity_variant"),
+                        "expected_answer": (o.task_result or {}).get("expected_answer"),
+                        "actual_answer": (o.task_result or {}).get("actual_answer"),
+                        "success": bool((o.task_result or {}).get("success")),
+                        "used_lateral_action_before_done": bool((o.task_result or {}).get("used_lateral_action_before_done")),
+                        "lateral_action_count_before_done": (o.task_result or {}).get("lateral_action_count_before_done"),
+                        "forward_action_count_before_done": (o.task_result or {}).get("forward_action_count_before_done"),
+                    }
+                    if task_id == "front_identity_task"
+                    else {
+                        "agent_color": o.agent_color,
+                        "wrong_color": o.wrong_color,
+                        "selected_cube": o.selected_cube,
+                        "correct": o.selected_cube == o.agent_color,
+                    }
+                )
+                if is_summary_task
+                else {}
             ),
         }
         for o in outcomes

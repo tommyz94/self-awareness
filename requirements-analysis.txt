@@ -1,6 +1,0 @@
-# Standalone plotting/notebook dependencies (Python 3.11); no simulator or SDKs.
-numpy==2.0.2
-matplotlib==3.9.4
-pandas==3.0.2
-seaborn==0.13.2
-jupyterlab==4.4.0

@@ -15,9 +15,9 @@ from experiments.evaluation.metrics import (
     extract_mirror_exposure_metrics,
     print_metrics,
 )
-from experiments.specs.builtin_helpers import build_cube_objects
-from experiments.naming import resolve_experiment_selection
-from experiments.specs import (
+from experiments.shared.scenes import build_cube_objects
+from experiments.naming import PAPER_EXPERIMENTS, EXPERIMENTAL_EXPERIMENTS, resolve_experiment_selection
+from experiments import (
     BackendOverrides,
     ExperimentRuntimeOptions,
     RunSetup,
@@ -32,14 +32,14 @@ from utils.io.logger import Logger
 
 _DEFAULT_SINGLE_RUN_COLOR = "red"
 _VALID_CUBE_SELECTIONS = set(_COLOR_POOL)
-_VALID_CLIENT_TYPES = {"ollama", "openai", "openrouter", "google", "anthropic", "claude"}
-_CANONICAL_CLIENT_TYPES = {"ollama", "openai", "openrouter", "google", "anthropic"}
-_EXPERIMENT_SCOPED_OUTPUT_ROOTS = {"e0", "e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "corridor"}
+_VALID_CLIENT_TYPES = {"ollama", "openai", "openrouter", "google", "anthropic", "claude", "hf", "huggingface"}
+_CANONICAL_CLIENT_TYPES = {"ollama", "openai", "openrouter", "google", "anthropic", "hf"}
+_EXPERIMENT_SCOPED_OUTPUT_ROOTS = set(PAPER_EXPERIMENTS) | set(EXPERIMENTAL_EXPERIMENTS.values())
 _AUTO_NAV_NAME = "auto"
-_E6_AUTOPILOT_SLEEP_SEC = 0.5
-_E6_AUTOPILOT_TARGET_REACHED_EPS = 1.0
+_AUTOPILOT_SLEEP_SEC = 0.5
+_AUTOPILOT_TARGET_REACHED_EPS = 1.0
 _DATASET_DIR_NAME = "Mirror_Video_Dataset"
-_AUTO_NAV_EXPERIMENTS = {"e6", "e7"}
+_AUTO_NAV_EXPERIMENTS = {"experimental/exploration", "e5"}
 
 
 def _create_env(
@@ -132,7 +132,7 @@ def _experiment_variant_tag(
     body_style: str,
     self_perception_mode: str,
 ) -> Optional[str]:
-    if experiment_id == "e0":
+    if experiment_id == "experimental/direct_perception":
         return "__".join(
             token
             for token in (
@@ -176,7 +176,7 @@ class Controller:
         use_mirror: bool = True,
         random_wall_color: bool = False,
         distractor_color_mode: str = "allow_duplicates",
-        e7_random_cube_heights: bool = False,
+        random_cube_heights: bool = False,
         body_style: str = "default",
         self_perception_mode: str = "color",
         experiment_id: Optional[str] = None,
@@ -190,8 +190,29 @@ class Controller:
         openrouter_app_title: str = "",
         openrouter_require_parameters: bool = True,
         openrouter_min_request_interval_sec: float = 0.0,
+        openrouter_allow_fallbacks: Optional[bool] = None,
+        openrouter_provider_order: Any = None,
+        openrouter_provider_only: Any = None,
+        openrouter_provider_ignore: Any = None,
+        openrouter_max_output_tokens: Optional[int] = None,
+        openrouter_structured_string_max_length: Optional[int] = None,
         google_api_key: str = "",
+        google_use_vertexai: bool = False,
+        google_project: str = "",
+        google_location: str = "",
+        google_max_output_tokens: Optional[int] = None,
+        google_max_retries: int = 5,
+        google_initial_retry_delay_sec: float = 2.0,
+        google_max_retry_delay_sec: float = 30.0,
         anthropic_api_key: str = "",
+        anthropic_use_vertexai: bool = False,
+        anthropic_project: str = "",
+        anthropic_location: str = "global",
+        anthropic_max_output_tokens: Optional[int] = 4096,
+        anthropic_max_retries: int = 2,
+        hf_device: str = "auto",
+        hf_dtype: str = "auto",
+        hf_max_output_tokens: Optional[int] = 1024,
         output_dir: str = "outputs",
         log_file: str = "llm_history.txt",
         json_export: bool = True,
@@ -205,8 +226,9 @@ class Controller:
         paper_experiment_id: Optional[str] = None,
     ):
         experiment_id, paper_experiment_id = resolve_experiment_selection(
-            experiment_id, paper_experiment_id
+            experiment_id, paper_experiment_id,
         )
+        self.paper_experiment_id = paper_experiment_id
         canonical_client_type = canonicalize_client_type(client_type)
         if canonical_client_type not in _CANONICAL_CLIENT_TYPES:
             raise ValueError(
@@ -222,6 +244,10 @@ class Controller:
         self.llm_model = None if (self.is_human_nav or self.is_auto_nav) else self.nav_mode
         self.env_type = env_type
         self.mujoco_headless = bool(mujoco_headless)
+        self.mujoco_render_width = int(mujoco_render_width)
+        self.mujoco_render_height = int(mujoco_render_height)
+        if self.mujoco_render_width <= 0 or self.mujoco_render_height <= 0:
+            raise ValueError("MuJoCo render dimensions must be positive integers.")
         self.client_type = canonical_client_type
         self.ollama_host = ollama_host
         if self.client_type == "openai":
@@ -234,6 +260,69 @@ class Controller:
             self.api_key = anthropic_api_key
         else:
             self.api_key = ""
+        self.provider_vertexai = (
+            bool(google_use_vertexai)
+            if self.client_type == "google"
+            else (bool(anthropic_use_vertexai) if self.client_type == "anthropic" else None)
+        )
+        self.provider_project = (
+            str(google_project or "")
+            if self.client_type == "google"
+            else (str(anthropic_project or "") if self.client_type == "anthropic" else None)
+        )
+        self.provider_location = (
+            str(google_location or "")
+            if self.client_type == "google"
+            else (str(anthropic_location or "") if self.client_type == "anthropic" else None)
+        )
+        self.hf_device = hf_device
+        self.hf_dtype = hf_dtype
+        max_output_tokens_by_client = {
+            "openrouter": openrouter_max_output_tokens,
+            "google": google_max_output_tokens,
+            "anthropic": anthropic_max_output_tokens,
+            "hf": hf_max_output_tokens,
+        }
+        configured_max_output_tokens = max_output_tokens_by_client.get(self.client_type)
+        self.provider_max_output_tokens = (
+            None
+            if configured_max_output_tokens is None
+            else int(configured_max_output_tokens)
+        )
+        self.provider_structured_string_max_length = (
+            int(openrouter_structured_string_max_length)
+            if self.client_type == "openrouter"
+            and openrouter_structured_string_max_length is not None
+            else None
+        )
+        if (
+            self.provider_structured_string_max_length is not None
+            and self.provider_structured_string_max_length <= 0
+        ):
+            raise ValueError("OpenRouter structured string max length must be positive.")
+        self.provider_max_retries = (
+            None
+            if (
+                (self.client_type == "google" and google_max_retries is None)
+                or (self.client_type == "anthropic" and anthropic_max_retries is None)
+                or self.client_type not in {"google", "anthropic"}
+            )
+            else int(
+                google_max_retries
+                if self.client_type == "google"
+                else anthropic_max_retries
+            )
+        )
+        self.provider_initial_retry_delay_sec = (
+            None
+            if self.client_type != "google" or google_initial_retry_delay_sec is None
+            else float(google_initial_retry_delay_sec)
+        )
+        self.provider_max_retry_delay_sec = (
+            None
+            if self.client_type != "google" or google_max_retry_delay_sec is None
+            else float(google_max_retry_delay_sec)
+        )
         self.provider_base_url = (
             openrouter_base_url if self.client_type == "openrouter" else None
         )
@@ -247,6 +336,20 @@ class Controller:
             bool(openrouter_require_parameters)
             if self.client_type == "openrouter"
             else None
+        )
+        self.provider_allow_fallbacks = (
+            None
+            if self.client_type != "openrouter" or openrouter_allow_fallbacks is None
+            else bool(openrouter_allow_fallbacks)
+        )
+        self.provider_order = (
+            openrouter_provider_order if self.client_type == "openrouter" else None
+        )
+        self.provider_only = (
+            openrouter_provider_only if self.client_type == "openrouter" else None
+        )
+        self.provider_ignore = (
+            openrouter_provider_ignore if self.client_type == "openrouter" else None
         )
         self.provider_min_request_interval_sec = (
             max(0.0, float(openrouter_min_request_interval_sec))
@@ -262,7 +365,6 @@ class Controller:
         self.body_style = str(body_style or "default")
         self.self_perception_mode = str(self_perception_mode or "color")
         self.experiment_id = experiment_id
-        self.paper_experiment_id = paper_experiment_id
         self.experiment_spec = get_experiment(experiment_id) if experiment_id else None
         self.experiment_runtime_options = ExperimentRuntimeOptions(
             distractors=num_distractors,
@@ -270,7 +372,7 @@ class Controller:
             use_mirror=use_mirror,
             random_wall_color=random_wall_color,
             distractor_color_mode=distractor_color_mode,
-            e7_random_cube_heights=e7_random_cube_heights,
+            random_cube_heights=random_cube_heights,
             body_style=self.body_style,
             self_perception_mode=self.self_perception_mode,
         )
@@ -313,11 +415,14 @@ class Controller:
                 and self.env_type == "mujoco"
                 and self.mujoco_headless
             )
-            else _E6_AUTOPILOT_SLEEP_SEC
+            else _AUTOPILOT_SLEEP_SEC
         )
 
         llm_slug = re.sub(r'[:/\\]', '_', nav_mode)   # e.g. "gemma3_4b", "human"
         session_id = time.strftime("%Y%m%d_%H%M%S")
+        # Parallel jobs can start within the same second for the same experiment/model.
+        # Add a suffix when needed so separate runs never collide into the same folder.
+        session_suffix = 0
         
         import os
         msr_level_str = os.getenv("MSR_LEVEL", "2")
@@ -329,21 +434,32 @@ class Controller:
         )
 
         if experiment_id in _EXPERIMENT_SCOPED_OUTPUT_ROOTS:
-            experiment_root = Path(output_dir) / env_type / experiment_id / self.client_type / llm_slug
+            experiment_root = Path(output_dir) / env_type / experiment_id.removeprefix("experimental/") / self.client_type / llm_slug
             if variant_tag:
                 experiment_root = experiment_root / variant_tag
-            self.output_dir = str(experiment_root / msr_tag / session_id)
+            output_root = experiment_root / msr_tag
         else:
-            self.output_dir = str(Path(output_dir) / env_type / self.client_type / llm_slug / msr_tag / session_id)
+            output_root = Path(output_dir) / env_type / self.client_type / llm_slug / msr_tag
 
-        Path(self.output_dir).mkdir(parents=True, exist_ok=True)
+        while True:
+            candidate_session_id = (
+                session_id if session_suffix == 0 else f"{session_id}_{session_suffix:02d}"
+            )
+            candidate_output_dir = output_root / candidate_session_id
+            try:
+                candidate_output_dir.mkdir(parents=True, exist_ok=False)
+            except FileExistsError:
+                session_suffix += 1
+                continue
+            self.output_dir = str(candidate_output_dir)
+            break
 
         self.current_run_dir: Optional[Path] = None
         self.current_obs_dir: Optional[Path] = None
         if self._dataset_enabled:
             self._initialize_dataset_layout()
         elif self.save_dataset:
-            print("save_dataset=true is currently supported for experiment=e6/e7 with nav=auto. Ignoring.")
+            print("save_dataset=true is currently supported for experimental/exploration and paper E5 with nav=auto. Ignoring.")
 
         if env_type == "mujoco" and self.is_human_nav and mujoco_headless:
             raise ValueError(
@@ -360,8 +476,8 @@ class Controller:
                 camera_height=camera_height,
                 body_style=self.body_style,
                 mujoco_headless=mujoco_headless,
-                mujoco_render_width=mujoco_render_width,
-                mujoco_render_height=mujoco_render_height,
+                mujoco_render_width=self.mujoco_render_width,
+                mujoco_render_height=self.mujoco_render_height,
             )
 
             if self.is_human_nav:
@@ -485,6 +601,84 @@ class Controller:
             if key in ("s", " "):
                 return
 
+        if self._is_front_identity_e4() and self._human_active_run_id is not None:
+            run_id = int(self._human_active_run_id)
+            if key == "f":
+                observation_metadata = self.sim_env.get_observation_metadata()
+                self.iteration += 1
+                self.bumped_wall = False
+                self._termination_reason = "human_stop"
+                self._record_step(
+                    move="done",
+                    view_description="",
+                    reasoning="Human ended the episode manually.",
+                    summary="",
+                    identification=self._human_identification(),
+                    task_payload={
+                        "front_identity": {
+                            "is_self": "no",
+                            "confidence": "low",
+                            "evidence_source": "human-stop",
+                            "reason": "Human ended the episode manually.",
+                        }
+                    },
+                    bumped_wall=False,
+                    view_position=observation_metadata.view_position,
+                    view_direction=observation_metadata.view_direction,
+                    mirror_visible=observation_metadata.mirror_visible,
+                    ego_reflection_visible=observation_metadata.ego_reflection_visible,
+                )
+                outcome = self._finalize_episode(run_id, self._new_outcome(run_id, None, True))
+                self._human_episode_outcome = outcome
+                self._print_e4_run_result(run_id, outcome)
+                self._save_human_observation()
+                return
+
+            if key in ("w", "a", "d"):
+                observation_metadata = self.sim_env.get_observation_metadata()
+                self.iteration += 1
+                previous_pos = self.current_pos
+                direction_before = self.current_dir
+                secondary_state_before = self._snapshot_secondary_state()
+                x, z, direction, bumped = self.sim_env.step(key)
+                self.bumped_wall = bumped
+                self.previous_pos = previous_pos
+                self.current_pos = (x, z)
+                self.current_dir = direction
+                self.trajectory.append(self.current_pos)
+                secondary_state_after = self._snapshot_secondary_state()
+                self._record_step(
+                    move=key,
+                    view_description="",
+                    reasoning="",
+                    summary="",
+                    identification=self._human_identification(),
+                    bumped_wall=bumped,
+                    view_position=observation_metadata.view_position,
+                    view_direction=observation_metadata.view_direction,
+                    mirror_visible=observation_metadata.mirror_visible,
+                    ego_reflection_visible=observation_metadata.ego_reflection_visible,
+                    step_metadata={
+                        "position_before": list(previous_pos),
+                        "position_after": list(self.current_pos),
+                        "direction_before": direction_before,
+                        "direction_after": self.current_dir,
+                        "movement_delta": self._movement_components(
+                            previous_pos=previous_pos,
+                            current_pos=self.current_pos,
+                            direction_before=direction_before,
+                        ),
+                        "ego_move_debug": self._snapshot_ego_move_debug(),
+                        "secondary_state_before": secondary_state_before,
+                        "secondary_state_after": secondary_state_after,
+                    },
+                )
+                self._save_human_observation()
+                return
+
+            if key in ("s", " "):
+                return
+
         if self._human_finish_requested and key != "f":
             return
         if key == "f" and self._human_cube_task_enabled():
@@ -544,6 +738,7 @@ class Controller:
         self._human_finish_observation = None
         self._human_episode_outcome = None
         self._human_active_run_id = None
+        self._termination_reason: Optional[str] = None
 
     def _human_cube_task_enabled(self) -> bool:
         if not self.is_human_nav:
@@ -572,16 +767,102 @@ class Controller:
         obs_path = self.current_obs_dir / f"{self._obs_counter:06d}.jpg"
         self.sim_env.capture_image(str(obs_path))
 
-    def _build_run_context(self) -> dict:
-        paper_id = getattr(self, "paper_experiment_id", None)
-        if paper_id is None:
-            return {}
-        return {
-            "experiment_suite": "paper",
-            "experiment_preset": f"paper/{paper_id}",
-            "paper_experiment_id": paper_id,
-            "implementation_experiment_id": self.experiment_id,
+    def _snapshot_ego_move_debug(self) -> Optional[dict[str, Any]]:
+        if self.sim_env is None or not hasattr(self.sim_env, "get_last_move_debug"):
+            return None
+        return dict(self.sim_env.get_last_move_debug())
+
+    def _snapshot_secondary_state(self) -> Optional[dict[str, Any]]:
+        if self.sim_env is None or not hasattr(self.sim_env, "get_secondary_state"):
+            return None
+        state = self.sim_env.get_secondary_state()
+        if state is None:
+            return None
+        return dict(state)
+
+    def _movement_components(
+        self,
+        *,
+        previous_pos: Optional[tuple[float, float]],
+        current_pos: Optional[tuple[float, float]],
+        direction_before: Optional[str],
+    ) -> Optional[dict[str, float]]:
+        if previous_pos is None or current_pos is None:
+            return None
+        dx = float(current_pos[0]) - float(previous_pos[0])
+        dz = float(current_pos[1]) - float(previous_pos[1])
+        forward_by_dir = {
+            "N": (1.0, 0.0),
+            "S": (-1.0, 0.0),
+            "E": (0.0, 1.0),
+            "W": (0.0, -1.0),
         }
+        forward = forward_by_dir.get(str(direction_before or "").upper())
+        if forward is None:
+            return {
+                "dx": round(dx, 3),
+                "dz": round(dz, 3),
+            }
+        fx, fz = forward
+        rx, rz = -fz, fx
+        return {
+            "dx": round(dx, 3),
+            "dz": round(dz, 3),
+            "forward_delta": round(dx * fx + dz * fz, 3),
+            "lateral_delta": round(dx * rx + dz * rz, 3),
+        }
+
+    def _build_run_context(self) -> dict[str, Any]:
+        return {
+            **(
+                {
+                    "experiment_suite": "paper",
+                    "experiment_preset": f"paper/{self.paper_experiment_id}",
+                    "paper_experiment_id": self.paper_experiment_id,
+                    "experiment_id_scheme": "paper-v1",
+                }
+                if getattr(self, "paper_experiment_id", None) is not None
+                else {}
+            ),
+            **(
+                {
+                    "experiment_suite": "experimental",
+                    "experiment_preset": self.experiment_id,
+                    "experiment_id_scheme": "experimental-v1",
+                }
+                if str(self.experiment_id or "").startswith("experimental/")
+                else {}
+            ),
+            "nav_mode": self.nav_mode,
+            "model": self.llm_model,
+            "client_type": self.client_type,
+            "env_type": self.env_type,
+            "max_steps": int(self.max_steps),
+            "history_steps": int(self.history_steps),
+            "num_runs": int(self.num_runs),
+            "third_person": bool(self.third_person),
+            "camera_height": float(self.camera_height),
+            "body_style": self.body_style,
+            "self_perception_mode": self.self_perception_mode,
+            "mujoco_headless": bool(self.mujoco_headless),
+            "mujoco_render_width": int(self.mujoco_render_width),
+            "mujoco_render_height": int(self.mujoco_render_height),
+            "provider_max_output_tokens": self.provider_max_output_tokens,
+            "provider_structured_string_max_length": self.provider_structured_string_max_length,
+            **({"hf_device": self.hf_device, "hf_dtype": self.hf_dtype}
+               if self.client_type == "hf" else {}),
+            "save_obs": bool(self.save_obs),
+            "print_reasoning": bool(self.print_reasoning),
+        }
+
+    def _is_front_identity_e4(self) -> bool:
+        return bool(
+            self.experiment_id == "experimental/front_identity"
+            and self.task_spec is not None
+            and self.task_spec.task_id == "front_identity_task"
+            and self.current_run_setup is not None
+            and self.current_run_setup.scene_spec.layout_kind == "corridor"
+        )
 
     def _is_e4_corridor_run(self) -> bool:
         return bool(
@@ -624,17 +905,28 @@ class Controller:
         task_result = outcome.task_result or {}
         success = bool(task_result.get("success"))
         status = "SUCCESS" if success else "FAILURE"
-        variant = task_result.get("e4_variant", "unknown")
-        expected_done = task_result.get("expected_done_step")
-        actual_done = task_result.get("actual_done_step")
+        if self.task_spec.task_id == "corridor_task":
+            print(
+                f"[corridor] Run {run_id}: {status} | "
+                f"variant={task_result.get('e4_variant', 'unknown')} | "
+                f"reason={task_result.get('failure_reason') or 'terminal decision accepted'}"
+            )
+            return
+        variant = task_result.get("front_identity_variant", "unknown")
+        expected = task_result.get("expected_answer")
+        actual = task_result.get("actual_answer")
+        front_identity = task_result.get("front_identity") or {}
+        confidence = front_identity.get("confidence")
         reason = (
             task_result.get("failure_reason")
-            or (task_result.get("goal_status") or {}).get("reason")
+            or front_identity.get("reason")
             or "n/a"
         )
         print(
             f"[E4] Run {run_id}: {status} | variant={variant} | "
-            f"done_step={actual_done}/{expected_done} | reason={reason}"
+            f"answer={actual}/{expected}"
+            + (f" | confidence={confidence}" if confidence else "")
+            + f" | reason={reason}"
         )
 
     def _initialize_dataset_layout(self) -> None:
@@ -839,6 +1131,7 @@ class Controller:
         view_direction: Optional[tuple[float, float, float]] = None,
         mirror_visible: Optional[bool] = None,
         ego_reflection_visible: Optional[bool] = None,
+        step_metadata: Optional[dict[str, Any]] = None,
     ) -> None:
         record = {
             "step": self.iteration,
@@ -865,6 +1158,8 @@ class Controller:
             record["mirror_visible"] = bool(mirror_visible)
         if ego_reflection_visible is not None:
             record["ego_reflection_visible"] = bool(ego_reflection_visible)
+        if step_metadata:
+            record["step_metadata"] = dict(step_metadata)
         self.step_records.append(record)
 
     def _reset_run(self, run_id: int, run_setup: RunSetup) -> None:
@@ -872,7 +1167,7 @@ class Controller:
             expected = scene_geometry_signature(self.scene_template)
             actual = scene_geometry_signature(run_setup.scene_spec)
             if actual != expected:
-                if self.task_spec is not None and self.task_spec.task_id == "corridor_task":
+                if self.task_spec.task_id in {"corridor_task", "front_identity_task"}:
                     expected_scene = self.scene_template
                     actual_scene = run_setup.scene_spec
                     compatible_e4_variant = (
@@ -944,6 +1239,8 @@ class Controller:
             task_id=self.task_spec.task_id if self.task_spec else None,
             task_result=task_result,
             mirror_exposure_metrics=mirror_exposure_metrics,
+            termination_reason=self._termination_reason,
+            run_context=self._build_run_context(),
         )
 
     # ------------------------------------------------------------------
@@ -965,7 +1262,7 @@ class Controller:
 
     def _run_human_nav(self):
         if not self._human_cube_task_enabled():
-            if self.task_spec is not None and self.task_spec.task_id == "corridor_task":
+            if self._is_front_identity_e4() or self.task_spec.task_id == "corridor_task":
                 outcomes: list[RunOutcome] = []
                 for run_id in range(1, self.num_runs + 1):
                     run_setup = (
@@ -1053,12 +1350,14 @@ class Controller:
                     outcome = self._human_episode_outcome
                     self._human_episode_outcome = None
                     return outcome
+                self._termination_reason = "window_closed"
                 outcome = self._finalize_episode(run_id, self._new_outcome(run_id, None, False))
                 self._print_e4_run_result(run_id, outcome)
                 return outcome
 
             if self.iteration >= self.max_steps:
                 self._human_active_run_id = None
+                self._termination_reason = "max_steps"
                 outcome = self._finalize_episode(run_id, self._new_outcome(run_id, None, False))
                 self._print_e4_run_result(run_id, outcome)
                 return outcome
@@ -1118,13 +1417,13 @@ class Controller:
 
     def _run_auto_nav(self):
         if self.experiment_spec is None:
-            raise ValueError("nav=auto requires an experiment preset (e.g. experiment=e6 or experiment=e7).")
+            raise ValueError("nav=auto requires an experiment preset (e.g. experiment=experimental/exploration or experiment=e5).")
         if self.experiment_id not in _AUTO_NAV_EXPERIMENTS:
-            raise ValueError("nav=auto is currently supported only for experiment=e6/e7.")
+            raise ValueError("nav=auto is currently supported only for experimental/exploration and paper E5.")
         self._run_auto_experiment()
 
     def _run_single_auto_episode(self, run_id: int) -> RunOutcome:
-        from experiments.specs.e5.experiment import (
+        from experiments.shared.distractors import (
             _DISTRACTOR_ACTION_MOVE_STEP,
             _distractor_nav_bounds,
             _sample_distractor_target,
@@ -1170,7 +1469,7 @@ class Controller:
             frame_relpath = self._capture_dataset_frame(run_id, self.iteration + 1)
             x, z = self.current_pos
             dist_before = math.hypot(target_x - x, target_z - z)
-            if dist_before <= _E6_AUTOPILOT_TARGET_REACHED_EPS:
+            if dist_before <= _AUTOPILOT_TARGET_REACHED_EPS:
                 target_x, target_z = _sample_distractor_target(
                     bounds,
                     current=(float(x), float(z)),
@@ -1216,7 +1515,7 @@ class Controller:
             last_action = action
 
             if (
-                dist_after <= _E6_AUTOPILOT_TARGET_REACHED_EPS
+                dist_after <= _AUTOPILOT_TARGET_REACHED_EPS
                 or bumped
                 or stuck_steps >= 5
                 or turn_switches >= 4
@@ -1394,7 +1693,7 @@ class Controller:
                 print(f"[Step {step}] Querying model...")
                 query_t0 = time.perf_counter()
                 try:
-                    view_description, reasoning, move, summary, selected_cube_reply, thinking, identification, task_payload = get_next_move(
+                    view_description, reasoning, move, summary, selected_cube_reply, thinking, identification, task_payload, _llm_debug = get_next_move(
                         self.base_instruction,
                         model=self.llm_model,
                         image_path=str(img_path),
@@ -1413,9 +1712,33 @@ class Controller:
                         http_referer=getattr(self, "provider_http_referer", None),
                         app_title=getattr(self, "provider_app_title", None),
                         require_parameters=getattr(self, "provider_require_parameters", None),
+                        allow_fallbacks=getattr(self, "provider_allow_fallbacks", None),
+                        provider_order=getattr(self, "provider_order", None),
+                        provider_only=getattr(self, "provider_only", None),
+                        provider_ignore=getattr(self, "provider_ignore", None),
                         min_request_interval_sec=getattr(
                             self, "provider_min_request_interval_sec", None
                         ),
+                        vertexai=getattr(self, "provider_vertexai", None),
+                        project=getattr(self, "provider_project", None),
+                        location=getattr(self, "provider_location", None),
+                        max_output_tokens=getattr(
+                            self, "provider_max_output_tokens", None
+                        ),
+                        structured_string_max_length=getattr(
+                            self, "provider_structured_string_max_length", None
+                        ),
+                        max_retries=getattr(self, "provider_max_retries", None),
+                        initial_retry_delay_sec=getattr(
+                            self, "provider_initial_retry_delay_sec", None
+                        ),
+                        max_retry_delay_sec=getattr(
+                            self, "provider_max_retry_delay_sec", None
+                        ),
+                        hf_device=getattr(self, "hf_device", "auto"),
+                        hf_dtype=getattr(self, "hf_dtype", "auto"),
+                        current_step=step,
+                        max_steps=self.max_steps,
                     )
                 except Exception as exc:
                     print(f"Navigation stopped: model call failed at step {step}: {exc}")
@@ -1423,6 +1746,13 @@ class Controller:
 
                 move = move.lower().strip()
                 print(f"[Step {step}] action={move} ({time.perf_counter() - query_t0:.2f}s)")
+                if self.print_reasoning:
+                    print(f"  [view-description] {view_description}")
+                    print(f"  [reasoning] {reasoning}")
+                    print(f"  [summary] {summary}")
+                    if move == "done":
+                        print(f"  [selected_cube] {selected_cube_reply}")
+                    print(f"  [identification] {identification}")
 
                 self.iteration += 1
                 self.step_history.append({
@@ -1573,21 +1903,26 @@ class Controller:
         while True:
             self.sim_env.tick(30)
             if self.sim_env.update_frame() is False:
+                self._termination_reason = "window_closed"
                 return self._finalize_episode(run_id, self._new_outcome(run_id, None, False))
 
             step = self.iteration + 1
             observation_metadata = self.sim_env.get_observation_metadata()
             img_path = self.current_obs_dir / f"{step:06d}.jpg"
+            capture_t0 = time.perf_counter()
             try:
                 img_path = Path(self.sim_env.capture_image(str(img_path)))
             except Exception as exc:
                 print(f"  [Step {step}] Capture failed: {exc}")
+                self._termination_reason = "capture_failed"
                 return self._finalize_episode(run_id, self._new_outcome(run_id, None, False))
+            capture_duration_sec = time.perf_counter() - capture_t0
 
             if self.print_reasoning:
                 print(f"  [Step {step}] Thinking:")
+            query_t0 = time.perf_counter()
             try:
-                view_description, reasoning, move, summary, selected_cube, thinking, identification, task_payload = get_next_move(
+                view_description, reasoning, move, summary, selected_cube, thinking, identification, task_payload, llm_debug = get_next_move(
                     model=self.llm_model,
                     task_spec=self.task_spec,
                     run_setup=self.current_run_setup,
@@ -1606,17 +1941,65 @@ class Controller:
                     http_referer=getattr(self, "provider_http_referer", None),
                     app_title=getattr(self, "provider_app_title", None),
                     require_parameters=getattr(self, "provider_require_parameters", None),
+                    allow_fallbacks=getattr(self, "provider_allow_fallbacks", None),
+                    provider_order=getattr(self, "provider_order", None),
+                    provider_only=getattr(self, "provider_only", None),
+                    provider_ignore=getattr(self, "provider_ignore", None),
                     min_request_interval_sec=getattr(
                         self, "provider_min_request_interval_sec", None
                     ),
+                    vertexai=getattr(self, "provider_vertexai", None),
+                    project=getattr(self, "provider_project", None),
+                    location=getattr(self, "provider_location", None),
+                    max_output_tokens=getattr(
+                        self, "provider_max_output_tokens", None
+                    ),
+                    structured_string_max_length=getattr(
+                        self, "provider_structured_string_max_length", None
+                    ),
+                    max_retries=getattr(self, "provider_max_retries", None),
+                    initial_retry_delay_sec=getattr(
+                        self, "provider_initial_retry_delay_sec", None
+                    ),
+                    max_retry_delay_sec=getattr(
+                        self, "provider_max_retry_delay_sec", None
+                    ),
+                    hf_device=getattr(self, "hf_device", "auto"),
+                    hf_dtype=getattr(self, "hf_dtype", "auto"),
+                    current_step=step,
+                    max_steps=self.max_steps,
                 )
             except Exception as exc:
                 print(f"  [Step {step}] Model call failed: {exc}")
+                self._termination_reason = "model_error"
                 return self._finalize_episode(run_id, self._new_outcome(run_id, None, False))
+            query_duration_sec = time.perf_counter() - query_t0
 
             move = move.lower().strip()
             print(f"  [Step {step}] action={move}"
                   + (f"  selected_cube={selected_cube}" if move == "done" else ""))
+            if self.print_reasoning:
+                print(f"    [view-description] {view_description}")
+                print(f"    [reasoning] {reasoning}")
+                print(f"    [summary] {summary}")
+                print(f"    [identification] {identification}")
+            position_before = self.current_pos
+            direction_before = self.current_dir
+            secondary_state_before = self._snapshot_secondary_state()
+            common_step_metadata = {
+                "image_path": str(img_path),
+                "capture_duration_sec": round(capture_duration_sec, 4),
+                "query_duration_sec": round(query_duration_sec, 4),
+                "step_budget": {
+                    "current_step": int(step),
+                    "max_steps": int(self.max_steps),
+                    "remaining_after_decision": max(0, int(self.max_steps) - int(step)),
+                },
+                "position_before": list(position_before),
+                "direction_before": direction_before,
+                "secondary_state_before": secondary_state_before,
+                "llm_io": dict(llm_debug),
+            }
             is_e4_terminal_move_failure = bool(
                 self._is_e4_corridor_run()
                 and move in ("w", "a", "d")
@@ -1679,6 +2062,8 @@ class Controller:
 
             if move == "done":
                 cube = selected_cube if selected_cube and selected_cube != "none" else None
+                secondary_state_after = self._snapshot_secondary_state()
+                self._termination_reason = "done"
                 self._record_step(
                     move=move,
                     view_description=view_description,
@@ -1686,6 +2071,7 @@ class Controller:
                     summary=summary,
                     identification=identification,
                     goal_status=task_payload.get("goal_status") if task_payload else None,
+                    task_payload=task_payload,
                     selected_cube=cube,
                     bumped_wall=False,
                     inner_reasoning=thinking,
@@ -1693,13 +2079,26 @@ class Controller:
                     view_direction=observation_metadata.view_direction,
                     mirror_visible=observation_metadata.mirror_visible,
                     ego_reflection_visible=observation_metadata.ego_reflection_visible,
+                    step_metadata={
+                        **common_step_metadata,
+                        "position_after": list(self.current_pos),
+                        "direction_after": self.current_dir,
+                        "movement_delta": {
+                            "dx": 0.0,
+                            "dz": 0.0,
+                            "forward_delta": 0.0,
+                            "lateral_delta": 0.0,
+                        },
+                        "secondary_state_after": secondary_state_after,
+                    },
                 )
                 outcome = self._finalize_episode(run_id, self._new_outcome(run_id, cube, True))
-                if self._is_e4_corridor_run():
+                if self._is_front_identity_e4():
                     self._print_e4_run_result(run_id, outcome)
                 return outcome
             elif is_e4_terminal_move_failure:
                 self.bumped_wall = True
+                self._termination_reason = "terminal_row_violation"
                 self._record_step(
                     move=move,
                     view_description=view_description,
@@ -1707,12 +2106,25 @@ class Controller:
                     summary=summary,
                     identification=identification,
                     goal_status=task_payload.get("goal_status") if task_payload else None,
+                    task_payload=task_payload,
                     bumped_wall=True,
                     inner_reasoning=thinking,
                     view_position=observation_metadata.view_position,
                     view_direction=observation_metadata.view_direction,
                     mirror_visible=observation_metadata.mirror_visible,
                     ego_reflection_visible=observation_metadata.ego_reflection_visible,
+                    step_metadata={
+                        **common_step_metadata,
+                        "position_after": list(self.current_pos),
+                        "direction_after": self.current_dir,
+                        "movement_delta": {
+                            "dx": 0.0,
+                            "dz": 0.0,
+                            "forward_delta": 0.0,
+                            "lateral_delta": 0.0,
+                        },
+                        "secondary_state_after": self._snapshot_secondary_state(),
+                    },
                 )
                 self.step_records[-1]["e4_terminal_violation"] = True
                 self.step_records[-1]["e4_terminal_row"] = True
@@ -1723,8 +2135,9 @@ class Controller:
                 return outcome
             elif move not in ("w", "s", "a", "d"):
                 print(f"  [Step {step}] Unsupported action '{move}'. Ending episode.")
+                self._termination_reason = "unsupported_action"
                 outcome = self._finalize_episode(run_id, self._new_outcome(run_id, None, False))
-                if self._is_e4_corridor_run():
+                if self._is_front_identity_e4():
                     self._print_e4_run_result(run_id, outcome)
                 return outcome
 
@@ -1735,6 +2148,8 @@ class Controller:
             self.current_pos = (x, z)
             self.current_dir = direction
             self.trajectory.append(self.current_pos)
+            ego_move_debug = self._snapshot_ego_move_debug()
+            secondary_state_after = self._snapshot_secondary_state()
             self._record_step(
                 move=move,
                 view_description=view_description,
@@ -1742,23 +2157,38 @@ class Controller:
                 summary=summary,
                 identification=identification,
                 goal_status=task_payload.get("goal_status") if task_payload else None,
+                task_payload=task_payload,
                 inner_reasoning=thinking,
                 view_position=observation_metadata.view_position,
                 view_direction=observation_metadata.view_direction,
                 mirror_visible=observation_metadata.mirror_visible,
                 ego_reflection_visible=observation_metadata.ego_reflection_visible,
+                step_metadata={
+                    **common_step_metadata,
+                    "position_after": list(self.current_pos),
+                    "direction_after": self.current_dir,
+                    "movement_delta": self._movement_components(
+                        previous_pos=position_before,
+                        current_pos=self.current_pos,
+                        direction_before=direction_before,
+                    ),
+                    "ego_move_debug": ego_move_debug,
+                    "secondary_state_after": secondary_state_after,
+                },
             )
 
             if self.sim_env.update_frame() is False:
+                self._termination_reason = "window_closed"
                 outcome = self._finalize_episode(run_id, self._new_outcome(run_id, None, False))
-                if self._is_e4_corridor_run():
+                if self._is_front_identity_e4():
                     self._print_e4_run_result(run_id, outcome)
                 return outcome
 
             if self.iteration >= self.max_steps:
                 print(f"  Max steps reached for run {run_id}.")
+                self._termination_reason = "max_steps"
                 outcome = self._finalize_episode(run_id, self._new_outcome(run_id, None, False))
-                if self._is_e4_corridor_run():
+                if self._is_front_identity_e4():
                     self._print_e4_run_result(run_id, outcome)
                 return outcome
 
@@ -1769,7 +2199,9 @@ class Controller:
     def _run_experiment(self) -> List[RunOutcome]:
         spec = self.experiment_spec
         if getattr(self, "paper_experiment_id", None) is not None:
-            print(f"Paper {self.paper_experiment_id.upper()} (implementation {self.experiment_id})")
+            print(
+                f"Paper {self.paper_experiment_id.upper()}"
+            )
         print(f"Starting experiment {self.experiment_id.upper()} | model={self.llm_model} | client={self.client_type} | runs={self.num_runs}")
 
         if self.client_type == "ollama":

@@ -4,8 +4,8 @@ import json
 
 
 def _build_two_room_run_setup():
-    from experiments.specs.registry import RunSetup
-    from experiments.specs.builtin_helpers import build_cube_objects, build_mirror_room_scene
+    from experiments import RunSetup
+    from experiments.shared.scenes import build_cube_objects, build_mirror_room_scene
 
     scene_spec = build_mirror_room_scene(mirror_enabled=True)
     cube_positions = {
@@ -23,7 +23,7 @@ def _build_two_room_run_setup():
 
 def test_two_room_mirror_visibility_detects_spawn_facing_view():
     from env.observation import mirror_visible_from_camera
-    from experiments.specs.builtin_helpers import build_mirror_room_scene
+    from experiments.shared.scenes import build_mirror_room_scene
 
     visible = mirror_visible_from_camera(
         scene_spec=build_mirror_room_scene(mirror_enabled=True),
@@ -38,7 +38,7 @@ def test_two_room_mirror_visibility_detects_spawn_facing_view():
 
 def test_two_room_mirror_visibility_rejects_turned_away_and_out_of_window_views():
     from env.observation import mirror_visible_from_camera
-    from experiments.specs.builtin_helpers import build_mirror_room_scene
+    from experiments.shared.scenes import build_mirror_room_scene
 
     scene_spec = build_mirror_room_scene(mirror_enabled=True)
 
@@ -60,7 +60,7 @@ def test_two_room_mirror_visibility_rejects_turned_away_and_out_of_window_views(
 
 def test_corridor_mirror_visibility_detects_visible_and_not_yet_visible_views():
     from env.observation import mirror_visible_from_camera
-    from experiments.specs.builtin_helpers import build_corridor_scene
+    from experiments.shared.scenes import build_corridor_scene
 
     scene_spec = build_corridor_scene()
 
@@ -82,7 +82,7 @@ def test_corridor_mirror_visibility_detects_visible_and_not_yet_visible_views():
 
 def test_corridor_without_mirror_never_reports_mirror_visible():
     from env.observation import mirror_visible_from_camera
-    from experiments.specs.builtin_helpers import build_corridor_scene
+    from experiments.shared.scenes import build_corridor_scene
 
     scene_spec = build_corridor_scene(use_mirror=False)
 
@@ -112,19 +112,19 @@ def test_extract_mirror_exposure_metrics_handles_missing_visibility_and_supporte
         "mirror_revisits": 1,
         "chose_after_mirror": 1,
     }
-    assert extract_mirror_exposure_metrics(step_records, completed=True, experiment_id="e0") == {
+    assert extract_mirror_exposure_metrics(step_records, completed=True, experiment_id="experimental/direct_perception") == {
         "mirror_before_done": 1,
         "steps_to_first_mirror_view": 2,
         "mirror_revisits": 1,
         "chose_after_mirror": 1,
     }
-    assert extract_mirror_exposure_metrics(step_records, completed=True, experiment_id="e4") == {
+    assert extract_mirror_exposure_metrics(step_records, completed=True, experiment_id="experimental/front_identity") == {
         "mirror_before_done": 1,
         "steps_to_first_mirror_view": 2,
         "mirror_revisits": 1,
         "chose_after_mirror": 1,
     }
-    assert extract_mirror_exposure_metrics(step_records, completed=True, experiment_id="e8") == {
+    assert extract_mirror_exposure_metrics(step_records, completed=True, experiment_id="experimental/embodiment") == {
         "mirror_before_done": 1,
         "steps_to_first_mirror_view": 2,
         "mirror_revisits": 1,
@@ -151,7 +151,7 @@ def test_extract_mirror_exposure_metrics_handles_never_seen_and_incomplete_runs(
         "mirror_revisits": 0,
         "chose_after_mirror": 0,
     }
-    assert extract_mirror_exposure_metrics(incomplete_after_seen, completed=False, experiment_id="e4") == {
+    assert extract_mirror_exposure_metrics(incomplete_after_seen, completed=False, experiment_id="experimental/front_identity") == {
         "mirror_before_done": 1,
         "steps_to_first_mirror_view": 1,
         "mirror_revisits": 0,
@@ -163,6 +163,8 @@ def test_controller_record_step_persists_observation_metadata():
     from runtime.controller import Controller
 
     controller = Controller.__new__(Controller)
+    controller._termination_reason = None
+    controller._build_run_context = lambda: {}
     controller.step_records = []
     controller.iteration = 1
     controller.current_pos = (-8.0, 2.5)
@@ -206,6 +208,8 @@ def test_controller_new_outcome_populates_mirror_metrics_only_for_supported_expe
     from experiments.tasks.cube import CUBE_TASK_SPEC
 
     controller = Controller.__new__(Controller)
+    controller._termination_reason = None
+    controller._build_run_context = lambda: {}
     controller.task_spec = CUBE_TASK_SPEC
     controller.agent_color_name = "red"
     controller.wrong_color = None
@@ -334,7 +338,7 @@ def test_save_run_json_omits_mirror_metrics_for_unsupported_experiment(tmp_path)
 def test_save_run_json_preserves_corridor_task_output_shape(tmp_path):
     from experiments.evaluation.metrics import RunOutcome
     from utils.io.json_export import save_run_json
-    from experiments.specs.builtin_helpers import build_corridor_run_setup, build_corridor_scene
+    from experiments.shared.scenes import build_corridor_run_setup, build_corridor_scene
 
     run_setup = build_corridor_run_setup(build_corridor_scene(use_mirror=False))
     outcome = RunOutcome(
@@ -345,7 +349,7 @@ def test_save_run_json_preserves_corridor_task_output_shape(tmp_path):
         completed=True,
         steps=4,
         trajectory=[(-4.0, 0.0), (-2.0, 0.0), (0.0, 0.0)],
-        experiment_id="e4",
+        experiment_id="experimental/front_identity",
         scene_id="narrow_corridor_mirror",
         task_id="corridor_task",
         task_result={

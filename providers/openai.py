@@ -52,15 +52,12 @@ def _build_input_messages(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]
 
         # Images first, then text
         for image_path in images:
-            try:
-                b64 = _encode_image(image_path)
-                media_type = _mime_type_for_path(image_path)
-                content_items.append({
-                    "type": "input_image",
-                    "image_url": f"data:{media_type};base64,{b64}",
-                })
-            except OSError:
-                pass  # skip unreadable images
+            b64 = _encode_image(image_path)
+            media_type = _mime_type_for_path(image_path)
+            content_items.append({
+                "type": "input_image",
+                "image_url": f"data:{media_type};base64,{b64}",
+            })
 
         if content:
             content_items.append({"type": "input_text", "text": content})
@@ -106,11 +103,9 @@ def chat(
         text={
             "format": {
                 "type": "json_schema",
-                "json_schema": {
-                    "name": "navigation_response",
-                    "schema": output_schema,
-                    "strict": True,
-                },
+                "name": "navigation_response",
+                "schema": output_schema,
+                "strict": True,
             }
         },
     )

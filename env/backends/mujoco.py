@@ -31,7 +31,7 @@ from env.base import BaseEnv
 from env.observation import ObservationMetadata, mirror_visible_from_camera
 from env.backends.rest_pose import MUJOCO_ARM_REST_POSE as _ARM_REST_POSE
 from env.scenes.mujoco_builder import build_humanoid_scene
-from experiments.specs.types import BackendOverrides, MuJoCoSceneBuildResult, RunSetup, SceneSpec
+from experiments.shared.types import BackendOverrides, MuJoCoSceneBuildResult, RunSetup, SceneSpec
 from utils.colors import rgba_for_color as _rgba_for_color
 
 _ASSETS_DIR = Path(__file__).resolve().parents[2] / "assets" / "mujoco"
@@ -767,6 +767,22 @@ class MuJoCoEnv(BaseEnv):
         )
         self._secondary_z: float = round(self._spawn_z, 2)
         self._secondary_yaw: float = self._spawn_yaw + math.pi
+        self._last_move_debug: dict[str, object] = {
+            "requested_action": "none",
+            "attempted_dx": 0.0,
+            "attempted_dz": 0.0,
+            "applied_dx": 0.0,
+            "applied_dz": 0.0,
+            "used_forward_fallback": False,
+            "success": None,
+        }
+        self._secondary_last_action: str = "none"
+        self._secondary_last_move_success: Optional[bool] = None
+        self._secondary_last_dx: float = 0.0
+        self._secondary_last_dz: float = 0.0
+        self._secondary_last_applied_dx: float = 0.0
+        self._secondary_last_applied_dz: float = 0.0
+        self._secondary_last_used_forward_fallback: bool = False
         self._object_pos_2d: dict = {}
 
         # Apply initial kinematics
@@ -1122,6 +1138,22 @@ class MuJoCoEnv(BaseEnv):
         )
         self._secondary_z = round(run_setup.scene_spec.spawn_pos[1], 2)
         self._secondary_yaw = run_setup.scene_spec.spawn_yaw + math.pi
+        self._last_move_debug = {
+            "requested_action": "none",
+            "attempted_dx": 0.0,
+            "attempted_dz": 0.0,
+            "applied_dx": 0.0,
+            "applied_dz": 0.0,
+            "used_forward_fallback": False,
+            "success": None,
+        }
+        self._secondary_last_action = "none"
+        self._secondary_last_move_success = None
+        self._secondary_last_dx = 0.0
+        self._secondary_last_dz = 0.0
+        self._secondary_last_applied_dx = 0.0
+        self._secondary_last_applied_dz = 0.0
+        self._secondary_last_used_forward_fallback = False
 
         apply_wall_color = getattr(self, "_apply_wall_color", None)
         if callable(apply_wall_color):
@@ -1243,42 +1275,156 @@ class MuJoCoEnv(BaseEnv):
             )
         return (0.0, 0.0)
 
+    def _attempt_corridor_move_with_forward_fallback(
+        self,
+        action: str,
+        *,
+        yaw: float,
+        move_fn,
+    ) -> dict[str, object]:
+        attempted_dx, attempted_dz = self._corridor_action_delta(action, yaw=yaw)
+        applied_dx = 0.0
+        applied_dz = 0.0
+        used_forward_fallback = False
+        success = False
+
+        if move_fn(attempted_dx, attempted_dz):
+            applied_dx = attempted_dx
+            applied_dz = attempted_dz
+            success = True
+        elif action in {"a", "d"}:
+            forward_dx, forward_dz = self._corridor_action_delta("w", yaw=yaw)
+            if move_fn(forward_dx, forward_dz):
+                applied_dx = forward_dx
+                applied_dz = forward_dz
+                used_forward_fallback = True
+                success = True
+
+        return {
+            "requested_action": action,
+            "attempted_dx": float(attempted_dx),
+            "attempted_dz": float(attempted_dz),
+            "applied_dx": float(applied_dx),
+            "applied_dz": float(applied_dz),
+            "used_forward_fallback": bool(used_forward_fallback),
+            "success": bool(success),
+        }
+
     def step(self, action: str) -> Tuple[float, float, str, bool]:
         bumped = False
         fwd_x =  math.cos(self._yaw) * _MOVE_STEP
         fwd_z = -math.sin(self._yaw) * _MOVE_STEP
+        self._last_move_debug = {
+            "requested_action": action,
+            "attempted_dx": 0.0,
+            "attempted_dz": 0.0,
+            "applied_dx": 0.0,
+            "applied_dz": 0.0,
+            "used_forward_fallback": False,
+            "success": None,
+        }
         if action == "w":
             if self._corridor_diagonal_actions:
-                dx, dz = self._corridor_action_delta("w", yaw=self._yaw)
-                if not self._try_move(dx, dz):
+                move_debug = self._attempt_corridor_move_with_forward_fallback(
+                    "w",
+                    yaw=self._yaw,
+                    move_fn=self._try_move,
+                )
+                self._last_move_debug = move_debug
+                if not move_debug["success"]:
                     bumped = True
             elif not self._try_move(fwd_x, fwd_z):
                 bumped = True
+                self._last_move_debug.update({
+                    "attempted_dx": float(fwd_x),
+                    "attempted_dz": float(fwd_z),
+                    "success": False,
+                })
+            else:
+                self._last_move_debug.update({
+                    "attempted_dx": float(fwd_x),
+                    "attempted_dz": float(fwd_z),
+                    "applied_dx": float(fwd_x),
+                    "applied_dz": float(fwd_z),
+                    "success": True,
+                })
         elif action == "s":
             if self._corridor_diagonal_actions:
                 bumped = True
+                self._last_move_debug["success"] = False
             elif not self._try_move(-fwd_x, -fwd_z):
                 bumped = True
+                self._last_move_debug.update({
+                    "attempted_dx": float(-fwd_x),
+                    "attempted_dz": float(-fwd_z),
+                    "success": False,
+                })
+            else:
+                self._last_move_debug.update({
+                    "attempted_dx": float(-fwd_x),
+                    "attempted_dz": float(-fwd_z),
+                    "applied_dx": float(-fwd_x),
+                    "applied_dz": float(-fwd_z),
+                    "success": True,
+                })
         elif action == "a":
             if self._strafe_actions:
                 if self._corridor_diagonal_actions:
-                    dx, dz = self._corridor_action_delta("a", yaw=self._yaw)
-                    if not self._try_move(dx, dz):
+                    move_debug = self._attempt_corridor_move_with_forward_fallback(
+                        "a",
+                        yaw=self._yaw,
+                        move_fn=self._try_move,
+                    )
+                    self._last_move_debug = move_debug
+                    if not move_debug["success"]:
                         bumped = True
                 elif not self._try_move(fwd_z, -fwd_x):
                     bumped = True
+                    self._last_move_debug.update({
+                        "attempted_dx": float(fwd_z),
+                        "attempted_dz": float(-fwd_x),
+                        "success": False,
+                    })
+                else:
+                    self._last_move_debug.update({
+                        "attempted_dx": float(fwd_z),
+                        "attempted_dz": float(-fwd_x),
+                        "applied_dx": float(fwd_z),
+                        "applied_dz": float(-fwd_x),
+                        "success": True,
+                    })
             else:
                 self._yaw += getattr(self, "_turn_step", _TURN_STEP)
+                self._last_move_debug["success"] = True
         elif action == "d":
             if self._strafe_actions:
                 if self._corridor_diagonal_actions:
-                    dx, dz = self._corridor_action_delta("d", yaw=self._yaw)
-                    if not self._try_move(dx, dz):
+                    move_debug = self._attempt_corridor_move_with_forward_fallback(
+                        "d",
+                        yaw=self._yaw,
+                        move_fn=self._try_move,
+                    )
+                    self._last_move_debug = move_debug
+                    if not move_debug["success"]:
                         bumped = True
                 elif not self._try_move(-fwd_z, fwd_x):
                     bumped = True
+                    self._last_move_debug.update({
+                        "attempted_dx": float(-fwd_z),
+                        "attempted_dz": float(fwd_x),
+                        "success": False,
+                    })
+                else:
+                    self._last_move_debug.update({
+                        "attempted_dx": float(-fwd_z),
+                        "attempted_dz": float(fwd_x),
+                        "applied_dx": float(-fwd_z),
+                        "applied_dz": float(fwd_x),
+                        "success": True,
+                    })
             else:
                 self._yaw -= getattr(self, "_turn_step", _TURN_STEP)
+                self._last_move_debug["success"] = True
         if getattr(self, "_secondary_active", False):
             self._advance_secondary_agent()
         step_applier = getattr(self, "_step_applier", None)
@@ -1312,20 +1458,72 @@ class MuJoCoEnv(BaseEnv):
         if not self._secondary_present:
             return
         action = self._sample_secondary_action()
+        self._secondary_last_action = action
+        self._secondary_last_move_success = None
+        self._secondary_last_dx = 0.0
+        self._secondary_last_dz = 0.0
+        self._secondary_last_applied_dx = 0.0
+        self._secondary_last_applied_dz = 0.0
+        self._secondary_last_used_forward_fallback = False
         if self._corridor_diagonal_actions:
-            dx, dz = self._corridor_action_delta(action, yaw=self._secondary_yaw)
-            if action in {"w", "a", "d"}:
-                self._try_move_secondary(dx, dz)
+            move_debug = self._attempt_corridor_move_with_forward_fallback(
+                action,
+                yaw=self._secondary_yaw,
+                move_fn=self._try_move_secondary,
+            )
+            self._secondary_last_dx = float(move_debug["attempted_dx"])
+            self._secondary_last_dz = float(move_debug["attempted_dz"])
+            self._secondary_last_applied_dx = float(move_debug["applied_dx"])
+            self._secondary_last_applied_dz = float(move_debug["applied_dz"])
+            self._secondary_last_used_forward_fallback = bool(move_debug["used_forward_fallback"])
+            self._secondary_last_move_success = bool(move_debug["success"])
             return
 
         fwd_x = math.cos(self._secondary_yaw) * _MOVE_STEP
         fwd_z = -math.sin(self._secondary_yaw) * _MOVE_STEP
+        dx = 0.0
+        dz = 0.0
         if action == "w":
-            self._try_move_secondary(fwd_x, fwd_z)
+            dx, dz = fwd_x, fwd_z
         elif action == "a":
-            self._try_move_secondary(fwd_z, -fwd_x)
+            dx, dz = fwd_z, -fwd_x
         elif action == "d":
-            self._try_move_secondary(-fwd_z, fwd_x)
+            dx, dz = -fwd_z, fwd_x
+        self._secondary_last_dx = float(dx)
+        self._secondary_last_dz = float(dz)
+        if action in {"w", "a", "d"}:
+            self._secondary_last_move_success = bool(self._try_move_secondary(dx, dz))
+            if self._secondary_last_move_success:
+                self._secondary_last_applied_dx = float(dx)
+                self._secondary_last_applied_dz = float(dz)
+
+    def get_last_move_debug(self) -> dict[str, object]:
+        return dict(self._last_move_debug)
+
+    def get_secondary_state(self) -> Optional[dict[str, object]]:
+        if not getattr(self, "_secondary_present", False):
+            return None
+        return {
+            "present": bool(self._secondary_present),
+            "active": bool(getattr(self, "_secondary_active", False)),
+            "mirror_present": bool(getattr(self, "_mirror_present", False)),
+            "x": float(self._secondary_x),
+            "z": float(self._secondary_z),
+            "yaw": float(self._secondary_yaw),
+            "last_action": str(getattr(self, "_secondary_last_action", "none")),
+            "last_move_success": (
+                None
+                if getattr(self, "_secondary_last_move_success", None) is None
+                else bool(self._secondary_last_move_success)
+            ),
+            "last_dx": float(getattr(self, "_secondary_last_dx", 0.0)),
+            "last_dz": float(getattr(self, "_secondary_last_dz", 0.0)),
+            "last_applied_dx": float(getattr(self, "_secondary_last_applied_dx", 0.0)),
+            "last_applied_dz": float(getattr(self, "_secondary_last_applied_dz", 0.0)),
+            "last_used_forward_fallback": bool(
+                getattr(self, "_secondary_last_used_forward_fallback", False)
+            ),
+        }
 
     # ------------------------------------------------------------------
     # Rendering

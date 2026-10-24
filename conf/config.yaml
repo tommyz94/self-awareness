@@ -17,7 +17,7 @@ body_style: default
 self_perception_mode: color
 random_wall_color: false
 distractor_color_mode: allow_duplicates
-e7_random_cube_heights: false
+random_cube_heights: false
 save_dataset: false
 history_steps: 1
 num_runs: 1
@@ -36,12 +36,35 @@ openrouter:
   app_title: ""
   require_parameters: true
   min_request_interval_sec: 0.0
+  allow_fallbacks: null
+  provider_order: []
+  provider_only: []
+  provider_ignore: []
+  max_output_tokens: null
+  structured_string_max_length: null
 
 google:
   api_key: ""
+  use_vertexai: false
+  project: ""
+  location: us-central1
+  max_output_tokens: null
+  max_retries: 5
+  initial_retry_delay_sec: 2.0
+  max_retry_delay_sec: 30.0
 
 anthropic:
   api_key: ""
+  use_vertexai: false
+  project: ""
+  location: global
+  max_output_tokens: 4096
+  max_retries: 2
+
+hf:
+  device: auto
+  dtype: auto
+  max_output_tokens: 1024
 
 mujoco:
   headless: false

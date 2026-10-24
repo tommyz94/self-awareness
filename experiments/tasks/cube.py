@@ -1,7 +1,7 @@
 """
 Cube self-recognition task spec.
 
-Instruction, response schema, and reply parser for the e1/e2/e3 experiments
+Instruction, response schema, and reply parser for the E1-E4 paper experiments
 where the agent must select the cube that matches its own color.
 """
 from __future__ import annotations
@@ -9,7 +9,7 @@ from __future__ import annotations
 import os
 from typing import Any, Dict, Optional, Tuple
 
-from experiments.specs.types import RunSetup, TaskCapabilities, TaskSpec
+from experiments.shared.types import RunSetup, TaskCapabilities, TaskSpec
 from llm.navigation.parser import _parse_json_reply
 from utils.colors import COLOR_POOL as _COLOR_POOL
 

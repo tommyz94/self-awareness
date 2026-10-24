@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import random
 import re
 import shlex
 import subprocess
@@ -95,22 +96,18 @@ def _parse_set_overrides(values: Optional[List[str]]) -> Dict[str, str]:
 
 
 def _preset_locked_keys(repo_root: Path, experiment: str) -> set[str]:
+    import yaml
+
     preset_path = repo_root / "conf" / "experiment" / f"{experiment}.yaml"
     if not preset_path.exists():
         raise SystemExit(f"Experiment preset not found: {preset_path}")
 
-    locked_keys: set[str] = set()
-    for raw_line in preset_path.read_text().splitlines():
-        stripped = raw_line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
-        if raw_line[:1].isspace():
-            continue
-        if ":" not in stripped:
-            continue
-        key = stripped.split(":", 1)[0].strip()
-        if key:
-            locked_keys.add(key)
+    data = yaml.safe_load(preset_path.read_text()) or {}
+    locked_keys = set(data) - {"defaults"}
+    # Explicit paper/ aliases inherit exactly the same protocol locks.
+    for default in data.get("defaults", []):
+        if isinstance(default, str) and default.startswith("/experiment/"):
+            locked_keys.update(_preset_locked_keys(repo_root, default.removeprefix("/experiment/")))
     return locked_keys
 
 
@@ -136,6 +133,7 @@ def _job_args(
     experiment: str,
     cli_overrides: Mapping[str, str],
     locked_keys: set[str],
+    random_seed: Optional[int] = None,
 ) -> Dict[str, Any]:
     args: Dict[str, Any] = {}
     args.update(_mapping(config.get("shared_args"), "shared_args"))
@@ -153,6 +151,9 @@ def _job_args(
     args.update(cli_overrides)
     _validate_unlocked_args(args=args, locked_keys=locked_keys, experiment=experiment)
 
+    if "seed" not in args and random_seed is not None:
+        args["seed"] = int(random_seed)
+
     args["client"] = str(config.get("client", "openrouter"))
     args["experiment"] = experiment
     args["nav"] = model
@@ -166,10 +167,18 @@ def _build_python_command(
     experiment: str,
     cli_overrides: Mapping[str, str],
     locked_keys: set[str],
+    random_seed: Optional[int] = None,
 ) -> List[str]:
     python_bin = str(config.get("python_bin", "./.venv/bin/python"))
     main_script = str(config.get("main_script", "main.py"))
-    raw_args = _job_args(config, model, experiment, cli_overrides, locked_keys)
+    raw_args = _job_args(
+        config,
+        model,
+        experiment,
+        cli_overrides,
+        locked_keys,
+        random_seed=random_seed,
+    )
     extra_cli_args = config.get("extra_cli_args", [])
     if not isinstance(extra_cli_args, list):
         raise SystemExit("Config field 'extra_cli_args' must be a JSON array.")
@@ -270,43 +279,64 @@ def _prepare_jobs(
         "experiments",
     )
 
+    repetitions_raw = config.get("repetitions", 1)
+    if not isinstance(repetitions_raw, int) or repetitions_raw <= 0:
+        raise SystemExit("Config field 'repetitions' must be a positive integer.")
+    repetitions = int(repetitions_raw)
+
     copied_env = _require_copied_env(config)
     repo_root = Path(__file__).resolve().parents[2]
     batch_dir = repo_root / _terminal_batch_dir(config, batch_id)
+    seed_rng = random.SystemRandom()
+    used_random_seeds: set[int] = set()
 
     jobs: List[Dict[str, Any]] = []
     for experiment in selected_experiments:
         locked_keys = _preset_locked_keys(repo_root, experiment)
         for model in selected_models:
-            job_name = f"{_slug(experiment)}__{_slug(model)}"
-            log_file = batch_dir / f"{job_name}.log"
-            python_command = _build_python_command(
-                repo_root,
-                config,
-                model,
-                experiment,
-                cli_overrides,
-                locked_keys,
-            )
-            shell_command = _build_shell_command(
-                repo_root=repo_root,
-                python_command=python_command,
-                job_name=job_name,
-                log_file=log_file,
-                copied_env=copied_env,
-                config=config,
-            )
-            jobs.append(
-                {
-                    "name": job_name,
-                    "model": model,
-                    "experiment": experiment,
-                    "python_command": python_command,
-                    "shell_command": shell_command,
-                    "log_file": log_file,
-                    "config": config,
-                }
-            )
+            for repetition_index in range(1, repetitions + 1):
+                random_seed: Optional[int] = None
+                if "seed" not in cli_overrides and "seed" not in _mapping(config.get("shared_args"), "shared_args"):
+                    while True:
+                        candidate = seed_rng.randrange(1, 2**31)
+                        if candidate not in used_random_seeds:
+                            used_random_seeds.add(candidate)
+                            random_seed = candidate
+                            break
+                repetition_suffix = (
+                    f"__rep{repetition_index:02d}" if repetitions > 1 else ""
+                )
+                job_name = f"{_slug(experiment)}__{_slug(model)}{repetition_suffix}"
+                log_file = batch_dir / f"{job_name}.log"
+                python_command = _build_python_command(
+                    repo_root,
+                    config,
+                    model,
+                    experiment,
+                    cli_overrides,
+                    locked_keys,
+                    random_seed=random_seed,
+                )
+                shell_command = _build_shell_command(
+                    repo_root=repo_root,
+                    python_command=python_command,
+                    job_name=job_name,
+                    log_file=log_file,
+                    copied_env=copied_env,
+                    config=config,
+                )
+                jobs.append(
+                    {
+                        "name": job_name,
+                        "model": model,
+                        "experiment": experiment,
+                        "repetition_index": repetition_index,
+                        "python_command": python_command,
+                        "shell_command": shell_command,
+                        "log_file": log_file,
+                        "config": config,
+                    }
+                )
 
     return jobs
 

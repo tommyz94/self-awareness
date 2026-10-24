@@ -1,8 +1,0 @@
-# @package _global_
-experiment_id: e6
-paper_experiment_id: null
-num_runs: 100
-max_steps: 100
-nav: auto
-outputs:
-  dir: outputs/extras

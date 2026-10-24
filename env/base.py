@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional, Tuple
 
 if TYPE_CHECKING:
-    from experiments.specs.types import RunSetup
+    from experiments.shared.types import RunSetup
     from env.observation import ObservationMetadata
 
 # (x, z) cube slot positions — backend-agnostic

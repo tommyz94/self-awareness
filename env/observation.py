@@ -4,7 +4,7 @@ import math
 from dataclasses import dataclass
 from typing import Iterable, Optional
 
-from experiments.specs.types import SceneSpec
+from experiments.shared.types import SceneSpec
 
 
 @dataclass(frozen=True)

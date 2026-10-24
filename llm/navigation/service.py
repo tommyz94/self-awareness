@@ -8,7 +8,9 @@ from llm.navigation.parser import _parse_json_reply
 from utils.colors import COLOR_POOL as _COLOR_POOL
 
 if TYPE_CHECKING:
-    from experiments.specs.types import RunSetup, TaskSpec
+    from experiments.shared.types import RunSetup, TaskSpec
+
+_GOOGLE_MALFORMED_JSON_RETRIES = 2
 
 
 def _uses_fixed_facing_prompt(
@@ -57,6 +59,8 @@ def _build_messages(
     current_dir: str = "N",
     task_spec: Optional[TaskSpec] = None,
     run_setup: Optional[RunSetup] = None,
+    current_step: Optional[int] = None,
+    max_steps: Optional[int] = None,
 ) -> List[Dict[str, Any]]:
     color_list_text = ", ".join(_COLOR_POOL)
     fixed_facing_prompt = _uses_fixed_facing_prompt(task_spec, run_setup)
@@ -76,6 +80,15 @@ def _build_messages(
         if not fixed_facing_prompt:
             position_text += f"; facing {current_dir}"
         position_text += "\n"
+
+    if current_step is not None and max_steps is not None and max_steps > 0:
+        remaining_steps = max(0, int(max_steps) - int(current_step))
+        position_text += (
+            f"Step budget: this is step {int(current_step)} of {int(max_steps)}. "
+            f"{remaining_steps} step{'s' if remaining_steps != 1 else ''} remain after this decision.\n"
+        )
+        if remaining_steps == 0:
+            position_text += "This is the final step available in this episode.\n"
 
     if task_spec is not None and run_setup is not None and task_spec.build_system_prompt is not None:
         system_prompt = task_spec.build_system_prompt(run_setup, third_person=third_person)
@@ -172,11 +185,38 @@ def get_next_move(
     http_referer: Optional[str] = None,
     app_title: Optional[str] = None,
     require_parameters: Optional[bool] = None,
+    allow_fallbacks: Optional[bool] = None,
+    provider_order: Optional[Any] = None,
+    provider_only: Optional[Any] = None,
+    provider_ignore: Optional[Any] = None,
     min_request_interval_sec: Optional[float] = None,
-) -> Tuple[str, str, str, str, Optional[str], Optional[str], Dict[str, str], Dict[str, Any]]:
+    vertexai: Optional[bool] = None,
+    project: Optional[str] = None,
+    location: Optional[str] = None,
+    hf_device: str = "auto",
+    hf_dtype: str = "auto",
+    max_output_tokens: Optional[int] = None,
+    structured_string_max_length: Optional[int] = None,
+    max_retries: Optional[int] = None,
+    initial_retry_delay_sec: Optional[float] = None,
+    max_retry_delay_sec: Optional[float] = None,
+    current_step: Optional[int] = None,
+    max_steps: Optional[int] = None,
+) -> Tuple[str, str, str, str, Optional[str], Optional[str], Dict[str, str], Dict[str, Any], Dict[str, Any]]:
     """
     Query a VLM with an observation image path plus step history.
-    Returns: (view_description, reasoning, action, summary, selected_cube, thinking, identification, task_payload)
+    Returns:
+      (
+        view_description,
+        reasoning,
+        action,
+        summary,
+        selected_cube,
+        thinking,
+        identification,
+        task_payload,
+        debug_payload,
+      )
 
     When task_spec and run_setup are provided (experiment path):
       - instruction and wrong_color params are ignored
@@ -208,51 +248,101 @@ def get_next_move(
         current_dir=current_dir,
         task_spec=task_spec,
         run_setup=run_setup,
-    )
-
-    raw_content, thinking = chat(
-        client_type=client_type,
-        model=model,
-        messages=messages,
-        output_schema=schema,
-        stream_thinking=stream_thinking,
-        host=host,
-        api_key=api_key,
-        base_url=base_url,
-        http_referer=http_referer,
-        app_title=app_title,
-        require_parameters=require_parameters,
-        min_request_interval_sec=min_request_interval_sec,
+        current_step=current_step,
+        max_steps=max_steps,
     )
 
     last_action = history[-1]["action"] if history else None
-    try:
-        if task_spec is not None:
-            result = task_spec.parse_reply(raw_content, last_action)
-        else:
-            view_description, reasoning, action, summary, selected_cube, identification = _parse_json_reply(
-                raw_content,
-                previous_action=last_action,
-            )
-            result = (
+    system_prompt = ""
+    user_prompt = ""
+    if messages:
+        if len(messages) >= 1:
+            system_prompt = str(messages[0].get("content", ""))
+        if len(messages) >= 2:
+            user_prompt = str(messages[1].get("content", ""))
+    parse_attempts = 1 + (_GOOGLE_MALFORMED_JSON_RETRIES if client_type == "google" else 0)
+    last_raw_content = ""
+    last_thinking = None
+    last_exc: Optional[Exception] = None
+
+    for parse_attempt in range(1, parse_attempts + 1):
+        raw_content, thinking = chat(
+            client_type=client_type,
+            model=model,
+            messages=messages,
+            output_schema=schema,
+            stream_thinking=stream_thinking,
+            host=host,
+            api_key=api_key,
+            base_url=base_url,
+            http_referer=http_referer,
+            app_title=app_title,
+            require_parameters=require_parameters,
+            allow_fallbacks=allow_fallbacks,
+            provider_order=provider_order,
+            provider_only=provider_only,
+            provider_ignore=provider_ignore,
+            min_request_interval_sec=min_request_interval_sec,
+            vertexai=vertexai,
+            project=project,
+            location=location,
+            hf_device=hf_device,
+            hf_dtype=hf_dtype,
+            max_output_tokens=max_output_tokens,
+            structured_string_max_length=structured_string_max_length,
+            max_retries=max_retries,
+            initial_retry_delay_sec=initial_retry_delay_sec,
+            max_retry_delay_sec=max_retry_delay_sec,
+        )
+
+        debug_payload = {
+            "system_prompt": system_prompt,
+            "user_prompt": user_prompt,
+            "image_path": image_path,
+            "raw_reply": raw_content,
+        }
+        try:
+            if task_spec is not None:
+                result = task_spec.parse_reply(raw_content, last_action)
+            else:
+                view_description, reasoning, action, summary, selected_cube, identification = _parse_json_reply(
+                    raw_content,
+                    previous_action=last_action,
+                )
+                result = (
+                    view_description,
+                    reasoning,
+                    action,
+                    summary,
+                    selected_cube,
+                    identification,
+                    {},
+                )
+            view_description, reasoning, action, summary, selected_cube, identification, task_payload = result
+            return (
                 view_description,
                 reasoning,
                 action,
                 summary,
                 selected_cube,
+                thinking,
                 identification,
-                {},
+                task_payload,
+                debug_payload,
             )
-        view_description, reasoning, action, summary, selected_cube, identification, task_payload = result
-        return (
-            view_description,
-            reasoning,
-            action,
-            summary,
-            selected_cube,
-            thinking,
-            identification,
-            task_payload,
-        )
-    except (ValueError, KeyError, TypeError) as exc:
-        raise ValueError(f"Could not parse JSON model response: {raw_content}") from exc
+        except (ValueError, KeyError, TypeError) as exc:
+            last_raw_content = raw_content
+            last_thinking = thinking
+            last_exc = exc
+            if client_type == "google" and parse_attempt < parse_attempts:
+                print(
+                    f"  [Google] Malformed JSON reply on attempt {parse_attempt}/{parse_attempts}. "
+                    "Retrying...",
+                    flush=True,
+                )
+                continue
+            raise ValueError(f"Could not parse JSON model response: {raw_content}") from exc
+
+    raise ValueError(
+        f"Could not parse JSON model response: {last_raw_content}"
+    ) from last_exc

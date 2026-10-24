@@ -1,5 +1,5 @@
 """
-Unit tests for the OpenAI, OpenRouter, Google, and Anthropic provider adapters.
+Unit tests for Ollama and the hosted provider adapters.
 
 All external SDK calls are mocked so these tests run without any installed
 provider package or live API key.
@@ -8,15 +8,32 @@ provider package or live API key.
 from __future__ import annotations
 
 import base64
+import io
 import json
 import sys
 import types
+import urllib.error
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
+
+
+@pytest.mark.parametrize("transient_failures", [0, 1])
+def test_ollama_stops_retrying_after_a_successful_response(monkeypatch, transient_failures):
+    from providers import ollama
+
+    response = io.BytesIO(json.dumps({"message": {"content": '{"action":"w"}'}}).encode())
+    urlopen = MagicMock(side_effect=[urllib.error.URLError("temporary")] * transient_failures + [response])
+    monkeypatch.setattr(ollama.urllib.request, "urlopen", urlopen)
+    content, thinking = ollama.chat(
+        host="http://localhost:11434", model="test-model", messages=[], retry_delay_sec=0,
+    )
+    assert json.loads(content) == {"action": "w"}
+    assert thinking is None
+    assert urlopen.call_count == transient_failures + 1
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -98,13 +115,6 @@ class TestOpenAIImageConversion:
         b64_part = url.split(",", 1)[1]
         assert base64.b64decode(b64_part) == Path(img).read_bytes()
 
-    def test_unreadable_image_is_skipped(self, tmp_path):
-        from providers.openai import _build_input_messages
-
-        msg = {"role": "user", "content": "Look.", "images": ["/nonexistent/path.jpg"]}
-        items = _build_input_messages([msg])
-        # Only the text item should remain
-        assert all(i["type"] != "input_image" for i in items[0]["content"])
 
 
 class TestOpenAISchemaHandoff:
@@ -137,7 +147,9 @@ class TestOpenAISchemaHandoff:
         assert content == '{"action": "w"}'
         text_format = captured["text"]["format"]
         assert text_format["type"] == "json_schema"
-        assert text_format["json_schema"]["schema"] is _SCHEMA
+        assert text_format["name"] == "navigation_response"
+        assert text_format["schema"] is _SCHEMA
+        assert text_format["strict"] is True
         assert captured["input"][0]["role"] == "user"
 
 
@@ -210,6 +222,46 @@ class TestOpenRouterSchemaHandoff:
             "X-OpenRouter-Title": "self-awareness",
         }
         assert captured["extra_body"] == {"provider": {"require_parameters": True}}
+
+    def test_provider_routing_controls_are_forwarded(self, monkeypatch):
+        captured: dict = {}
+
+        mock_response = SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content='{"action": "w"}'))]
+        )
+
+        mock_client = MagicMock()
+        mock_client.chat.completions.create.side_effect = lambda **kwargs: (
+            captured.update(kwargs) or mock_response
+        )
+
+        mock_openai = MagicMock()
+        mock_openai.OpenAI.return_value = mock_client
+
+        with patch.dict(sys.modules, {"openai": mock_openai}):
+            import providers.openrouter as openrouter_provider
+
+            monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
+            content, thinking = openrouter_provider.chat(
+                model="anthropic/claude-sonnet-4.6",
+                messages=[_USER_TEXT_MSG],
+                output_schema=_SCHEMA,
+                require_parameters=True,
+                allow_fallbacks=False,
+                provider_order=["anthropic"],
+                provider_ignore=["azure"],
+            )
+
+        assert thinking is None
+        assert content == '{"action": "w"}'
+        assert captured["extra_body"] == {
+            "provider": {
+                "require_parameters": True,
+                "allow_fallbacks": False,
+                "order": ["anthropic"],
+                "ignore": ["azure"],
+            }
+        }
 
 
 # ===========================================================================
@@ -414,6 +466,314 @@ class TestGoogleSchemaHandoff:
         # Original schema is not mutated
         assert "propertyOrdering" not in schema
 
+    def test_prefers_structured_parsed_payload_over_malformed_text(self, monkeypatch):
+        mock_response = MagicMock()
+        mock_response.text = '{\n  "view-description'
+        mock_response.parsed = {
+            "view-description": "Mirror room with cubes.",
+            "reasoning": "Need to keep exploring.",
+            "action": "w",
+            "summary": "Move forward.",
+            "selected_cube": "none",
+            "identification": {
+                "my_color": "unknown",
+                "source": "other",
+                "confidence": "low",
+            },
+        }
+
+        mock_models = MagicMock()
+        mock_models.generate_content.return_value = mock_response
+
+        mock_client_instance = MagicMock()
+        mock_client_instance.models = mock_models
+
+        mock_genai = MagicMock()
+        mock_genai.Client.return_value = mock_client_instance
+
+        mock_types = MagicMock()
+        mock_types.Part.from_text.side_effect = lambda text: {"_text": text}
+        mock_types.Content.side_effect = lambda role, parts: {"role": role, "parts": parts}
+        mock_types.GenerateContentConfig.side_effect = lambda **kw: {"_config": kw}
+
+        google_pkg = types.ModuleType("google")
+        google_genai_pkg = types.ModuleType("google.genai")
+        google_genai_pkg.Client = mock_genai.Client
+        google_genai_pkg.types = mock_types
+
+        with patch.dict(sys.modules, {"google": google_pkg, "google.genai": google_genai_pkg}):
+            import providers.google as google_provider
+
+            monkeypatch.setenv("GEMINI_API_KEY", "test-key")
+            content, thinking = google_provider.chat(
+                model="gemini-2.5-flash",
+                messages=[_USER_TEXT_MSG],
+                output_schema=_SCHEMA,
+            )
+
+        assert thinking is None
+        assert json.loads(content) == mock_response.parsed
+
+
+class TestGoogleVertexAIConfiguration:
+    def test_vertex_ai_client_uses_project_and_location(self, monkeypatch):
+        captured: dict = {}
+        config_calls: list = []
+
+        mock_response = MagicMock()
+        mock_response.text = '{"action": "w"}'
+
+        mock_models = MagicMock()
+        mock_models.generate_content.return_value = mock_response
+
+        def _fake_client(**kwargs):
+            captured.update(kwargs)
+            client = MagicMock()
+            client.models = mock_models
+            return client
+
+        mock_types = MagicMock()
+        mock_types.Part.from_text.side_effect = lambda text: {"_text": text}
+        mock_types.Content.side_effect = lambda role, parts: {"role": role, "parts": parts}
+        mock_types.GenerateContentConfig.side_effect = lambda **kw: config_calls.append(kw) or {"_config": kw}
+        mock_types.HttpOptions.side_effect = lambda **kw: {"_http_options": kw}
+
+        google_pkg = types.ModuleType("google")
+        google_genai_pkg = types.ModuleType("google.genai")
+        google_genai_pkg.Client = _fake_client
+        google_genai_pkg.types = mock_types
+
+        with patch.dict(sys.modules, {"google": google_pkg, "google.genai": google_genai_pkg}):
+            import providers.google as google_provider
+
+            monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+            monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
+            google_provider.chat(
+                model="gemini-2.5-flash",
+                messages=[_USER_TEXT_MSG],
+                output_schema=_SCHEMA,
+                vertexai=True,
+                project="gemini-self-perspetion",
+                location="us-central1",
+                max_output_tokens=256,
+            )
+
+        assert captured == {
+            "vertexai": True,
+            "project": "gemini-self-perspetion",
+            "location": "us-central1",
+            "http_options": {"_http_options": {"timeout": 180000}},
+        }
+        assert config_calls[0]["max_output_tokens"] == 256
+
+    def test_gemini_25_pro_uses_low_thinking_budget(self, monkeypatch):
+        config_calls: list = []
+
+        mock_response = MagicMock()
+        mock_response.text = '{"action": "w"}'
+
+        mock_models = MagicMock()
+        mock_models.generate_content.return_value = mock_response
+
+        def _fake_client(**kwargs):
+            client = MagicMock()
+            client.models = mock_models
+            return client
+
+        mock_types = MagicMock()
+        mock_types.Part.from_text.side_effect = lambda text: {"_text": text}
+        mock_types.Content.side_effect = lambda role, parts: {"role": role, "parts": parts}
+        mock_types.GenerateContentConfig.side_effect = lambda **kw: config_calls.append(kw) or {"_config": kw}
+        mock_types.ThinkingConfig.side_effect = lambda **kw: {"_thinking": kw}
+
+        google_pkg = types.ModuleType("google")
+        google_genai_pkg = types.ModuleType("google.genai")
+        google_genai_pkg.Client = _fake_client
+        google_genai_pkg.types = mock_types
+
+        with patch.dict(sys.modules, {"google": google_pkg, "google.genai": google_genai_pkg}):
+            import providers.google as google_provider
+
+            monkeypatch.setenv("GEMINI_API_KEY", "test-key")
+            google_provider.chat(
+                model="gemini-2.5-pro",
+                messages=[_USER_TEXT_MSG],
+                output_schema=_SCHEMA,
+            )
+
+        thinking_config = config_calls[0]["thinking_config"]
+        assert thinking_config == {
+            "_thinking": {
+                "thinking_budget": 128,
+                "include_thoughts": False,
+            }
+        }
+
+    def test_retries_once_on_resource_exhausted_then_succeeds(self, monkeypatch):
+        call_count = {"n": 0}
+        sleep_calls: list[float] = []
+
+        class FakeRetryableError(Exception):
+            def __init__(self):
+                self.code = 429
+                self.status = "RESOURCE_EXHAUSTED"
+                self.message = "Resource exhausted. Please try again later."
+                super().__init__(self.message)
+
+        mock_response = MagicMock()
+        mock_response.text = '{"action": "w"}'
+
+        def _fake_generate_content(**kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                raise FakeRetryableError()
+            return mock_response
+
+        mock_models = MagicMock()
+        mock_models.generate_content.side_effect = _fake_generate_content
+
+        def _fake_client(**kwargs):
+            client = MagicMock()
+            client.models = mock_models
+            return client
+
+        mock_types = MagicMock()
+        mock_types.Part.from_text.side_effect = lambda text: {"_text": text}
+        mock_types.Content.side_effect = lambda role, parts: {"role": role, "parts": parts}
+        mock_types.GenerateContentConfig.side_effect = lambda **kw: {"_config": kw}
+
+        google_pkg = types.ModuleType("google")
+        google_genai_pkg = types.ModuleType("google.genai")
+        google_genai_pkg.Client = _fake_client
+        google_genai_pkg.types = mock_types
+
+        with patch.dict(sys.modules, {"google": google_pkg, "google.genai": google_genai_pkg}):
+            import providers.google as google_provider
+
+            monkeypatch.setattr(google_provider.time, "sleep", lambda seconds: sleep_calls.append(seconds))
+            monkeypatch.setenv("GEMINI_API_KEY", "test-key")
+            content, thinking = google_provider.chat(
+                model="gemini-2.5-pro",
+                messages=[_USER_TEXT_MSG],
+                output_schema=_SCHEMA,
+            )
+
+        assert thinking is None
+        assert content == '{"action": "w"}'
+        assert call_count["n"] == 2
+        assert sleep_calls == [2.0]
+
+    def test_retry_parameters_are_configurable(self, monkeypatch):
+        call_count = {"n": 0}
+        sleep_calls: list[float] = []
+
+        class FakeRetryableError(Exception):
+            def __init__(self):
+                self.code = 429
+                self.status = "RESOURCE_EXHAUSTED"
+                self.message = "Resource exhausted. Please try again later."
+                super().__init__(self.message)
+
+        mock_response = MagicMock()
+        mock_response.text = '{"action": "w"}'
+
+        def _fake_generate_content(**kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                raise FakeRetryableError()
+            return mock_response
+
+        mock_models = MagicMock()
+        mock_models.generate_content.side_effect = _fake_generate_content
+
+        def _fake_client(**kwargs):
+            client = MagicMock()
+            client.models = mock_models
+            return client
+
+        mock_types = MagicMock()
+        mock_types.Part.from_text.side_effect = lambda text: {"_text": text}
+        mock_types.Content.side_effect = lambda role, parts: {"role": role, "parts": parts}
+        mock_types.GenerateContentConfig.side_effect = lambda **kw: {"_config": kw}
+
+        google_pkg = types.ModuleType("google")
+        google_genai_pkg = types.ModuleType("google.genai")
+        google_genai_pkg.Client = _fake_client
+        google_genai_pkg.types = mock_types
+
+        with patch.dict(sys.modules, {"google": google_pkg, "google.genai": google_genai_pkg}):
+            import providers.google as google_provider
+
+            monkeypatch.setattr(google_provider.time, "sleep", lambda seconds: sleep_calls.append(seconds))
+            monkeypatch.setenv("GEMINI_API_KEY", "test-key")
+            content, thinking = google_provider.chat(
+                model="gemini-2.5-pro",
+                messages=[_USER_TEXT_MSG],
+                output_schema=_SCHEMA,
+                max_retries=9,
+                initial_retry_delay_sec=7.0,
+                max_retry_delay_sec=60.0,
+            )
+
+        assert thinking is None
+        assert content == '{"action": "w"}'
+        assert call_count["n"] == 2
+        assert sleep_calls == [7.0]
+
+    def test_retries_once_on_deadline_exceeded_then_succeeds(self, monkeypatch):
+        call_count = {"n": 0}
+        sleep_calls: list[float] = []
+
+        class FakeDeadlineExceededError(Exception):
+            def __init__(self):
+                self.code = 504
+                self.status = "DEADLINE_EXCEEDED"
+                self.message = "Deadline expired before operation could complete."
+                super().__init__(self.message)
+
+        mock_response = MagicMock()
+        mock_response.text = '{"action": "w"}'
+
+        def _fake_generate_content(**kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                raise FakeDeadlineExceededError()
+            return mock_response
+
+        mock_models = MagicMock()
+        mock_models.generate_content.side_effect = _fake_generate_content
+
+        def _fake_client(**kwargs):
+            client = MagicMock()
+            client.models = mock_models
+            return client
+
+        mock_types = MagicMock()
+        mock_types.Part.from_text.side_effect = lambda text: {"_text": text}
+        mock_types.Content.side_effect = lambda role, parts: {"role": role, "parts": parts}
+        mock_types.GenerateContentConfig.side_effect = lambda **kw: {"_config": kw}
+
+        google_pkg = types.ModuleType("google")
+        google_genai_pkg = types.ModuleType("google.genai")
+        google_genai_pkg.Client = _fake_client
+        google_genai_pkg.types = mock_types
+
+        with patch.dict(sys.modules, {"google": google_pkg, "google.genai": google_genai_pkg}):
+            import providers.google as google_provider
+
+            monkeypatch.setattr(google_provider.time, "sleep", lambda seconds: sleep_calls.append(seconds))
+            monkeypatch.setenv("GEMINI_API_KEY", "test-key")
+            content, thinking = google_provider.chat(
+                model="gemini-2.5-pro",
+                messages=[_USER_TEXT_MSG],
+                output_schema=_SCHEMA,
+            )
+
+        assert thinking is None
+        assert content == '{"action": "w"}'
+        assert call_count["n"] == 2
+        assert sleep_calls == [2.0]
+
 
 # ===========================================================================
 # Anthropic adapter tests
@@ -458,16 +818,6 @@ class TestAnthropicImageConversion:
         assert image_block["source"]["media_type"] == "image/jpeg"
         assert base64.b64decode(image_block["source"]["data"]) == Path(img).read_bytes()
 
-    def test_unreadable_image_is_skipped(self, tmp_path):
-        from providers.anthropic import _build_request
-
-        msg = {"role": "user", "content": "Look.", "images": ["/nonexistent/path.jpg"]}
-
-        _, anthropic_messages = _build_request([msg])
-        assert anthropic_messages == [{
-            "role": "user",
-            "content": [{"type": "text", "text": "Look."}],
-        }]
 
 
 class TestAnthropicSchemaHandoff:
@@ -500,6 +850,54 @@ class TestAnthropicSchemaHandoff:
         assert captured["system"] == "You are a robot."
         assert captured["output_config"]["format"]["type"] == "json_schema"
         assert captured["output_config"]["format"]["schema"] is _SCHEMA
+
+    def test_vertex_ai_client_uses_project_location_and_max_retries(self, monkeypatch):
+        captured_client: dict = {}
+        captured_request: dict = {}
+
+        mock_response = SimpleNamespace(
+            content=[SimpleNamespace(type="text", text='{"action": "w"}')]
+        )
+
+        mock_client = MagicMock()
+        mock_client.messages.create.side_effect = lambda **kwargs: (
+            captured_request.update(kwargs) or mock_response
+        )
+
+        def _fake_vertex_client(**kwargs):
+            captured_client.update(kwargs)
+            return mock_client
+
+        mock_anthropic = MagicMock()
+        mock_anthropic.AnthropicVertex.side_effect = _fake_vertex_client
+
+        with patch.dict(sys.modules, {"anthropic": mock_anthropic}):
+            import providers.anthropic as anthropic_provider
+
+            monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+            content, thinking = anthropic_provider.chat(
+                model="claude-sonnet-4-6",
+                messages=[_SYSTEM_MSG, _USER_TEXT_MSG],
+                output_schema=_SCHEMA,
+                vertexai=True,
+                project="gemini-self-perspetion",
+                location="global",
+                max_output_tokens=1024,
+                max_retries=7,
+                timeout_sec=123,
+            )
+
+        assert thinking is None
+        assert content == '{"action": "w"}'
+        assert captured_client == {
+            "region": "global",
+            "project_id": "gemini-self-perspetion",
+            "timeout": 123,
+            "max_retries": 7,
+        }
+        assert captured_request["model"] == "claude-sonnet-4-6"
+        assert captured_request["max_tokens"] == 1024
+        assert captured_request["output_config"]["format"]["schema"] is _SCHEMA
 
 
 class TestDispatchCanonicalization:
@@ -541,11 +939,21 @@ class TestDispatchCanonicalization:
             model="claude-sonnet-4-5",
             messages=[_USER_TEXT_MSG],
             output_schema=_SCHEMA,
+            vertexai=True,
+            project="gemini-self-perspetion",
+            location="global",
+            max_output_tokens=1024,
+            max_retries=7,
         )
 
         assert thinking is None
         assert content == '{"action": "w"}'
         assert called["model"] == "claude-sonnet-4-5"
+        assert called["vertexai"] is True
+        assert called["project"] == "gemini-self-perspetion"
+        assert called["location"] == "global"
+        assert called["max_output_tokens"] == 1024
+        assert called["max_retries"] == 7
 
     def test_canonicalize_client_type_maps_claude(self):
         from llm.dispatch import canonicalize_client_type
@@ -681,7 +1089,71 @@ class TestParseJsonReplyRoundtrip:
         _, _, action, _, _, _ = _parse_json_reply(json.dumps(payload), previous_action=None)
         assert action == "w"
 
+    def test_mirror_contingency_source_is_preserved(self):
+        from llm.navigation.parser import _parse_json_reply
+
+        payload = {
+            "view-description": "A robot is visible in the mirror.",
+            "reasoning": "The mirror reveals my body color.",
+            "action": "w",
+            "summary": "Moving closer to inspect the mirror.",
+            "selected_cube": "none",
+            "identification": {
+                "my_color": "yellow",
+                "source": "mirror-contingency",
+                "confidence": "high",
+            },
+        }
+        _, _, _, _, _, identification = _parse_json_reply(json.dumps(payload), previous_action=None)
+        assert identification["source"] == "mirror-contingency"
+
 class TestJudgeImports:
     def test_canonical_judge_modules_import_after_ollama_move(self):
         import experiments.evaluation.judge_reliability  # noqa: F401
         import experiments.evaluation.judge  # noqa: F401
+
+
+@pytest.mark.parametrize("provider", ["openai", "openrouter", "anthropic", "google"])
+@pytest.mark.parametrize("failure", ["missing", "directory", "permission"])
+def test_unreadable_observation_stops_before_api_request(monkeypatch, tmp_path, provider, failure):
+    import importlib
+
+    sdk = MagicMock()
+    if provider == "google":
+        google = types.ModuleType("google")
+        google.genai = sdk
+        monkeypatch.setitem(sys.modules, "google", google)
+        monkeypatch.setitem(sys.modules, "google.genai", sdk)
+        request = sdk.Client.return_value.models.generate_content
+    elif provider == "anthropic":
+        monkeypatch.setitem(sys.modules, "anthropic", sdk)
+        request = sdk.Anthropic.return_value.messages.create
+    else:
+        monkeypatch.setitem(sys.modules, "openai", sdk)
+        client = sdk.OpenAI.return_value
+        request = client.responses.create if provider == "openai" else client.chat.completions.create
+
+    bad_path = tmp_path / "unreadable.jpg"
+    expected = FileNotFoundError
+    if failure == "directory":
+        bad_path.mkdir()
+        expected = IsADirectoryError
+    elif failure == "permission":
+        expected = PermissionError
+        read_bytes = Path.read_bytes
+
+        def read_image(path):
+            if path == bad_path:
+                raise PermissionError(13, "Permission denied", str(path))
+            return read_bytes(path)
+
+        monkeypatch.setattr(Path, "read_bytes", read_image)
+
+    adapter = importlib.import_module(f"providers.{provider}")
+    with pytest.raises(expected, match="unreadable.jpg"):
+        adapter.chat(
+            model="test-vision-model", api_key="test-key", output_schema=_SCHEMA,
+            messages=[{"role": "user", "content": "Look.",
+                       "images": [_fake_image_path(tmp_path), str(bad_path)]}],
+        )
+    request.assert_not_called()

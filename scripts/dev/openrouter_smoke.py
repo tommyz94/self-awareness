@@ -105,6 +105,16 @@ def _read_models_file(path: Optional[str]) -> list[str]:
     return models
 
 
+def _parse_provider_values(values: Optional[Iterable[str]]) -> list[str]:
+    parsed: list[str] = []
+    for raw in values or []:
+        for part in raw.split(","):
+            item = part.strip()
+            if item:
+                parsed.append(item)
+    return parsed
+
+
 def _with_variant(model: str, variant: str) -> str:
     if not variant or ":" in model:
         return model
@@ -115,17 +125,27 @@ def _run_one_model(
     *,
     model: str,
     mode: str,
+    image_path_override: Optional[Path],
     api_key: str,
     base_url: str,
     http_referer: str,
     app_title: str,
     require_parameters: bool,
+    allow_fallbacks: Optional[bool],
+    provider_order: list[str],
+    provider_only: list[str],
+    provider_ignore: list[str],
     timeout_sec: int,
 ) -> tuple[bool, str]:
     try:
         with tempfile.TemporaryDirectory(prefix="openrouter_smoke_") as tmp_dir:
             temp_dir = Path(tmp_dir)
-            image_path = None if mode == "text" else _write_test_png(temp_dir)
+            if mode == "text":
+                image_path = None
+            elif image_path_override is not None:
+                image_path = image_path_override
+            else:
+                image_path = _write_test_png(temp_dir)
             content, _thinking = openrouter_chat(
                 model=model,
                 messages=_messages(mode=mode, image_path=image_path),
@@ -134,6 +154,10 @@ def _run_one_model(
                 http_referer=http_referer,
                 app_title=app_title,
                 require_parameters=require_parameters,
+                allow_fallbacks=allow_fallbacks,
+                provider_order=provider_order,
+                provider_only=provider_only,
+                provider_ignore=provider_ignore,
                 temperature=0.0,
                 timeout_sec=timeout_sec,
                 output_schema=_schema(mode),
@@ -186,6 +210,15 @@ def main() -> int:
         help="Skip the generated test image and do a text-only structured-output request.",
     )
     parser.add_argument(
+        "--image-path",
+        default="",
+        help=(
+            "Optional local image path to use instead of the generated 1x1 PNG. "
+            "Useful when a provider rejects the synthetic smoke image but the "
+            "real experiment uses a normal JPG."
+        ),
+    )
+    parser.add_argument(
         "--api-key",
         default="",
         help="Optional API key fallback. OPENROUTER_API_KEY still takes precedence.",
@@ -211,6 +244,34 @@ def main() -> int:
         help="Disable provider.require_parameters for this smoke test.",
     )
     parser.add_argument(
+        "--allow-provider-fallbacks",
+        action="store_true",
+        help="Set provider.allow_fallbacks=true in the OpenRouter routing config.",
+    )
+    parser.add_argument(
+        "--disable-provider-fallbacks",
+        action="store_true",
+        help="Set provider.allow_fallbacks=false in the OpenRouter routing config.",
+    )
+    parser.add_argument(
+        "--provider-order",
+        action="append",
+        default=[],
+        help="Preferred provider order. May be repeated and may contain comma-separated values.",
+    )
+    parser.add_argument(
+        "--provider-only",
+        action="append",
+        default=[],
+        help="Restrict routing to these providers only. May be repeated and may contain comma-separated values.",
+    )
+    parser.add_argument(
+        "--provider-ignore",
+        action="append",
+        default=[],
+        help="Exclude these providers from routing. May be repeated and may contain comma-separated values.",
+    )
+    parser.add_argument(
         "--timeout-sec",
         type=int,
         default=120,
@@ -225,18 +286,40 @@ def main() -> int:
         raise SystemExit("Provide at least one model via --model or --model-file.")
 
     mode = "text" if args.no_image else "vision"
+    image_path_override: Optional[Path] = None
+    if args.image_path:
+        image_path_override = Path(args.image_path).expanduser()
+        if not image_path_override.is_file():
+            raise SystemExit(f"--image-path does not exist or is not a file: {image_path_override}")
     require_parameters = not args.allow_fallback_routing
+    allow_fallbacks: Optional[bool] = None
+    if args.allow_provider_fallbacks and args.disable_provider_fallbacks:
+        raise SystemExit(
+            "Use at most one of --allow-provider-fallbacks or --disable-provider-fallbacks."
+        )
+    if args.allow_provider_fallbacks:
+        allow_fallbacks = True
+    elif args.disable_provider_fallbacks:
+        allow_fallbacks = False
+    provider_order = _parse_provider_values(args.provider_order)
+    provider_only = _parse_provider_values(args.provider_only)
+    provider_ignore = _parse_provider_values(args.provider_ignore)
 
     results: list[tuple[str, bool, str]] = []
     for model in models:
         ok, detail = _run_one_model(
             model=model,
             mode=mode,
+            image_path_override=image_path_override,
             api_key=args.api_key,
             base_url=args.base_url,
             http_referer=args.http_referer,
             app_title=args.app_title,
             require_parameters=require_parameters,
+            allow_fallbacks=allow_fallbacks,
+            provider_order=provider_order,
+            provider_only=provider_only,
+            provider_ignore=provider_ignore,
             timeout_sec=args.timeout_sec,
         )
         results.append((model, ok, detail))

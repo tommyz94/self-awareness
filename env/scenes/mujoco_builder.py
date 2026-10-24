@@ -17,6 +17,7 @@ _PREFERRED_HUMANOID_XML_PATH = _ASSETS_DIR / "humanoid_real.xml"
 _CLOTHES_OBJS_DIR = _REPO_ROOT / "clothes" / "objs"
 _LEGACY_AVATAR_OBJS_DIR = _ASSETS_DIR / "objs"
 _HUMANOID_ROT_EULER = "-90 0 0"
+_AVATAR_FACING_EULER = "0 -90 0"
 _FIRST_PERSON_CAMERA = {
     "name": "first_person",
     "pos": "0.15 1.45 0",
@@ -192,6 +193,21 @@ def sample_avatar_mesh_choice() -> AvatarMeshChoice | None:
     return _avatar_choice_for_path(random.choice(candidates).as_posix())
 
 
+def sample_avatar_mesh_choices(count: int) -> list[AvatarMeshChoice]:
+    if count <= 0:
+        return []
+    candidates = list(_discover_avatar_mesh_candidates())
+    if not candidates:
+        return []
+
+    sampled_paths: list[Path] = []
+    while len(sampled_paths) < count:
+        batch = list(candidates)
+        random.shuffle(batch)
+        sampled_paths.extend(batch[: min(len(batch), count - len(sampled_paths))])
+    return [_avatar_choice_for_path(path.as_posix()) for path in sampled_paths[:count]]
+
+
 def _avatar_mesh_asset_entry(choice: AvatarMeshChoice) -> str:
     scale = f"{choice.scale:.8f} {choice.scale:.8f} {choice.scale:.8f}"
     return (
@@ -288,25 +304,42 @@ def _resolve_avatar_texture_asset(obj_path: Path) -> Path | None:
     return None
 
 
-def _avatar_asset_xml(choice: AvatarMeshChoice) -> str:
-    entries = [_avatar_mesh_asset_entry(choice), _AGENT_FLAT_MATERIAL_XML]
-    if (
-        choice.texture_path is not None
-        and choice.texture_name is not None
-        and choice.material_name is not None
-    ):
-        entries.append(
-            f'<texture name="{choice.texture_name}" '
-            f'type="2d" file="{choice.texture_path.as_posix()}"/>'
-        )
-        entries.append(
-            f'<material name="{choice.material_name}" '
-            f'texture="{choice.texture_name}" '
-            'texuniform="true" '
-            'specular="0.05" '
-            'shininess="0.03"/>'
-        )
+def build_avatar_asset_bundle(choices: list[AvatarMeshChoice]) -> str:
+    unique_choices: list[AvatarMeshChoice] = []
+    seen_meshes: set[str] = set()
+    for choice in choices:
+        if choice.mesh_name in seen_meshes:
+            continue
+        seen_meshes.add(choice.mesh_name)
+        unique_choices.append(choice)
+
+    if not unique_choices:
+        return ""
+
+    entries = [_AGENT_FLAT_MATERIAL_XML]
+    for choice in unique_choices:
+        entries.append(_avatar_mesh_asset_entry(choice))
+        if (
+            choice.texture_path is not None
+            and choice.texture_name is not None
+            and choice.material_name is not None
+        ):
+            entries.append(
+                f'<texture name="{choice.texture_name}" '
+                f'type="2d" file="{choice.texture_path.as_posix()}"/>'
+            )
+            entries.append(
+                f'<material name="{choice.material_name}" '
+                f'texture="{choice.texture_name}" '
+                'texuniform="true" '
+                'specular="0.05" '
+                'shininess="0.03"/>'
+            )
     return f"<asset>{''.join(entries)}</asset>"
+
+
+def _avatar_asset_xml(choice: AvatarMeshChoice) -> str:
+    return build_avatar_asset_bundle([choice])
 
 
 def _asset_file_paths(humanoid_xml_path: Path) -> list[Path]:
@@ -510,8 +543,16 @@ def _build_avatar_wrapper(
     ox, oy, oz = avatar_choice.offset
     geom_name = f"{prefix}avatar_vis"
     material_name = avatar_choice.material_name or _AGENT_FLAT_MATERIAL_NAME
-    ET.SubElement(
+    frame = ET.SubElement(
         wrapper,
+        "body",
+        {
+            "name": f"{prefix}frame",
+            "euler": _AVATAR_FACING_EULER,
+        },
+    )
+    ET.SubElement(
+        frame,
         "geom",
         {
             "name": geom_name,

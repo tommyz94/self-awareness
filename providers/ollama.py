@@ -89,6 +89,7 @@ def chat(
             with urllib.request.urlopen(req, timeout=timeout_sec) as response:
                 if not stream_thinking:
                     body = response.read().decode("utf-8")
+                    break
                 else:
                     content_acc = ""
                     thinking_acc = ""

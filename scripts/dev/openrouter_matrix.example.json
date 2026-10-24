@@ -19,24 +19,14 @@
   ],
   "shared_args": {
     "mujoco.headless": true,
-    "msr_level": 2,
     "print_reasoning": true
   },
   "per_experiment_args": {
     "e2": {
-      "history_steps": 2
-    },
-    "e3": {
-      "random_wall_color": true
+      "openrouter.max_output_tokens": 2048
     }
   },
-  "pair_args": {
-    "qwen/qwen2.5-vl-7b-instruct": {
-      "e3": {
-        "third_person": true
-      }
-    }
-  },
+  "pair_args": {},
   "launcher": {
     "terminal_app": "Terminal",
     "keep_open": true,

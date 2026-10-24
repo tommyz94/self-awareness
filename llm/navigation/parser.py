@@ -41,7 +41,13 @@ _IDENTIFICATION_DEFAULTS: Dict[str, str] = {
     "confidence": "low",
 }
 _VALID_MY_COLORS = set(_COLOR_POOL) | {"unknown"}
-_VALID_SOURCES = {"guessing", "told-in-prompt", "saw-another-robot", "other"}
+_VALID_SOURCES = {
+    "guessing",
+    "told-in-prompt",
+    "saw-another-robot",
+    "mirror-contingency",
+    "other",
+}
 _VALID_CONFIDENCES = {"low", "medium", "high"}
 
 

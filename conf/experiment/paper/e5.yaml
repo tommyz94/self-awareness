@@ -1,17 +1,4 @@
 # @package _global_
-# Paper E5; stable historical implementation: e7.
-experiment_id: e7
-paper_experiment_id: e5
-num_runs: 7
-max_steps: 100
-history_steps: 1
-msr_level: 2
-third_person: false
-camera_height: 1.0
-body_style: default
-random_wall_color: false
-distractor_color_mode: allow_duplicates
-e7_random_cube_heights: true
-save_dataset: false
-outputs:
-  dir: outputs/paper
+# Explicit paper namespace alias; canonical definition is ../e5.yaml.
+defaults:
+  - /experiment/e5

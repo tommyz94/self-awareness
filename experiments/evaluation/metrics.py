@@ -19,6 +19,8 @@ class RunOutcome:
     task_id: Optional[str] = None
     task_result: Dict = field(default_factory=dict)
     mirror_exposure_metrics: Dict = field(default_factory=dict)
+    termination_reason: Optional[str] = None
+    run_context: Dict = field(default_factory=dict)
 
 
 def extract_mirror_exposure_metrics(
@@ -27,7 +29,7 @@ def extract_mirror_exposure_metrics(
     completed: bool,
     experiment_id: Optional[str],
 ) -> Dict[str, int | None]:
-    if experiment_id not in {"e0", "e1", "e3", "e4", "e8"}:
+    if experiment_id not in {"experimental/direct_perception", "e1", "e3", "experimental/front_identity", "experimental/embodiment"}:
         return {}
 
     considered = step_records
@@ -94,10 +96,28 @@ def print_metrics(outcomes: List[RunOutcome], experiment_id: str) -> None:
     if capabilities.supports_summary_metrics and capabilities.summarize_experiment is not None:
         summary = capabilities.summarize_experiment(outcomes, experiment_id)
     is_summary_task = bool(capabilities.supports_summary_metrics)
+    is_front_identity_task = task_id == "front_identity_task"
+
+    def _format_optional_rate(value: Optional[float]) -> str:
+        if value is None or math.isnan(value):
+            return "N/A"
+        return f"{value:.2f}"
 
     for o in outcomes:
         done_str = "done" if o.completed else f"stopped@{o.steps}"
-        if is_summary_task:
+        if is_front_identity_task:
+            task_result = o.task_result or {}
+            mark = "✓" if task_result.get("success") else "✗"
+            variant = task_result.get("front_identity_variant", "unknown")
+            actual = task_result.get("actual_answer", "missing")
+            expected = task_result.get("expected_answer", "unknown")
+            used_lateral = "yes" if task_result.get("used_lateral_action_before_done") else "no"
+            print(
+                f"  Run {o.run_id:2d}: variant={variant:5s}  "
+                f"answer={actual:9s}/{expected:3s}  lateral={used_lateral:3s}  "
+                f"{mark}  [{done_str}]"
+            )
+        elif is_summary_task:
             sel = o.selected_cube or "none"
             mark = "✓" if o.selected_cube == o.agent_color else "✗"
             extra = f"  misleading={o.wrong_color}" if o.wrong_color else ""
@@ -106,23 +126,44 @@ def print_metrics(outcomes: List[RunOutcome], experiment_id: str) -> None:
             print(f"  Run {o.run_id:2d}: [{done_str}]  steps={o.steps}")
 
     if summary is not None:
-        sia = summary["sia"]
-        correct = summary["correct"]
-        print(f"\n  SIA : {sia:.2f}  ({correct}/{n} correct)")
+        if is_front_identity_task:
+            accuracy = summary["accuracy"]
+            correct = summary["correct"]
+            done = summary["done"]
+            done_rate = summary["done_rate"]
+            lateral = summary["used_lateral_action_before_done"]
+            lateral_rate = summary["used_lateral_action_before_done_rate"]
+            print(f"\n  Accuracy : {accuracy:.2f}  ({correct}/{n} correct)")
+            print(f"  Done rate: {done_rate:.2f}  ({done}/{n} terminated with done)")
+            print(f"  Lateral-before-done: {lateral_rate:.2f}  ({lateral}/{n} runs used a/d before commit)")
+            print(
+                "  Accuracy with lateral: "
+                f"{_format_optional_rate(summary['accuracy_with_lateral'])}  "
+                f"({summary['correct_with_lateral']}/{summary['runs_with_lateral']} correct)"
+            )
+            print(
+                "  Accuracy without lateral: "
+                f"{_format_optional_rate(summary['accuracy_without_lateral'])}  "
+                f"({summary['correct_without_lateral']}/{summary['runs_without_lateral']} correct)"
+            )
+        else:
+            sia = summary["sia"]
+            correct = summary["correct"]
+            print(f"\n  SIA : {sia:.2f}  ({correct}/{n} correct)")
 
-        if summary.get("show_gi", False):
-            gi = summary["gi"]
-            completed = summary["visual"] + summary["text"] + summary["random"]
-            if completed:
-                if math.isnan(gi):
-                    print("  GI  : N/A")
+            if summary.get("show_gi", False):
+                gi = summary["gi"]
+                completed = summary["visual"] + summary["text"] + summary["random"]
+                if completed:
+                    if math.isnan(gi):
+                        print("  GI  : N/A")
+                    else:
+                        print(
+                            f"  GI  : {gi:.2f}  "
+                            f"(visual={summary['visual']}, text={summary['text']}, random={summary['random']})"
+                        )
                 else:
-                    print(
-                        f"  GI  : {gi:.2f}  "
-                        f"(visual={summary['visual']}, text={summary['text']}, random={summary['random']})"
-                    )
-            else:
-                print("  [Δ_mirror = SIA(E1) - SIA(E2) — run both experiments to compute]")
+                    print("  [Δ_mirror = SIA(E1) - SIA(E2) — run both experiments to compute]")
     else:
         print(f"\n  No aggregate metrics defined for task_id={task_id}.")
 

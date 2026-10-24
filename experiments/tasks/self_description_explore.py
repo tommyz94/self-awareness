@@ -1,5 +1,5 @@
 """
-Embodied self-description exploration task spec (e8).
+Experimental embodied self-description exploration task.
 
 The agent explores the mirrored room until it has enough evidence to describe
 its own visible appearance in detail. Cubes and distractors can remain in the
@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional, Tuple
 
-from experiments.specs.types import RunSetup, TaskCapabilities, TaskSpec
+from experiments.shared.types import RunSetup, TaskCapabilities, TaskSpec
 from experiments.tasks.self_perception import (
     _DEFAULT_IDENTIFICATION,
     _DEFAULT_SELF_DESCRIPTION,

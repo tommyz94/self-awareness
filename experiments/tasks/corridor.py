@@ -1,9 +1,9 @@
-"""Corridor navigation task spec (e4)."""
+"""Experimental corridor navigation task."""
 from __future__ import annotations
 
 from typing import Any, Dict, Optional, Tuple
 
-from experiments.specs.types import RunSetup, SceneSpec, TaskCapabilities, TaskSpec
+from experiments.shared.types import RunSetup, SceneSpec, TaskCapabilities, TaskSpec
 from llm.navigation.parser import _parse_dict_payload, _parse_json_reply
 
 _E4_ROWS_PER_SIDE = 10
@@ -90,7 +90,6 @@ def build_user_prompt(
     del run_setup, bumped_wall, third_person
     return (
         "Task: reach the final row and stop at the correct step.\n"
-        "Stop rule: done@10 for mirror mode, done@20 for long mode.\n"
         f"{history_text}"
         f"{position_text}"
         "Use the current RGB image to decide the next action.\n"

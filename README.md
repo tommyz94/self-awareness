@@ -1,136 +1,250 @@
 # Mirror, Mirror on the Wall
 
-Code for *Mirror, Mirror on the Wall: Can VLM Agents Tell Who They Are at All?*
-(arXiv: [2605.08816](https://arxiv.org/abs/2605.08816)).
+Can a vision-language model distinguish its own reflection from another robot,
+identify its body color, and act on that information? This repository provides
+the MuJoCo environments, model interfaces and evaluation tools for
+*Mirror, Mirror on the Wall: Can VLM Agents Tell Who They Are at All?*
 
-Citation metadata: [CITATION.cff](CITATION.cff).
-Scope, data access, and release status: [benchmark card](docs/BENCHMARK_CARD.md).
+[Paper](https://arxiv.org/abs/2605.08816) · [Citation](#citation)
 
-A first-person MuJoCo benchmark for functional mirror-guided self-identification.
-The agent reports a body color and, in E1-E4, selects a matching cube. This
-evaluates grounded behavior; it does not establish philosophical self-awareness.
+You can inspect the environments yourself, run a local or API-hosted model,
+and calculate benchmark scores from saved episodes. The repository also
+includes the scripts used to produce the paper's comparison figures.
 
-## Install
+## What the benchmark does
 
-Python 3.11 is the tested development version.
+A model controls a robot through a first-person camera. At each step it receives
+an RGB image, recent history and position information, then returns a structured
+response containing its next action and self-identification. It can move
+forward/backward, turn left/right, or finish with `done`.
+
+The five official conditions match E1–E5 in the paper:
+
+| Preset | What changes | What the agent must do |
+| --- | --- | --- |
+| [e1](experiments/paper/e1/experiment.py) | Baseline room with a mirror | Identify its color and select the matching cube from three candidates |
+| [e2](experiments/paper/e2/experiment.py) | The mirror is removed | Perform the same cube-selection task without mirror evidence |
+| [e3](experiments/paper/e3/experiment.py) | The prompt supplies an incorrect body color | Resolve the conflict between language and vision, then select a cube |
+| [e4](experiments/paper/e4/experiment.py) | Other robots move through the mirrored scene | Distinguish itself from distractors and select a cube |
+| [e5](experiments/paper/e5/experiment.py) | Cluttered exploration with moving robots | Explore and report its own color at the final decision; no cube selection |
+
+Each official preset runs **seven episodes per seed**, with a **100-step limit**,
+640×480 observations and one-step textual history. The primary paper evaluation
+uses three seeds per model and condition. The [presets](conf/experiment/)
+define these settings; [task modules](experiments/tasks/) contain the exact
+prompts and response schemas.
+
+## Run an experiment
+
+Use **Python 3.11** and run commands from the repository root. First install
+the simulator, metric calculator, plotting tools and notebooks:
 
 ```sh
 python3.11 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-python -m pip install -r requirements-dev.txt
+python scripts/dev/check_installation.py
 ```
 
-Provider SDKs are used only for the selected backend. Local experimental inference adapters may have additional optional dependencies;
-see [providers](providers/PROVIDERS.md).
-Do not put API keys in tracked configuration files.
+The check validates all five scene presets without calling a model. Add
+`--render` to check image rendering too. On Linux without working EGL, install
+OSMesa (for example, `libosmesa6` on Ubuntu) and set `MUJOCO_GL=osmesa`.
 
-## Paper experiments
+### Choose a model backend
 
-Use the explicit `paper/` namespace. Bare numeric IDs retain their historical
-meaning so existing scripts and datasets remain readable.
+Start with **OpenRouter for hosted models** or **Ollama for local models**.
+The same experiment runner also supports direct provider APIs as alternatives.
+`client` selects the backend; `nav` selects the exact model ID understood by
+that backend. Choose a model that accepts images and can return the required
+structured response.
 
-| Paper condition | Preset | Historical implementation | Task |
+| Backend | `client` | Optional Python SDK | Setup |
 | --- | --- | --- | --- |
-| E1: Mirror baseline | `paper/e1` | `e1` | Matching cube |
-| E2: No mirror | `paper/e2` | `e2` | Matching cube |
-| E3: Misleading language | `paper/e3` | `e3` | Matching cube |
-| E4: Distractor robots | `paper/e4` | `e5` | Matching cube |
-| E5: Cluttered exploration | `paper/e5` | `e7` | Final self-attribution |
+| OpenRouter | `openrouter` | `openai==2.2.0` | `OPENROUTER_API_KEY` |
+| Ollama | `ollama` | None | Running Ollama server with a vision model installed |
+| OpenAI | `openai` | `openai==2.2.0` | `OPENAI_API_KEY` |
+| Google Gemini | `google` | `google-genai==1.67.0` | `GEMINI_API_KEY` or `GOOGLE_API_KEY` |
+| Anthropic Claude | `anthropic` | `anthropic==0.97.0` | `ANTHROPIC_API_KEY` |
 
-Check a preset without rendering or contacting a model:
+**Hosted example (OpenRouter).** Install the SDK, set your API key,
+and replace `YOUR_VISION_MODEL` with its OpenRouter model ID:
 
 ```sh
-python main.py experiment=paper/e4 --cfg job
+python -m pip install "openai==2.2.0"
+export OPENROUTER_API_KEY="YOUR_API_KEY"
+python main.py experiment=e1 client=openrouter nav=YOUR_VISION_MODEL \
+  seed=123 mujoco.headless=true
 ```
 
-Run one seed of seven episodes with a model:
+For other APIs, use the SDK, `client` and credential variable from the table
+above. To install all supported API SDKs, use
+`python -m pip install -r requirements-providers.txt`.
+All provider settings are in [conf/config.yaml](conf/config.yaml).
+The [Google](providers/google.py) and [Anthropic](providers/anthropic.py)
+adapters also support Vertex AI through application-default credentials and
+their `use_vertexai`, `project` and `location` settings.
+
+**Local example.** With Ollama running and a vision model installed, replace
+`YOUR_OLLAMA_MODEL` with its installed name and set the server address:
 
 ```sh
-python main.py experiment=paper/e1 client=google nav=gemini-2.5-pro seed=123 mujoco.headless=true
+python main.py experiment=e1 client=ollama nav=YOUR_OLLAMA_MODEL \
+  ollama.host=http://localhost:11434 seed=123 mujoco.headless=true
 ```
 
-For an OpenRouter matrix, preview the commands before launching:
+Both commands run seven E1 episodes without opening a simulator window.
+`seed=123` fixes the random seed; choose a different seed for another batch.
+Change `experiment=e1` to `e2`, `e3`, `e4` or `e5` to choose another condition.
+Append `--cfg job` to inspect the configuration without starting a run.
+For a short setup check, append `num_runs=1 max_steps=5`; this changes the
+benchmark protocol and is only a smoke test.
+
+### Explore the scene yourself
+
+Human control needs neither a model nor API credentials:
 
 ```sh
-python scripts/dev/openrouter_matrix.py --config scripts/dev/openrouter_matrix.paper.json
+python main.py experiment=e1 nav=human mujoco.headless=false
 ```
 
-This preview makes no model calls. The example covers two OpenRouter models
-and one seed; it is not the complete nine-model evaluation.
+Use W/S to move and A/D to turn. In cube tasks, press F to open the final
+selection dialog, choose a cube with 1/2/3, enter reasoning and press Enter.
+Q or Esc closes the scene.
 
-The presets fix a 100-step budget, one-step textual history, first-person
-640x480 observations, the standard humanoid, and seven episodes per seed.
-The original eight-model evaluation used three seeds per condition. The
-additional Cosmos set has one seed per condition; see [reproducibility](docs/REPRODUCIBILITY.md).
-The shared pool contains **ten colors**, with three distinct candidate cubes
-in E1-E4. E5 has no target-cube decision.
+### Find the outputs
 
-Inspect the scene interactively:
+Official runs are saved under `outputs/paper/mujoco/`, grouped by experiment,
+provider, model, level and session:
 
-```sh
-python main.py experiment=paper/e1 nav=human mujoco.headless=false
+```text
+outputs/paper/mujoco/<experiment>/<provider>/<model>/level_2/<timestamp>/run_01/
 ```
 
-Human controls are W/S for movement, A/D for 30-degree turns, C for camera,
-and F for the cube-selection dialog. The corridor extras use different controls.
+Each model-driven episode saves `runNN.json`
+(setup, actions and identifications), observation images, and a text log.
+The session also contains `experiment_summary.json`. These runtime summaries
+are useful for inspection; calculate the paper's aggregate metrics with the
+evaluator below.
+Generated runs and `reports/` are ignored by Git.
 
-## Preserved research extras
+## Turn saved episodes into scores and figures
 
-Original research files remain in place. The shared presets include:
+The workflow is **run episodes → select logs → calculate metrics → plot a CSV**.
+Evaluation and plotting run offline and do not require a model or simulator.
 
-| Extra preset | Historical ID | Purpose |
-| --- | --- | --- |
-| `extras/direct_perception` | `e0` | Direct mirror-view sanity check |
-| `extras/corridor` | `corridor` | Original mirror/long-corridor stopping task |
-| `extras/exploration` | `e6` | Exploration and optional video export |
-| `extras/embodiment` | `e8` | Clothed-avatar self-description |
+Create a JSON manifest listing the episodes you want to score. For example,
+save this as `selected_runs.json`, replacing the path with a real run JSON
+and adding one row per episode:
 
-Additional local front-identity and mirror-side-choice prototypes are preserved
-but are not included in this alignment commit; their publication and integration
-need a separate code review. See [development](docs/DEVELOPMENT.md).
-
-```sh
-python main.py experiment=extras/direct_perception nav=human mujoco.headless=false
-python main.py experiment=extras/exploration save_dataset=true mujoco.headless=true
+```json
+{
+  "experiment_id_scheme": "paper-v1",
+  "manifest_rows": [
+    {"experiment_id": "e1", "path": "PATH_TO_YOUR_E1_RUN_JSON"}
+  ]
+}
 ```
 
-The numeric `e7` preset retains automatic navigation; `paper/e5` does not
-inherit that default. Always provide `nav=<model>` for model evaluations.
-For non-cube tasks the simulator skips room-style heatmaps when the task does
-not support them. Full mapping and controls: [experiments](docs/EXPERIMENTS.md).
-
-## Data and evaluation status
-
-Original run JSONs, observations, manifests, and notebooks are preserved in
-place. New paper runs go to `outputs/paper/`; extras go to `outputs/extras/`.
-Subdirectories and `experiment_id` keep the implementation ID. Paper-run JSONs
-also include `paper_experiment_id`, and their `run_context` records both IDs.
-Thus paper E4 is unambiguously labeled even though its stable directory is `e5`.
-
-**Metric implementations and reported results are unchanged by this alignment.**
-The final evaluation code is being obtained from a collaborator. Endpoint,
-terminal-step, and undefined-value conventions must be reconciled before a
-new metrics release. [Outstanding metric questions](docs/METRIC_CONVENTIONS.md).
-
-Historical analysis commands, selected counts, and data-preservation checks are
-documented in [reproducibility](docs/REPRODUCIBILITY.md). Generated data remain
-local; a public code checkout is not a download of the evaluation dataset.
-
-## Paper figures
-
-Source-only notebooks and the batch renderer cover all nine models, with the
-original figure styles preserved. See [plot sources](notebooks/NOTEBOOKS.md)
-for the standalone plotting dependencies and commands. Aggregate inputs and
-generated figures are supplied separately; metric conventions remain pending.
-
-## Tests and development
+Use `e1`–`e5` for `experiment_id`, matching each episode's condition, and keep
+`experiment_id_scheme` set to `paper-v1`. Paths are relative to the repository
+root, or absolute. Keep the output folder structure intact: the evaluator
+reads the experiment, provider and model from
+`<experiment>/<provider>/<model>/.../runNN.json`.
 
 ```sh
+python scripts/analysis/evaluate_selected_runs.py \
+  --manifest selected_runs.json --dry-run
+python scripts/analysis/evaluate_selected_runs.py \
+  --manifest selected_runs.json \
+  --out-dir reports/evaluation
+```
+
+The dry run checks the selection. Evaluation writes `paper_metrics.csv`, input
+hashes and calculation provenance to a **new** report directory. Choose a
+different `--out-dir` for each evaluation; existing directories are refused.
+Use `paper_metrics.csv` for scores labeled E1–E5. The evaluator handles the
+calculator's internal identifiers automatically and scores only the episodes
+listed in your manifest.
+
+The six core scores describe task success (TSA), steps to a decision (TTD),
+mirror exposure overall and among successful episodes (MCR and MTATO), correct
+color claims (CAAL), and claims preceding mirror evidence (CR). All models use
+the same [calculator](experiment.py): success requires a correct `done`, MCR
+and CAAL exclude that step, and CR searches the full trajectory. Timeouts are
+failures; MTATO is undefined without successful episodes. The calculator
+defines the exact denominators and aggregation rules.
+
+### Plot the results
+
+The plotting script reads the models and conditions present in
+`paper_metrics.csv`, including a single model or a subset of E1–E5. It keeps
+the paper models' styles and assigns styles automatically to additional models:
+
+```sh
+python notebooks/plot_paper_results.py \
+  --csv reports/evaluation/paper_metrics.csv \
+  --output-dir reports/figures
+```
+
+Figures are exported as PDF, SVG and PNG. You can pass multiple CSV paths after
+`--csv`, provided they contain no duplicate model/condition pairs. Missing
+statistics remain N/A; the identification-outcome figure is produced only when
+E5 is present. The [notebook](notebooks/results_analysis.ipynb) calls the same
+[plotting functions](notebooks/plot_paper_results.py) for interactive use.
+
+**Reproducing the paper:** original evaluation logs and aggregate inputs are
+not included in a code checkout. The primary set contains 840 episodes across
+eight models; Cosmos adds 35 episodes with a smaller sample per condition.
+You can run new episodes with the code and bundled assets. Reproducing the
+reported numbers requires the original logs and selection manifest; recreating
+the figures requires the aggregate CSV. Download instructions for these paper
+inputs are not yet provided.
+
+## Where to find things
+
+| Location | Responsibility |
+| --- | --- |
+| [main.py](main.py), [conf/config.yaml](conf/config.yaml) | Entry point and configuration |
+| [experiments/paper/](experiments/paper/), [loader.py](experiments/loader.py) | Official scene definitions and experiment selection |
+| [tasks/](experiments/tasks/), [shared/](experiments/shared/) | Prompts, response schemas, shared geometry and distractor mechanics |
+| [runtime/controller.py](runtime/controller.py) | Episode loop: capture an image, query the model, apply an action, save logs |
+| [env/backends/mujoco.py](env/backends/mujoco.py) | Simulation, rendering and movement |
+| [llm/navigation/](llm/navigation/), [providers/](providers/) | Model messages, response parsing and backend adapters |
+| [evaluate_selected_runs.py](scripts/analysis/evaluate_selected_runs.py), [experiment.py](experiment.py) | Input selection and core metric calculation |
+| [scripts/dev/](scripts/dev/) | Optional diagnostics and batch utilities; not needed for the workflow above |
+| [notebooks/](notebooks/), [tests/](tests/) | Analysis code and automated checks |
+
+Start with `main.py` and `runtime/controller.py` to follow an episode.
+Research extensions outside the official E1–E5 benchmark are in
+[experiments/experimental/](experiments/experimental/) and require an explicit
+`experiment=experimental/<name>` selector. These extensions are under
+development: `direct_perception`, `corridor`, `exploration`, `embodiment`,
+`front_identity` and `mirror_side_choice`. The embodiment extension requires
+additional avatar assets in `clothes/objs/` that are not distributed with this
+repository. All assets needed for E1–E5 are bundled.
+
+## Tests
+
+```sh
+python -m pip install -r requirements.txt "pytest>=8,<10"
 python -m pytest -q
 ```
 
-Tests use mocked providers and do not require paid model calls. Development
-checks, optional assets, and the Git inclusion policy are described in
-[development](docs/DEVELOPMENT.md). Provider/API options remain documented in
-[providers](providers/PROVIDERS.md) and [developer scripts](scripts/dev/DEV.md).
+The suite includes metric and plotting checks. Tests use mocked providers
+and make no paid model calls. Use
+`python scripts/dev/check_installation.py --providers` after installing all
+API SDKs to check their imports without making requests.
+
+## Citation
+
+```bibtex
+@misc{ziliotto2026mirrormirrorwallvlm,
+  title={Mirror, Mirror on the Wall: Can VLM Agents Tell Who They Are at All?},
+  author={Filippo Ziliotto and Ciro Beneduce and Bruno Lepri and Luciano Serafini and Massimiliano Luca and Tommaso Campari},
+  year={2026},
+  eprint={2605.08816},
+  archivePrefix={arXiv},
+  primaryClass={cs.AI},
+  url={https://arxiv.org/abs/2605.08816},
+}
+```

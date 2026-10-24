@@ -5,8 +5,8 @@ from types import ModuleType
 
 import pytest
 
-from experiments.specs.loader import discover_experiments, invalidate_experiment_cache
-from experiments.specs.types import (
+from experiments.loader import discover_experiments, invalidate_experiment_cache
+from experiments.shared.types import (
     BackendOverrides,
     ExperimentSpec,
     MuJoCoSceneBuildResult,
@@ -50,7 +50,7 @@ def _plugin_module(experiment_id: str) -> ModuleType:
 def test_builtin_experiment_plugins_are_discovered():
     experiments = discover_experiments(force_reload=True)
 
-    assert {"e0", "e1", "e2", "e3", "e4", "e8"} <= set(experiments)
+    assert set(experiments) == {"e1", "e2", "e3", "e4", "e5"}
 
 
 def test_loader_only_imports_experiment_modules(tmp_path, monkeypatch):
@@ -67,13 +67,13 @@ def test_loader_only_imports_experiment_modules(tmp_path, monkeypatch):
         imported.append(name)
         return _plugin_module("alpha")
 
-    monkeypatch.setattr("experiments.specs.loader._SPECS_DIR", root)
-    monkeypatch.setattr("experiments.specs.loader._load_experiment_module", fake_load)
+    monkeypatch.setattr("experiments.loader._PAPER_DIR", root)
+    monkeypatch.setattr("experiments.loader._load_experiment_module", fake_load)
     invalidate_experiment_cache()
 
     experiments = discover_experiments(force_reload=True)
 
-    assert imported == ["experiments.specs.alpha.experiment"]
+    assert imported == ["experiments.paper.alpha.experiment"]
     assert list(experiments) == ["alpha"]
 
 
@@ -88,8 +88,8 @@ def test_loader_rejects_duplicate_experiment_ids(tmp_path, monkeypatch):
         del name
         return _plugin_module("duplicate")
 
-    monkeypatch.setattr("experiments.specs.loader._SPECS_DIR", root)
-    monkeypatch.setattr("experiments.specs.loader._load_experiment_module", fake_load)
+    monkeypatch.setattr("experiments.loader._PAPER_DIR", root)
+    monkeypatch.setattr("experiments.loader._load_experiment_module", fake_load)
     invalidate_experiment_cache()
 
     with pytest.raises(ValueError, match="Duplicate experiment_id"):
@@ -107,8 +107,8 @@ def test_loader_rejects_malformed_experiment_export(tmp_path, monkeypatch):
         module.EXTRA = "not allowed"
         return module
 
-    monkeypatch.setattr("experiments.specs.loader._SPECS_DIR", root)
-    monkeypatch.setattr("experiments.specs.loader._load_experiment_module", fake_load)
+    monkeypatch.setattr("experiments.loader._PAPER_DIR", root)
+    monkeypatch.setattr("experiments.loader._load_experiment_module", fake_load)
     invalidate_experiment_cache()
 
     with pytest.raises(ValueError, match="exactly one public symbol"):
@@ -157,7 +157,7 @@ def test_tasks_resolve_task_can_follow_experiment_local_override(monkeypatch):
     )
 
     monkeypatch.setattr(
-        "experiments.specs.get_experiment",
+        "experiments.get_experiment",
         lambda experiment_id: spec if experiment_id == "local" else None,
     )
 

@@ -1,0 +1,58 @@
+from __future__ import annotations
+
+from dataclasses import replace as _replace
+
+from experiments.shared.scenes import (
+    build_cube_run_setup as _build_cube_run_setup,
+    build_mirror_room_scene as _build_mirror_room_scene,
+)
+from experiments.shared.types import (
+    ExperimentRuntimeOptions as _ExperimentRuntimeOptions,
+    ExperimentSpec as _ExperimentSpec,
+    SceneSpec as _SceneSpec,
+)
+
+_E1_WIDE_MIRROR_SLOTS = [
+    (-14.85, -3.0),
+    (-14.85, 0.0),
+    (-14.85, 3.0),
+    (-0.35, -3.0),
+    (-0.35, 0.0),
+    (-0.35, 3.0),
+]
+
+_SCENE_TEMPLATE = _replace(
+    _build_mirror_room_scene(mirror_enabled=True),
+    mirror_window_z=(-4.0, 4.0),
+    turn_step_deg=30.0,
+)
+
+
+def _resolve_scene_template(_runtime_options: _ExperimentRuntimeOptions) -> _SceneSpec:
+    return _SCENE_TEMPLATE
+
+
+def _build_run_setup(
+    run_id: int,
+    runtime_options: _ExperimentRuntimeOptions,
+    scene_template: _SceneSpec,
+):
+    del run_id
+    return _build_cube_run_setup(
+        scene_template,
+        cube_slots=_E1_WIDE_MIRROR_SLOTS,
+        randomize_wall=True,
+        randomize_wall_color=runtime_options.random_wall_color,
+        randomize_spawn_yaw=True,
+    )
+
+
+EXPERIMENT = _ExperimentSpec(
+    experiment_id="e1",
+    scene_id=_SCENE_TEMPLATE.scene_id,
+    task_id="cube_task",
+    num_runs_default=7,
+    scene_template=_SCENE_TEMPLATE,
+    scene_template_factory=_resolve_scene_template,
+    run_setup_factory=_build_run_setup,
+)

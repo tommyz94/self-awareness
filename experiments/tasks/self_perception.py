@@ -1,5 +1,5 @@
 """
-Direct mirror self-perception task spec (e0).
+Experimental direct mirror self-perception task.
 
 The agent starts with a direct, unobstructed mirror view and should report its
 own body color immediately without navigating.
@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional, Tuple
 
-from experiments.specs.types import RunSetup, TaskCapabilities, TaskSpec
+from experiments.shared.types import RunSetup, TaskCapabilities, TaskSpec
 from llm.navigation.parser import _parse_dict_payload
 from utils.colors import COLOR_POOL as _COLOR_POOL
 

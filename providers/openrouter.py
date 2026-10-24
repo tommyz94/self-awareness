@@ -17,15 +17,64 @@ import os
 import tempfile
 import time
 from pathlib import Path
+from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple
 
 _DEFAULT_BASE_URL = "https://openrouter.ai/api/v1"
+
+
+def _bound_unconstrained_strings(schema: Any, max_length: Optional[int]) -> Any:
+    if max_length is None:
+        return schema
+    bounded = deepcopy(schema)
+
+    def _visit(node: Any) -> None:
+        if isinstance(node, dict):
+            if node.get("type") == "string" and "enum" not in node:
+                node.setdefault("maxLength", int(max_length))
+            for value in node.values():
+                _visit(value)
+        elif isinstance(node, list):
+            for value in node:
+                _visit(value)
+
+    _visit(bounded)
+    return bounded
 _RATE_LIMIT_LOCK_PATH = Path(tempfile.gettempdir()) / "self_awareness_openrouter_rate_limit.lock"
 _RATE_LIMIT_STATE_PATH = Path(tempfile.gettempdir()) / "self_awareness_openrouter_rate_limit.json"
 
 
 def _resolve_api_key(api_key: str) -> str:
     return os.getenv("OPENROUTER_API_KEY") or api_key
+
+
+def _normalize_provider_list(value: Any) -> List[str]:
+    if value is None:
+        return []
+
+    if isinstance(value, str):
+        stripped = value.strip()
+        if not stripped:
+            return []
+        if stripped.startswith("["):
+            try:
+                parsed = json.loads(stripped)
+            except json.JSONDecodeError:
+                parsed = None
+            if isinstance(parsed, list):
+                return [str(item).strip() for item in parsed if str(item).strip()]
+        return [part.strip() for part in stripped.split(",") if part.strip()]
+
+    if isinstance(value, (list, tuple, set)):
+        items = value
+    else:
+        try:
+            items = list(value)
+        except TypeError:
+            text = str(value).strip()
+            return [text] if text else []
+
+    return [str(item).strip() for item in items if str(item).strip()]
 
 
 def _mime_type_for_path(image_path: str) -> str:
@@ -97,20 +146,17 @@ def _build_messages(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             content_blocks.append({"type": "text", "text": content})
 
         for image_path in images:
-            try:
-                content_blocks.append(
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": (
-                                f"data:{_mime_type_for_path(image_path)};base64,"
-                                f"{_encode_image(image_path)}"
-                            )
-                        },
-                    }
-                )
-            except OSError:
-                pass
+            content_blocks.append(
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": (
+                            f"data:{_mime_type_for_path(image_path)};base64,"
+                            f"{_encode_image(image_path)}"
+                        )
+                    },
+                }
+            )
 
         if content_blocks:
             openrouter_messages.append({"role": role, "content": content_blocks})
@@ -164,7 +210,13 @@ def chat(
     http_referer: str = "",
     app_title: str = "",
     require_parameters: bool = True,
+    allow_fallbacks: Optional[bool] = None,
+    provider_order: Any = None,
+    provider_only: Any = None,
+    provider_ignore: Any = None,
     min_request_interval_sec: float = 0.0,
+    max_output_tokens: Optional[int] = None,
+    structured_string_max_length: Optional[int] = None,
 ) -> Tuple[str, Optional[str]]:
     """
     Send messages to OpenRouter and return (content, None).
@@ -192,26 +244,49 @@ def chat(
     if app_title:
         extra_headers["X-OpenRouter-Title"] = app_title
 
-    extra_body = {}
+    provider_config: Dict[str, Any] = {}
     if require_parameters:
-        extra_body["provider"] = {"require_parameters": True}
+        provider_config["require_parameters"] = True
+    if allow_fallbacks is not None:
+        provider_config["allow_fallbacks"] = bool(allow_fallbacks)
+
+    normalized_order = _normalize_provider_list(provider_order)
+    normalized_only = _normalize_provider_list(provider_only)
+    normalized_ignore = _normalize_provider_list(provider_ignore)
+    if normalized_order:
+        provider_config["order"] = normalized_order
+    if normalized_only:
+        provider_config["only"] = normalized_only
+    if normalized_ignore:
+        provider_config["ignore"] = normalized_ignore
+
+    extra_body = {}
+    if provider_config:
+        extra_body["provider"] = provider_config
 
     _enforce_global_min_interval(min_request_interval_sec)
 
-    response = client.chat.completions.create(
-        model=model,
-        messages=_build_messages(messages),
-        temperature=temperature,
-        response_format={
+    request_kwargs: Dict[str, Any] = {
+        "model": model,
+        "messages": _build_messages(messages),
+        "temperature": temperature,
+        "response_format": {
             "type": "json_schema",
             "json_schema": {
                 "name": "navigation_response",
                 "strict": True,
-                "schema": output_schema,
+                "schema": _bound_unconstrained_strings(
+                    output_schema,
+                    structured_string_max_length,
+                ),
             },
         },
-        extra_headers=extra_headers or None,
-        extra_body=extra_body or None,
-    )
+        "extra_headers": extra_headers or None,
+        "extra_body": extra_body or None,
+    }
+    if max_output_tokens is not None:
+        request_kwargs["max_tokens"] = int(max_output_tokens)
+
+    response = client.chat.completions.create(**request_kwargs)
 
     return _response_text(response), None
