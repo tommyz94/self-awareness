@@ -176,9 +176,20 @@ defines the exact denominators and aggregation rules.
 
 ### Plot the results
 
-The plotting script reads the models and conditions present in
-`paper_metrics.csv`, including a single model or a subset of E1–E5. It keeps
-the paper models' styles and assigns styles automatically to additional models:
+Open [results_analysis.ipynb](notebooks/results_analysis.ipynb), set `CSV_PATH`
+to your evaluator's `paper_metrics.csv`, and run the cells in order:
+
+```sh
+jupyter lab notebooks/results_analysis.ipynb
+```
+
+The notebook displays the five comparison figures supported by the available
+conditions and statistics. Set `SAVE_FIGURES = True` in its last cell to export
+PDF, SVG and PNG files to `reports/figures/`. Missing statistics stay N/A;
+models are discovered from the CSV, including models outside the paper.
+The notebook starts without saved outputs.
+
+The same [plotting code](notebooks/plot_paper_results.py) also runs directly:
 
 ```sh
 python notebooks/plot_paper_results.py \
@@ -186,11 +197,9 @@ python notebooks/plot_paper_results.py \
   --output-dir reports/figures
 ```
 
-Figures are exported as PDF, SVG and PNG. You can pass multiple CSV paths after
-`--csv`, provided they contain no duplicate model/condition pairs. Missing
-statistics remain N/A; the identification-outcome figure is produced only when
-E5 is present. The [notebook](notebooks/results_analysis.ipynb) calls the same
-[plotting functions](notebooks/plot_paper_results.py) for interactive use.
+Both routes use the same functions. Exports include a `figure_manifest.json`
+with input hashes. Multiple CSVs are accepted after `--csv` when their
+model/condition pairs do not overlap. Generated figures are ignored by Git.
 
 **Reproducing the paper:** original evaluation logs and aggregate inputs are
 not included in a code checkout. The primary set contains 840 episodes across

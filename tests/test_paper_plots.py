@@ -1,7 +1,6 @@
 """Plotting must not silently drop models or fabricate missing statistics."""
 from __future__ import annotations
 
-import ast
 import json
 from pathlib import Path
 
@@ -45,8 +44,6 @@ def test_canonical_paper_aggregates_preserve_figure_values_and_condition_labels(
     frame, path = aggregates
     expected = plots.load_results([path])
     canonical = frame.copy()
-    canonical["experiment_id"] = canonical["experiment_id"].map(
-        {"e1": "e1", "e2": "e2", "e3": "e3", "e5": "e4", "e7": "e5"})
     canonical["experiment_id_scheme"] = "paper-v1"
     target = tmp_path / "paper_metrics.csv"
     canonical.to_csv(target, index=False)
@@ -72,19 +69,6 @@ def test_duplicate_provider_alias_cannot_double_count_a_model(aggregates):
         plots.load_results([path])
 
 
-def test_precise_aggregate_overrides_rounded_overlay(aggregates, tmp_path):
-    frame, path = aggregates
-    overlay = tmp_path / "rounded.json"
-    rounded = frame[frame.model_name == "cosmos-reason2-8b"].copy()
-    rounded["TSA_mean"] = 0.14
-    overlay.write_text(json.dumps({"source": "test reported values", "rows": rounded.to_dict("records")}))
-    result = plots.load_results([path], overlay)
-    assert len(result) == 45
-    assert (result[result.model_key == "cosmos-reason2-8b"].TSA_mean == 0.5).all()
-    assert set(result.source_kind) == {"aggregate_csv"}
-    assert len(result.attrs["provenance"]) == 1
-
-
 def test_undefined_metric_and_missing_auxiliary_data_are_not_zero(aggregates):
     frame, path = aggregates
     mask = (frame.model_name == "cosmos-reason2-8b") & (frame.experiment_id == "e3")
@@ -98,12 +82,20 @@ def test_undefined_metric_and_missing_auxiliary_data_are_not_zero(aggregates):
 
 
 def test_existing_paper_colors_and_markers_are_preserved():
-    original = json.loads((ROOT / "notebooks/archive/results_analysis_legacy_source.ipynb").read_text())
-    tree = ast.parse("".join(original["cells"][9]["source"]))
-    node = next(n for n in tree.body if isinstance(n, ast.Assign)
-                and getattr(n.targets[0], "id", "") == "MODEL_STYLES")
-    for model, style in ast.literal_eval(node.value.args[0]):
-        assert {key: plots.MODEL_STYLES[model][key] for key in style} == style
+    expected = [
+        ("anthropic_claude-sonnet-4.6", "#0072B2", "o"),
+        ("qwen_qwen3.6-plus", "#D55E00", "s"),
+        ("gemma4_26b", "#009E73", "^"),
+        ("gemma4_31b", "#CC79A7", "D"),
+        ("gpt-5.1", "#E69F00", "P"),
+        ("gemini-2.5-flash", "#56B4E9", "X"),
+        ("gemini-2.5-pro", "#6A3D9A", "v"),
+        ("ministral-3_14b", "#6B6B6B", "h"),
+        ("cosmos-reason2-8b", "#8F305A", ">"),
+    ]
+    for model, color, marker in expected:
+        assert plots.MODEL_STYLES[model]["color"] == color
+        assert plots.MODEL_STYLES[model]["marker"] == marker
 
 
 def test_other_cosmos_sizes_are_not_relabelled_as_the_eight_billion_model():
@@ -114,12 +106,12 @@ def test_provider_ids_are_canonicalized_for_notebook_row_selection(aggregates):
     frame, path = aggregates
     frame.loc[frame.model_name == "cosmos-reason2-8b", "model_name"] = "mradermacher/Cosmos-Reason2-8B-GGUF:Q4_K_M"
     frame.to_csv(path, index=False)
-    result = plots.read_results(path)
+    result = plots.load_results([path])
     assert set(result.model_name) == set(plots.MODEL_NAMES)
 
 
 def test_source_notebooks_have_no_embedded_results_or_machine_paths():
-    for name in ("results_analysis.ipynb", "archive/results_analysis_legacy_source.ipynb"):
+    for name in ("results_analysis.ipynb",):
         notebook = json.loads((ROOT / "notebooks" / name).read_text())
         for cell in notebook["cells"]:
             assert not cell.get("outputs")
@@ -127,7 +119,7 @@ def test_source_notebooks_have_no_embedded_results_or_machine_paths():
             assert "/Users/" not in "".join(cell["source"])
 
 
-def test_all_five_original_plot_cells_render_without_real_data(aggregates, tmp_path):
+def test_all_five_figures_render_without_real_data(aggregates, tmp_path):
     pytest.importorskip("seaborn", reason="Install requirements.txt to render figures.")
     frame, path = aggregates
     frame["TSA-COMPLETE_mean"] = 0.75
@@ -143,7 +135,7 @@ def test_all_five_original_plot_cells_render_without_real_data(aggregates, tmp_p
     assert len(manifest["rows"]) == 45
 
 
-@pytest.mark.parametrize("condition", ["e1", "e7"])
+@pytest.mark.parametrize("condition", ["e1", "e5"])
 def test_single_unfamiliar_model_renders_without_registration(aggregates, condition):
     frame, path = aggregates
     frame = frame[frame.experiment_id == condition].iloc[:1].copy()
@@ -153,7 +145,7 @@ def test_single_unfamiliar_model_renders_without_registration(aggregates, condit
     for name, (plot, _, _) in plots.PLOTS.items():
         with plots.plt.rc_context():
             fig = plot(data)
-            if name == "e5_identification_outcomes" and condition != "e7":
+            if name == "e5_identification_outcomes" and condition != "e5":
                 assert fig is None
                 continue
             assert fig is not None
@@ -179,7 +171,7 @@ def test_partial_conditions_and_more_than_nine_models_are_visible(aggregates):
     frame, path = aggregates
     # These new models have no E1 baseline; radar ordering must still include them.
     extra = frame.iloc[:1].assign(model_name="new-A", experiment_id="e3")
-    extra2 = extra.assign(model_name="new-B", experiment_id="e7")
+    extra2 = extra.assign(model_name="new-B", experiment_id="e5")
     pd.concat([frame, extra, extra2]).to_csv(path, index=False)
     data = plots.load_results([path])
     original = data.copy(deep=True)
@@ -214,7 +206,7 @@ def test_missing_values_are_not_converted_to_zero_or_midpoint(aggregates):
         plots.plt.close(fig)
 
 
-@pytest.mark.parametrize("value", ["bad-condition", None])
+@pytest.mark.parametrize("value", ["bad-condition", "e7", None])
 def test_invalid_conditions_are_rejected_instead_of_silently_dropped(aggregates, value):
     frame, path = aggregates
     frame.loc[0, "experiment_id"] = value

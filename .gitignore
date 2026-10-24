@@ -46,12 +46,12 @@ htmlcov/
 # Optional local assets for experimental/embodiment
 /clothes/
 
-# Private notes and local batch launchers
+# Notes and batch launchers
 /docs/
 /overnight_runs.sh
 /run_msr_levels.sh
 
-# Generated runs and private research handoffs (files stay on disk)
+# Generated runs and research handoffs
 /outputs/
 /outputs_*/
 /outputs*.zip
@@ -74,10 +74,9 @@ htmlcov/
 /notebooks/*.pdf
 /notebooks/figures/
 /notebooks/paper_assets/
-# Original local notebook includes saved results; publish its source-only copy.
-/notebooks/archive/results_analysis_legacy.ipynb
-# Provisional PDF-transcribed values are local plotting inputs, not source code.
-/notebooks/plot_sources/cosmos_reported_metrics.json
+# Exploratory notebooks and plotting inputs
+/notebooks/archive/
+/notebooks/plot_sources/
 /paper_assets/
 
 # Personal launch configurations; shared presets and extra experiments are source
